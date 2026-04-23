@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --color-energy-orange: #F28C28;
+  --color-vital-green: #4F7942;
+  --color-midnight-black: #1A1A1A;
+  --color-soft-sand: #F9F7F2;
+  --color-pure-white: #FFFFFF;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-headline: 'Montserrat', sans-serif;
+  --font-callout: 'Plus Jakarta Sans', sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: #F9F7F2;
+  color: #1A1A1A;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+}
+
+#root {
+  display: flex;
+  min-height: 100dvh;
+}
