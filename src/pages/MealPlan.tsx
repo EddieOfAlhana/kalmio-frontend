@@ -22,13 +22,19 @@ const MEAL_COLOR: Record<MealType, string> = {
   BREAKFAST: '#F28C28', LUNCH: '#4F7942', DINNER: '#1A1A1A', SNACK: '#6b7280',
 }
 
+// z.coerce.number() converts empty string → 0, so we transform 0 → null for optional fields
+// to avoid sending impossible hard constraints (e.g. prepTimeMax=0 means "0 minutes allowed")
+const optionalInt = z.coerce.number().int().optional().nullable().transform(v => v || null)
+const optionalNum = z.coerce.number().optional().nullable().transform(v => v || null)
+
 const schema = z.object({
   days: z.coerce.number().int().min(1).max(14),
   mealsPerDay: z.coerce.number().int().min(1).max(6),
   kcalTarget: z.coerce.number().min(500),
-  proteinMin: z.coerce.number().optional().nullable(),
-  budgetMax: z.coerce.number().optional().nullable(),
-  prepTimeMax: z.coerce.number().int().optional().nullable(),
+  proteinMin: optionalNum,
+  budgetMax: optionalNum,
+  prepTimeMax: optionalInt,
+  maxRecipeRepetitions: z.coerce.number().int().min(1).optional().nullable().transform(v => (v == null || v < 1) ? null : v),
 })
 type FormValues = z.infer<typeof schema>
 
@@ -50,7 +56,7 @@ export function MealPlan() {
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema) as Resolver<FormValues>,
-    defaultValues: { days: 7, mealsPerDay: 3, kcalTarget: 2000, proteinMin: 150 },
+    defaultValues: { days: 7, mealsPerDay: 3, kcalTarget: 2000, proteinMin: 150, maxRecipeRepetitions: 2 },
   })
 
   const mutation = useMutation({
@@ -67,6 +73,7 @@ export function MealPlan() {
         proteinMin: v.proteinMin ?? null,
         budgetMax: v.budgetMax ?? null,
         prepTimeMax: v.prepTimeMax ?? null,
+        maxRecipeRepetitions: v.maxRecipeRepetitions ?? null,
       },
     })
   }
@@ -125,6 +132,11 @@ export function MealPlan() {
             <div className="space-y-1">
               <Label>Max prep time (min)</Label>
               <Input type="number" min="0" placeholder="optional" {...register('prepTimeMax')} />
+            </div>
+            <div className="space-y-1">
+              <Label>Max recipe repeats <span className="text-gray-400 text-xs">(hard limit)</span></Label>
+              <Input type="number" min="1" placeholder="optional" {...register('maxRecipeRepetitions')} />
+              {errors.maxRecipeRepetitions && <p className="text-xs text-red-500">{errors.maxRecipeRepetitions.message}</p>}
             </div>
 
             <div className="col-span-2 md:col-span-3 flex items-center gap-3 pt-1">

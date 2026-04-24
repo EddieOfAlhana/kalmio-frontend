@@ -91,6 +91,7 @@ export interface GenerateMealPlanRequest {
     budgetMax?: number | null
     prepTimeMax?: number | null
     forbiddenIngredientIds?: string[]
+    maxRecipeRepetitions?: number | null
   }
   servingConfig?: {
     minMultiplier: number
