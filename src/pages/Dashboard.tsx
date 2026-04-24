@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { UtensilsCrossed, ChefHat, Leaf, ShoppingCart, ArrowRight } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,12 +13,12 @@ import { useMealPlanStore } from '@/store/mealPlan'
 
 export function Dashboard() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const activePlan = useMealPlanStore(s => s.plan)
 
   const { data: recipes = [] } = useQuery({ queryKey: ['recipes'], queryFn: recipesService.list, staleTime: 30_000 })
   const { data: ingredients = [] } = useQuery({ queryKey: ['ingredients'], queryFn: ingredientsService.list, staleTime: 30_000 })
 
-  // Daily summary from active plan
   const dailySummaries = activePlan
     ? Array.from({ length: activePlan.days }, (_, day) => {
         const dayMeals = activePlan.meals.filter(m => m.day === day)
@@ -35,12 +36,12 @@ export function Dashboard() {
   return (
     <div>
       <Header
-        title="Dashboard"
-        subtitle="Your nutrition overview"
+        title={t('dashboard.title')}
+        subtitle={t('dashboard.subtitle')}
         actions={
           <Button onClick={() => navigate('/meal-plans')}>
             <UtensilsCrossed className="h-4 w-4" />
-            New Plan
+            {t('dashboard.newPlan')}
           </Button>
         }
       />
@@ -48,10 +49,10 @@ export function Dashboard() {
       {/* Quick stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         {[
-          { icon: ChefHat, label: 'Recipes', value: recipes.length, to: '/recipes', color: '#F28C28' },
-          { icon: Leaf, label: 'Ingredients', value: ingredients.length, to: '/ingredients', color: '#4F7942' },
-          { icon: UtensilsCrossed, label: 'Active Plan', value: activePlan ? `${activePlan.days}d` : '—', to: '/meal-plans', color: '#1A1A1A' },
-          { icon: ShoppingCart, label: 'Total Cost', value: activePlan ? formatCurrency(activePlan.totalEstimatedCost) : '—', to: '/shopping-list', color: '#F28C28' },
+          { icon: ChefHat, label: t('dashboard.stats.recipes'), value: recipes.length, to: '/recipes', color: '#F28C28' },
+          { icon: Leaf, label: t('dashboard.stats.ingredients'), value: ingredients.length, to: '/ingredients', color: '#4F7942' },
+          { icon: UtensilsCrossed, label: t('dashboard.stats.activePlan'), value: activePlan ? `${activePlan.days}d` : '—', to: '/meal-plans', color: '#1A1A1A' },
+          { icon: ShoppingCart, label: t('dashboard.stats.totalCost'), value: activePlan ? formatCurrency(activePlan.totalEstimatedCost) : '—', to: '/shopping-list', color: '#F28C28' },
         ].map(({ icon: Icon, label, value, to, color }) => (
           <button key={label} onClick={() => navigate(to)} className="text-left focus:outline-none">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
@@ -73,16 +74,20 @@ export function Dashboard() {
       {activePlan ? (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-headline font-bold text-[#1A1A1A]">Active Plan · {activePlan.days} days</h2>
+            <h2 className="text-base font-headline font-bold text-[#1A1A1A]">
+              {t('dashboard.activePlan.title', { days: activePlan.days })}
+            </h2>
             <Button variant="ghost" size="sm" onClick={() => navigate('/meal-plans')}>
-              View <ArrowRight className="h-3.5 w-3.5" />
+              {t('dashboard.activePlan.view')} <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {dailySummaries.slice(0, 4).map(day => (
               <Card key={day.day}>
                 <CardContent className="pt-4">
-                  <p className="text-xs font-medium text-gray-500 mb-3">Day {day.day + 1}</p>
+                  <p className="text-xs font-medium text-gray-500 mb-3">
+                    {t('dashboard.activePlan.day', { day: day.day + 1 })}
+                  </p>
                   <div className="flex items-center gap-3">
                     <MacroRing
                       macros={{ kcal: day.kcal, protein: day.protein, fat: day.fat, carbs: day.carbs }}
@@ -91,17 +96,17 @@ export function Dashboard() {
                     <div className="text-xs space-y-0.5">
                       <div className="flex gap-1.5 items-center">
                         <span className="w-2 h-2 rounded-full bg-[#F28C28] shrink-0" />
-                        <span className="text-gray-500">Protein</span>
+                        <span className="text-gray-500">{t('dashboard.activePlan.protein')}</span>
                         <span className="font-semibold ml-auto">{day.protein.toFixed(0)}g</span>
                       </div>
                       <div className="flex gap-1.5 items-center">
                         <span className="w-2 h-2 rounded-full bg-[#4F7942] shrink-0" />
-                        <span className="text-gray-500">Fat</span>
+                        <span className="text-gray-500">{t('dashboard.activePlan.fat')}</span>
                         <span className="font-semibold ml-auto">{day.fat.toFixed(0)}g</span>
                       </div>
                       <div className="flex gap-1.5 items-center">
                         <span className="w-2 h-2 rounded-full bg-[#1A1A1A] shrink-0" />
-                        <span className="text-gray-500">Carbs</span>
+                        <span className="text-gray-500">{t('dashboard.activePlan.carbs')}</span>
                         <span className="font-semibold ml-auto">{day.carbs.toFixed(0)}g</span>
                       </div>
                       {day.cost != null && (
@@ -117,7 +122,7 @@ export function Dashboard() {
           </div>
           {activePlan.days > 4 && (
             <Button variant="ghost" size="sm" className="mt-2" onClick={() => navigate('/meal-plans')}>
-              +{activePlan.days - 4} more days <ArrowRight className="h-3.5 w-3.5" />
+              {t('dashboard.activePlan.moreDays', { count: activePlan.days - 4 })} <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           )}
         </div>
@@ -125,9 +130,9 @@ export function Dashboard() {
         <Card>
           <CardContent className="py-12 flex flex-col items-center text-center">
             <UtensilsCrossed className="h-10 w-10 text-[#F28C28] mb-3" />
-            <h3 className="font-headline font-bold text-[#1A1A1A] mb-1">No active plan</h3>
-            <p className="text-sm text-gray-500 mb-4">Generate a meal plan to see your daily nutrition breakdown.</p>
-            <Button onClick={() => navigate('/meal-plans')}>Generate Meal Plan</Button>
+            <h3 className="font-headline font-bold text-[#1A1A1A] mb-1">{t('dashboard.noActivePlan.title')}</h3>
+            <p className="text-sm text-gray-500 mb-4">{t('dashboard.noActivePlan.description')}</p>
+            <Button onClick={() => navigate('/meal-plans')}>{t('dashboard.noActivePlan.button')}</Button>
           </CardContent>
         </Card>
       )}

@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { Zap, Clock, ChevronDown, ChevronUp, ShoppingCart } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
@@ -22,8 +23,6 @@ const MEAL_COLOR: Record<MealType, string> = {
   BREAKFAST: '#F28C28', LUNCH: '#4F7942', DINNER: '#1A1A1A', SNACK: '#6b7280',
 }
 
-// z.coerce.number() converts empty string → 0, so we transform 0 → null for optional fields
-// to avoid sending impossible hard constraints (e.g. prepTimeMax=0 means "0 minutes allowed")
 const optionalInt = z.coerce.number().int().optional().nullable().transform(v => v || null)
 const optionalNum = z.coerce.number().optional().nullable().transform(v => v || null)
 
@@ -51,6 +50,7 @@ function sumMacros(meals: GeneratedMeal[]): Macros {
 
 export function MealPlan() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const { plan, setPlan } = useMealPlanStore()
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set([0]))
 
@@ -87,16 +87,20 @@ export function MealPlan() {
   }
 
   const totalMacros = plan ? sumMacros(plan.meals) : null
+  const totalCost = plan?.meals.every(m => m.estimatedCost != null)
+    ? plan.meals.reduce((s, m) => s + (m.estimatedCost ?? 0), 0)
+    : null
+  const costPerDay = totalCost != null && plan ? totalCost / plan.days : null
 
   return (
     <div>
       <Header
-        title="Meal Plan"
-        subtitle="Solver-generated, nutrition-optimised weekly plans"
+        title={t('mealPlan.title')}
+        subtitle={t('mealPlan.subtitle')}
         actions={
           plan && (
             <Button variant="outline" onClick={() => navigate('/shopping-list')}>
-              <ShoppingCart className="h-4 w-4" /> Shopping List
+              <ShoppingCart className="h-4 w-4" /> {t('mealPlan.shoppingList')}
             </Button>
           )
         }
@@ -104,55 +108,55 @@ export function MealPlan() {
 
       {/* Generation form */}
       <Card className="mb-6">
-        <CardHeader><CardTitle>Generate New Plan</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t('mealPlan.form.title')}</CardTitle></CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <div className="space-y-1">
-              <Label>Days <span className="text-gray-400 text-xs">(1–14)</span></Label>
+              <Label>{t('mealPlan.form.days')} <span className="text-gray-400 text-xs">{t('mealPlan.form.daysHint')}</span></Label>
               <Input type="number" min="1" max="14" {...register('days')} />
               {errors.days && <p className="text-xs text-red-500">{errors.days.message}</p>}
             </div>
             <div className="space-y-1">
-              <Label>Meals / day <span className="text-gray-400 text-xs">(1–6)</span></Label>
+              <Label>{t('mealPlan.form.mealsPerDay')} <span className="text-gray-400 text-xs">{t('mealPlan.form.mealsPerDayHint')}</span></Label>
               <Input type="number" min="1" max="6" {...register('mealsPerDay')} />
             </div>
             <div className="space-y-1">
-              <Label>Calorie target (kcal) *</Label>
+              <Label>{t('mealPlan.form.kcalTarget')}</Label>
               <Input type="number" min="500" {...register('kcalTarget')} />
               {errors.kcalTarget && <p className="text-xs text-red-500">{errors.kcalTarget.message}</p>}
             </div>
             <div className="space-y-1">
-              <Label>Min protein (g)</Label>
-              <Input type="number" min="0" placeholder="optional" {...register('proteinMin')} />
+              <Label>{t('mealPlan.form.proteinMin')}</Label>
+              <Input type="number" min="0" placeholder={t('mealPlan.form.optional')} {...register('proteinMin')} />
             </div>
             <div className="space-y-1">
-              <Label>Budget max (HUF)</Label>
-              <Input type="number" min="0" placeholder="optional" {...register('budgetMax')} />
+              <Label>{t('mealPlan.form.budgetMax')}</Label>
+              <Input type="number" min="0" placeholder={t('mealPlan.form.optional')} {...register('budgetMax')} />
             </div>
             <div className="space-y-1">
-              <Label>Max prep time (min)</Label>
-              <Input type="number" min="0" placeholder="optional" {...register('prepTimeMax')} />
+              <Label>{t('mealPlan.form.prepTimeMax')}</Label>
+              <Input type="number" min="0" placeholder={t('mealPlan.form.optional')} {...register('prepTimeMax')} />
             </div>
             <div className="space-y-1">
-              <Label>Max recipe repeats <span className="text-gray-400 text-xs">(hard limit)</span></Label>
-              <Input type="number" min="1" placeholder="optional" {...register('maxRecipeRepetitions')} />
+              <Label>{t('mealPlan.form.maxRepeats')} <span className="text-gray-400 text-xs">{t('mealPlan.form.maxRepeatsHint')}</span></Label>
+              <Input type="number" min="1" placeholder={t('mealPlan.form.optional')} {...register('maxRecipeRepetitions')} />
               {errors.maxRecipeRepetitions && <p className="text-xs text-red-500">{errors.maxRecipeRepetitions.message}</p>}
             </div>
 
             <div className="col-span-2 md:col-span-3 flex items-center gap-3 pt-1">
               <Button type="submit" size="lg" disabled={mutation.isPending} className="min-w-40">
                 {mutation.isPending ? (
-                  <><Spinner className="h-4 w-4" /> Solving…</>
+                  <><Spinner className="h-4 w-4" /> {t('mealPlan.form.solving')}</>
                 ) : (
-                  <><Zap className="h-4 w-4" /> Generate Plan</>
+                  <><Zap className="h-4 w-4" /> {t('mealPlan.form.generate')}</>
                 )}
               </Button>
               {mutation.isPending && (
-                <p className="text-sm text-gray-500">The solver may take up to 15 seconds…</p>
+                <p className="text-sm text-gray-500">{t('mealPlan.form.solverNote')}</p>
               )}
               {mutation.isError && (
                 <p className="text-sm text-red-500">
-                  {(mutation.error as Error).message ?? 'Generation failed. Make sure you have recipes.'}
+                  {(mutation.error as Error).message ?? t('mealPlan.form.error')}
                 </p>
               )}
             </div>
@@ -164,12 +168,12 @@ export function MealPlan() {
       {plan && (
         <div>
           {/* Total summary */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
             {[
-              { label: 'Total kcal', value: formatMacro(totalMacros?.kcal, ' kcal'), color: '#F28C28' },
-              { label: 'Total protein', value: formatMacro(totalMacros?.protein, 'g'), color: '#F28C28' },
-              { label: 'Total fat', value: formatMacro(totalMacros?.fat, 'g'), color: '#4F7942' },
-              { label: 'Total cost', value: formatCurrency(plan.totalEstimatedCost), color: '#4F7942' },
+              { label: t('mealPlan.summary.totalKcal'), value: formatMacro(totalMacros != null ? totalMacros.kcal / plan.days : undefined, ' kcal'), color: '#F28C28' },
+              { label: t('mealPlan.summary.totalProtein'), value: formatMacro(totalMacros != null ? totalMacros.protein / plan.days : undefined, 'g'), color: '#F28C28' },
+              { label: t('mealPlan.summary.avgCarbs'), value: formatMacro(totalMacros != null ? totalMacros.carbs / plan.days : undefined, 'g'), color: '#F28C28' },
+              { label: t('mealPlan.summary.totalFat'), value: formatMacro(totalMacros != null ? totalMacros.fat / plan.days : undefined, 'g'), color: '#4F7942' },
             ].map(({ label, value, color }) => (
               <Card key={label}>
                 <CardContent className="pt-4">
@@ -178,6 +182,15 @@ export function MealPlan() {
                 </CardContent>
               </Card>
             ))}
+            <Card>
+              <CardContent className="pt-4">
+                <p className="text-xs text-gray-500 mb-1">{t('mealPlan.summary.totalCost')}</p>
+                <p className="text-lg font-headline font-bold" style={{ color: '#4F7942' }}>{formatCurrency(totalCost)}</p>
+                {costPerDay != null && (
+                  <p className="text-xs text-gray-400 mt-0.5">{formatCurrency(costPerDay)} {t('mealPlan.summary.costPerDay')}</p>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Day cards */}
@@ -200,12 +213,14 @@ export function MealPlan() {
                       <div className="flex items-center gap-4">
                         <MacroRing macros={dayMacros} size={56} />
                         <div className="flex-1 min-w-0">
-                          <p className="font-headline font-bold text-sm text-[#1A1A1A]">Day {day + 1}</p>
+                          <p className="font-headline font-bold text-sm text-[#1A1A1A]">
+                            {t('mealPlan.day', { day: day + 1 })}
+                          </p>
                           <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-gray-500 mt-0.5">
                             <span>{dayMacros.kcal.toFixed(0)} kcal</span>
-                            <span>{dayMacros.protein.toFixed(0)}g protein</span>
-                            <span>{dayMacros.fat.toFixed(0)}g fat</span>
-                            <span>{dayMacros.carbs.toFixed(0)}g carbs</span>
+                            <span>{dayMacros.protein.toFixed(0)}g {t('mealPlan.protein')}</span>
+                            <span>{dayMacros.fat.toFixed(0)}g {t('mealPlan.fat')}</span>
+                            <span>{dayMacros.carbs.toFixed(0)}g {t('mealPlan.carbs')}</span>
                             {dayCost != null && <span className="text-[#4F7942] font-semibold">{formatCurrency(dayCost)}</span>}
                           </div>
                         </div>
@@ -232,6 +247,8 @@ export function MealPlan() {
 }
 
 function MealSlotCard({ meal }: { meal: GeneratedMeal }) {
+  const { t } = useTranslation()
+
   return (
     <div className="flex gap-3 bg-[#F9F7F2] rounded-[12px] p-3">
       <div className="shrink-0">
@@ -248,7 +265,7 @@ function MealSlotCard({ meal }: { meal: GeneratedMeal }) {
           <span className="flex items-center gap-1">
             <Clock className="h-3 w-3" /> {meal.recipe.prepTimeMinutes + meal.recipe.cookTimeMinutes}m
           </span>
-          <span>×{meal.servingMultiplier?.toFixed(1)} serving</span>
+          <span>×{meal.servingMultiplier?.toFixed(1)} {t('mealPlan.serving')}</span>
           {meal.macros && <span>{meal.macros.kcal.toFixed(0)} kcal</span>}
           {meal.estimatedCost != null && (
             <span className="text-[#4F7942] font-medium">
@@ -258,7 +275,7 @@ function MealSlotCard({ meal }: { meal: GeneratedMeal }) {
         </div>
       </div>
       <div className="flex gap-1 shrink-0 flex-wrap justify-end items-start">
-        {(meal.recipe.tags ?? []).map(t => <Badge key={t} variant="gray">{t}</Badge>)}
+        {(meal.recipe.tags ?? []).map(tag => <Badge key={tag} variant="gray">{tag}</Badge>)}
       </div>
     </div>
   )

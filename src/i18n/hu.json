@@ -1,0 +1,217 @@
+{
+  "nav": {
+    "dashboard": "Irányítópult",
+    "mealPlans": "Étrendek",
+    "recipes": "Receptek",
+    "ingredients": "Hozzávalók",
+    "shoppingList": "Bevásárlólista",
+    "home": "Főoldal",
+    "plans": "Tervek",
+    "shop": "Bolt",
+    "retail": "Kiskereskedelem"
+  },
+  "common": {
+    "version": "Táplálkozási Motor v0.1",
+    "required": "Kötelező",
+    "optional": "opcionális",
+    "cancel": "Mégse",
+    "edit": "Szerkesztés",
+    "save": "Mentés",
+    "create": "Létrehozás",
+    "add": "Hozzáadás",
+    "delete": "Törlés",
+    "search": "Keresés"
+  },
+  "language": {
+    "en": "EN",
+    "hu": "HU"
+  },
+  "dashboard": {
+    "title": "Irányítópult",
+    "subtitle": "Táplálkozási áttekintőd",
+    "newPlan": "Új terv",
+    "stats": {
+      "recipes": "Receptek",
+      "ingredients": "Hozzávalók",
+      "activePlan": "Aktív terv",
+      "totalCost": "Teljes költség"
+    },
+    "activePlan": {
+      "title": "Aktív terv · {{days}} nap",
+      "view": "Megtekintés",
+      "day": "{{day}}. nap",
+      "protein": "Fehérje",
+      "fat": "Zsír",
+      "carbs": "Szénhidrát",
+      "moreDays": "+{{count}} további nap"
+    },
+    "noActivePlan": {
+      "title": "Nincs aktív terv",
+      "description": "Generálj étrendet a napi táplálkozási összesítőd megtekintéséhez.",
+      "button": "Étrend generálása"
+    }
+  },
+  "mealPlan": {
+    "title": "Étrend",
+    "subtitle": "Megoldómotor által generált, táplálkozásilag optimalizált heti tervek",
+    "shoppingList": "Bevásárlólista",
+    "form": {
+      "title": "Új terv generálása",
+      "days": "Napok",
+      "daysHint": "(1–14)",
+      "mealsPerDay": "Étkezés / nap",
+      "mealsPerDayHint": "(1–6)",
+      "kcalTarget": "Kalória cél (kcal) *",
+      "proteinMin": "Min fehérje (g)",
+      "budgetMax": "Max büdzsé (HUF)",
+      "prepTimeMax": "Max előkészítési idő (perc)",
+      "maxRepeats": "Max recept ismétlés",
+      "maxRepeatsHint": "(kemény korlát)",
+      "optional": "opcionális",
+      "generate": "Terv generálása",
+      "solving": "Megoldás folyamatban…",
+      "solverNote": "A megoldómotor akár 15 másodpercet is igénybe vehet…",
+      "error": "A generálás sikertelen. Győződj meg róla, hogy vannak receptjeid."
+    },
+    "summary": {
+      "totalKcal": "Átlag kcal / nap",
+      "totalProtein": "Átlag fehérje / nap",
+      "totalFat": "Átlag zsír / nap",
+      "avgCarbs": "Átlag szénhidrát / nap",
+      "totalCost": "Teljes költség",
+      "costPerDay": "Költség / nap"
+    },
+    "day": "{{day}}. nap",
+    "protein": "fehérje",
+    "fat": "zsír",
+    "carbs": "szénhidrát",
+    "serving": "adag"
+  },
+  "recipes": {
+    "title": "Receptek",
+    "subtitle_one": "{{count}} recept a könyvtárban",
+    "subtitle_other": "{{count}} recept a könyvtárban",
+    "addRecipe": "Recept hozzáadása",
+    "search": "Receptek keresése…",
+    "noResults": "Nem találhatók receptek",
+    "servings_one": "{{count}} adag",
+    "servings_other": "{{count}} adag",
+    "edit": "Szerkesztés",
+    "delete": "Törlöd: \"{{name}}\"?",
+    "form": {
+      "editTitle": "Recept szerkesztése",
+      "newTitle": "Új recept",
+      "name": "Név *",
+      "namePlaceholder": "pl. Grillezett csirkemell tál",
+      "prepTime": "Előkészítési idő (perc) *",
+      "cookTime": "Főzési idő (perc) *",
+      "servings": "Adagok *",
+      "steps": "Lépések",
+      "stepsHint": "(soronként egy)",
+      "stepsPlaceholder": "Várd fel a zöldségeket\nMelegítsd fel a serpenyőt…",
+      "tags": "Címkék",
+      "ingredients": "Hozzávalók *",
+      "noIngredients": "Még nincsenek hozzávalók — kattints a Hozzáadásra",
+      "add": "Hozzáadás",
+      "cancel": "Mégse",
+      "create": "Recept létrehozása",
+      "save": "Mentés"
+    }
+  },
+  "ingredients": {
+    "title": "Hozzávalók",
+    "subtitle_one": "{{count}} hozzávaló a katalógusban",
+    "subtitle_other": "{{count}} hozzávaló a katalógusban",
+    "addIngredient": "Hozzávaló hozzáadása",
+    "search": "Hozzávalók keresése…",
+    "noResults": "Nem találhatók hozzávalók",
+    "edit": "Szerkesztés",
+    "delete": "Törlöd: \"{{name}}\"?",
+    "form": {
+      "editTitle": "Hozzávaló szerkesztése",
+      "newTitle": "Új hozzávaló",
+      "name": "Név *",
+      "namePlaceholder": "pl. Csirkemell",
+      "aliases": "Alternatív nevek",
+      "aliasesHint": "(vesszővel elválasztva)",
+      "aliasesPlaceholder": "pl. csirke, szárnyas",
+      "category": "Kategória *",
+      "macros": "Makrók",
+      "macrosHint": "100g/ml vagy 1 db alapján",
+      "density": "Sűrűség",
+      "densityHint": "(g/ml, opcionális)",
+      "dietaryFlags": "Diétás jelölők",
+      "cancel": "Mégse",
+      "create": "Létrehozás",
+      "save": "Mentés"
+    },
+    "dietary": {
+      "vegetarian": "Vegetáriánus",
+      "vegan": "Vegán",
+      "lactoseFree": "Laktózmentes",
+      "milkProteinFree": "Tejfehérje-mentes",
+      "glutenFree": "Gluténmentes",
+      "paleo": "Paleo"
+    },
+    "chooseIngredient": "Válassz hozzávalót",
+    "searchByName": "Keresés név vagy alternatív név alapján…"
+  },
+  "retail": {
+    "title": "Kiskereskedelmi termékek",
+    "subtitle_one": "{{count}} termék",
+    "subtitle_other": "{{count}} termék",
+    "addProduct": "Termék hozzáadása",
+    "search": "Termékek keresése…",
+    "noResults": "Nem találhatók termékek",
+    "edit": "Szerkesztés",
+    "delete": "Törlöd: \"{{name}}\"?",
+    "price": "Ár",
+    "packageSize": "Kiszerelés",
+    "mappings": "Megfeleltetések",
+    "form": {
+      "editTitle": "Termék szerkesztése",
+      "newTitle": "Új kiskereskedelmi termék",
+      "provider": "Bolt",
+      "name": "Terméknév *",
+      "namePlaceholder": "pl. Tesco csirkemell 500g",
+      "externalProductId": "Külső azonosító *",
+      "externalProductIdPlaceholder": "pl. SKU-12345",
+      "brand": "Márka",
+      "brandPlaceholder": "pl. Tesco",
+      "packageSize": "Kiszerelés *",
+      "unit": "Egység *",
+      "price": "Ár (HUF) *",
+      "remoteUrl": "Termék URL",
+      "remoteUrlPlaceholder": "https://…",
+      "ingredientMappings": "Összetevő-megfeleltetések",
+      "addMapping": "Megfeleltetés hozzáadása",
+      "noMappings": "Még nincs megfeleltetés — kattints a Hozzáadásra",
+      "cancel": "Mégse",
+      "create": "Termék létrehozása",
+      "save": "Mentés"
+    }
+  },
+  "shoppingList": {
+    "title": "Bevásárlólista",
+    "subtitle": "{{days}} napos étrendeden alapul",
+    "backToPlan": "Vissza a tervhez",
+    "building": "Bevásárlólista készítése…",
+    "error": "A bevásárlólista létrehozása sikertelen",
+    "items": "tétel",
+    "noActivePlan": {
+      "title": "Nincs aktív étrend",
+      "description": "Először generálj étrendet a bevásárlólista létrehozásához.",
+      "button": "Étrendekhez"
+    },
+    "summary": {
+      "totalItems": "Összes tétel",
+      "estimatedTotal": "Becsült összeg",
+      "noRetailMatch": "Nincs kiskereskedelmi egyezés"
+    },
+    "missingItems_one": "{{count}} hozzávalóhoz nincs Tesco termék. Vásárold meg külön.",
+    "missingItems_other": "{{count}} hozzávalóhoz nincs Tesco termék. Vásárold meg külön.",
+    "totalNeeded": "Szükséges összesen:",
+    "noRetailProduct": "Nincs elérhető kiskereskedelmi termék — vásárold meg külön",
+    "tesco": "Tesco"
+  }
+}

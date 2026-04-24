@@ -1,0 +1,217 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "mealPlans": "Meal Plans",
+    "recipes": "Recipes",
+    "ingredients": "Ingredients",
+    "shoppingList": "Shopping List",
+    "home": "Home",
+    "plans": "Plans",
+    "shop": "Shop",
+    "retail": "Retail"
+  },
+  "common": {
+    "version": "Nutrition Engine v0.1",
+    "required": "Required",
+    "optional": "optional",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "save": "Save Changes",
+    "create": "Create",
+    "add": "Add",
+    "delete": "Delete",
+    "search": "Search"
+  },
+  "language": {
+    "en": "EN",
+    "hu": "HU"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Your nutrition overview",
+    "newPlan": "New Plan",
+    "stats": {
+      "recipes": "Recipes",
+      "ingredients": "Ingredients",
+      "activePlan": "Active Plan",
+      "totalCost": "Total Cost"
+    },
+    "activePlan": {
+      "title": "Active Plan · {{days}} days",
+      "view": "View",
+      "day": "Day {{day}}",
+      "protein": "Protein",
+      "fat": "Fat",
+      "carbs": "Carbs",
+      "moreDays": "+{{count}} more days"
+    },
+    "noActivePlan": {
+      "title": "No active plan",
+      "description": "Generate a meal plan to see your daily nutrition breakdown.",
+      "button": "Generate Meal Plan"
+    }
+  },
+  "mealPlan": {
+    "title": "Meal Plan",
+    "subtitle": "Solver-generated, nutrition-optimised weekly plans",
+    "shoppingList": "Shopping List",
+    "form": {
+      "title": "Generate New Plan",
+      "days": "Days",
+      "daysHint": "(1–14)",
+      "mealsPerDay": "Meals / day",
+      "mealsPerDayHint": "(1–6)",
+      "kcalTarget": "Calorie target (kcal) *",
+      "proteinMin": "Min protein (g)",
+      "budgetMax": "Budget max (HUF)",
+      "prepTimeMax": "Max prep time (min)",
+      "maxRepeats": "Max recipe repeats",
+      "maxRepeatsHint": "(hard limit)",
+      "optional": "optional",
+      "generate": "Generate Plan",
+      "solving": "Solving…",
+      "solverNote": "The solver may take up to 15 seconds…",
+      "error": "Generation failed. Make sure you have recipes."
+    },
+    "summary": {
+      "totalKcal": "Average cal / day",
+      "totalProtein": "Average protein / day",
+      "totalFat": "Average fat / day",
+      "avgCarbs": "Average carbs / day",
+      "totalCost": "Total cost",
+      "costPerDay": "Cost / day"
+    },
+    "day": "Day {{day}}",
+    "protein": "protein",
+    "fat": "fat",
+    "carbs": "carbs",
+    "serving": "serving"
+  },
+  "recipes": {
+    "title": "Recipes",
+    "subtitle_one": "{{count}} recipe in library",
+    "subtitle_other": "{{count}} recipes in library",
+    "addRecipe": "Add Recipe",
+    "search": "Search recipes…",
+    "noResults": "No recipes found",
+    "servings_one": "{{count}} serving",
+    "servings_other": "{{count}} servings",
+    "edit": "Edit",
+    "delete": "Delete \"{{name}}\"?",
+    "form": {
+      "editTitle": "Edit Recipe",
+      "newTitle": "New Recipe",
+      "name": "Name *",
+      "namePlaceholder": "e.g. Grilled Chicken Bowl",
+      "prepTime": "Prep time (min) *",
+      "cookTime": "Cook time (min) *",
+      "servings": "Servings *",
+      "steps": "Steps",
+      "stepsHint": "(one per line)",
+      "stepsPlaceholder": "Chop vegetables\nHeat pan…",
+      "tags": "Tags",
+      "ingredients": "Ingredients *",
+      "noIngredients": "No ingredients yet — click Add",
+      "add": "Add",
+      "cancel": "Cancel",
+      "create": "Create Recipe",
+      "save": "Save Changes"
+    }
+  },
+  "ingredients": {
+    "title": "Ingredients",
+    "subtitle_one": "{{count}} ingredient in catalog",
+    "subtitle_other": "{{count}} ingredients in catalog",
+    "addIngredient": "Add Ingredient",
+    "search": "Search ingredients…",
+    "noResults": "No ingredients found",
+    "edit": "Edit",
+    "delete": "Delete \"{{name}}\"?",
+    "form": {
+      "editTitle": "Edit Ingredient",
+      "newTitle": "New Ingredient",
+      "name": "Name *",
+      "namePlaceholder": "e.g. Chicken Breast",
+      "aliases": "Aliases",
+      "aliasesHint": "(comma-separated)",
+      "aliasesPlaceholder": "e.g. chicken, poultry",
+      "category": "Category *",
+      "macros": "Macros",
+      "macrosHint": "per 100g/ml or 1 piece",
+      "density": "Density",
+      "densityHint": "(g/ml, optional)",
+      "dietaryFlags": "Dietary flags",
+      "cancel": "Cancel",
+      "create": "Create",
+      "save": "Save Changes"
+    },
+    "dietary": {
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan",
+      "lactoseFree": "Lactose-free",
+      "milkProteinFree": "Milk protein-free",
+      "glutenFree": "Gluten-free",
+      "paleo": "Paleo"
+    },
+    "chooseIngredient": "Choose an Ingredient",
+    "searchByName": "Search by name or alias…"
+  },
+  "retail": {
+    "title": "Retail Products",
+    "subtitle_one": "{{count}} product",
+    "subtitle_other": "{{count}} products",
+    "addProduct": "Add Product",
+    "search": "Search products…",
+    "noResults": "No products found",
+    "edit": "Edit",
+    "delete": "Delete \"{{name}}\"?",
+    "price": "Price",
+    "packageSize": "Package",
+    "mappings": "Mappings",
+    "form": {
+      "editTitle": "Edit Product",
+      "newTitle": "New Retail Product",
+      "provider": "Provider",
+      "name": "Product name *",
+      "namePlaceholder": "e.g. Tesco Chicken Breast 500g",
+      "externalProductId": "External ID *",
+      "externalProductIdPlaceholder": "e.g. SKU-12345",
+      "brand": "Brand",
+      "brandPlaceholder": "e.g. Tesco",
+      "packageSize": "Package size *",
+      "unit": "Unit *",
+      "price": "Price (HUF) *",
+      "remoteUrl": "Product URL",
+      "remoteUrlPlaceholder": "https://…",
+      "ingredientMappings": "Ingredient mappings",
+      "addMapping": "Add mapping",
+      "noMappings": "No mappings yet — click Add mapping",
+      "cancel": "Cancel",
+      "create": "Create Product",
+      "save": "Save Changes"
+    }
+  },
+  "shoppingList": {
+    "title": "Shopping List",
+    "subtitle": "Based on your {{days}}-day meal plan",
+    "backToPlan": "Back to Plan",
+    "building": "Building your shopping list…",
+    "error": "Failed to build shopping list",
+    "items": "items",
+    "noActivePlan": {
+      "title": "No active meal plan",
+      "description": "Generate a meal plan first to create a shopping list.",
+      "button": "Go to Meal Plans"
+    },
+    "summary": {
+      "totalItems": "Total items",
+      "estimatedTotal": "Estimated total",
+      "noRetailMatch": "No retail match"
+    },
+    "missingItems_one": "{{count}} ingredient has no Tesco product match. Buy these separately.",
+    "missingItems_other": "{{count}} ingredients have no Tesco product match. Buy these separately.",
+    "totalNeeded": "Total needed:",
+    "noRetailProduct": "No retail product available — buy separately",
+    "tesco": "Tesco"
+  }
+}

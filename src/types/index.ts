@@ -80,6 +80,59 @@ export interface CreateRecipeRequest {
 
 export type UpdateRecipeRequest = CreateRecipeRequest
 
+// ── Retail ────────────────────────────────────────────────────────────────
+
+export interface RetailProvider {
+  id: string
+  name: string
+  country: string
+  currency: string
+  baseUrl: string | null
+  active: boolean
+}
+
+export interface RetailIngredientMapping {
+  ingredientId: string
+  matchConfidence: number
+}
+
+export interface RetailProduct {
+  id: string
+  providerId: string
+  externalProductId: string
+  name: string
+  brand: string | null
+  packageSize: number
+  unit: Unit
+  price: number
+  remoteUrl: string | null
+  active: boolean
+  ingredientMappings: RetailIngredientMapping[]
+}
+
+export interface CreateRetailProductRequest {
+  providerId: string
+  externalProductId: string
+  name: string
+  brand?: string | null
+  packageSize: number
+  unit: Unit
+  price: number
+  remoteUrl?: string | null
+  ingredientMappings: { ingredientId: string; matchConfidence: number }[]
+}
+
+export interface UpdateRetailProductRequest {
+  externalProductId: string
+  name: string
+  brand?: string | null
+  packageSize: number
+  unit: Unit
+  price: number
+  remoteUrl?: string | null
+  ingredientMappings: { ingredientId: string; matchConfidence: number }[]
+}
+
 // ── Meal Plans ────────────────────────────────────────────────────────────
 
 export interface GenerateMealPlanRequest {

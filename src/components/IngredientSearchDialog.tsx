@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Search } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -29,6 +30,7 @@ export function IngredientSearchDialog({
   onSelect,
   excludeIds = [],
 }: IngredientSearchDialogProps) {
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
 
   const { data: ingredients = [], isLoading } = useQuery({
@@ -51,13 +53,13 @@ export function IngredientSearchDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Choose an Ingredient</DialogTitle>
+          <DialogTitle>{t('ingredients.chooseIngredient')}</DialogTitle>
         </DialogHeader>
 
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search by name or alias…"
+            placeholder={t('ingredients.searchByName')}
             value={query}
             onChange={e => setQuery(e.target.value)}
             className="pl-9"
@@ -70,7 +72,7 @@ export function IngredientSearchDialog({
             <Spinner />
           </div>
         ) : filtered.length === 0 ? (
-          <p className="text-center text-sm text-gray-400 py-6">No ingredients found</p>
+          <p className="text-center text-sm text-gray-400 py-6">{t('ingredients.noResults')}</p>
         ) : (
           <ul className="max-h-72 overflow-y-auto space-y-1 -mx-1">
             {filtered.map(ing => (

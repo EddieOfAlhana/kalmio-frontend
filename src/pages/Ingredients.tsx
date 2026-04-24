@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Plus, Pencil, Trash2, Search } from 'lucide-react'
 import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -74,6 +75,7 @@ function defaultValues(ing?: Ingredient): FormValues {
 
 export function Ingredients() {
   const qc = useQueryClient()
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<Ingredient | null | 'new'>(null)
 
@@ -104,11 +106,11 @@ export function Ingredients() {
   return (
     <div>
       <Header
-        title="Ingredients"
-        subtitle={`${ingredients.length} ingredients in catalog`}
+        title={t('ingredients.title')}
+        subtitle={t('ingredients.subtitle', { count: ingredients.length })}
         actions={
           <Button onClick={() => setEditTarget('new')}>
-            <Plus className="h-4 w-4" /> Add Ingredient
+            <Plus className="h-4 w-4" /> {t('ingredients.addIngredient')}
           </Button>
         }
       />
@@ -116,7 +118,7 @@ export function Ingredients() {
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
-          placeholder="Search ingredients…"
+          placeholder={t('ingredients.search')}
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="pl-9"
@@ -126,7 +128,7 @@ export function Ingredients() {
       {isLoading ? (
         <div className="flex justify-center py-12"><Spinner /></div>
       ) : filtered.length === 0 ? (
-        <Card><CardContent className="py-10 text-center text-sm text-gray-400">No ingredients found</CardContent></Card>
+        <Card><CardContent className="py-10 text-center text-sm text-gray-400">{t('ingredients.noResults')}</CardContent></Card>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map(ing => (
@@ -158,10 +160,10 @@ export function Ingredients() {
 
                 <div className="flex gap-2">
                   <Button variant="secondary" size="sm" className="flex-1" onClick={() => setEditTarget(ing)}>
-                    <Pencil className="h-3.5 w-3.5" /> Edit
+                    <Pencil className="h-3.5 w-3.5" /> {t('ingredients.edit')}
                   </Button>
                   <Button variant="danger" size="sm" onClick={() => {
-                    if (confirm(`Delete "${ing.name}"?`)) deleteMutation.mutate(ing.id)
+                    if (confirm(t('ingredients.delete', { name: ing.name }))) deleteMutation.mutate(ing.id)
                   }}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
@@ -201,39 +203,40 @@ function IngredientFormDialog({
   onSubmit: (v: FormValues) => void
   isPending: boolean
 }) {
+  const { t } = useTranslation()
   const { register, handleSubmit, control, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema) as Resolver<FormValues>,
     values: defaultValues(ingredient),
   })
 
   const DIETARY = [
-    { name: 'vegetarian' as const, label: 'Vegetarian' },
-    { name: 'vegan' as const, label: 'Vegan' },
-    { name: 'lactoseFree' as const, label: 'Lactose-free' },
-    { name: 'milkProteinFree' as const, label: 'Milk protein-free' },
-    { name: 'glutenFree' as const, label: 'Gluten-free' },
-    { name: 'paleo' as const, label: 'Paleo' },
+    { name: 'vegetarian' as const, label: t('ingredients.dietary.vegetarian') },
+    { name: 'vegan' as const, label: t('ingredients.dietary.vegan') },
+    { name: 'lactoseFree' as const, label: t('ingredients.dietary.lactoseFree') },
+    { name: 'milkProteinFree' as const, label: t('ingredients.dietary.milkProteinFree') },
+    { name: 'glutenFree' as const, label: t('ingredients.dietary.glutenFree') },
+    { name: 'paleo' as const, label: t('ingredients.dietary.paleo') },
   ]
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{ingredient ? 'Edit Ingredient' : 'New Ingredient'}</DialogTitle>
+          <DialogTitle>{ingredient ? t('ingredients.form.editTitle') : t('ingredients.form.newTitle')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2 space-y-1">
-              <Label>Name *</Label>
-              <Input {...register('name')} placeholder="e.g. Chicken Breast" />
+              <Label>{t('ingredients.form.name')}</Label>
+              <Input {...register('name')} placeholder={t('ingredients.form.namePlaceholder')} />
               {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
             </div>
             <div className="col-span-2 space-y-1">
-              <Label>Aliases <span className="text-gray-400 font-normal">(comma-separated)</span></Label>
-              <Input {...register('aliases')} placeholder="e.g. chicken, poultry" />
+              <Label>{t('ingredients.form.aliases')} <span className="text-gray-400 font-normal">{t('ingredients.form.aliasesHint')}</span></Label>
+              <Input {...register('aliases')} placeholder={t('ingredients.form.aliasesPlaceholder')} />
             </div>
             <div className="col-span-2 space-y-1">
-              <Label>Category *</Label>
+              <Label>{t('ingredients.form.category')}</Label>
               <Controller name="category" control={control} render={({ field }) => (
                 <Select {...field}>
                   {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -243,7 +246,9 @@ function IngredientFormDialog({
           </div>
 
           <div>
-            <p className="text-sm font-medium text-[#1A1A1A] mb-2">Macros <span className="text-xs text-gray-400 font-normal">per 100g/ml or 1 piece</span></p>
+            <p className="text-sm font-medium text-[#1A1A1A] mb-2">
+              {t('ingredients.form.macros')} <span className="text-xs text-gray-400 font-normal">{t('ingredients.form.macrosHint')}</span>
+            </p>
             <div className="grid grid-cols-4 gap-2">
               {(['kcal', 'protein', 'fat', 'carbs'] as const).map(f => (
                 <div key={f} className="space-y-1">
@@ -255,12 +260,12 @@ function IngredientFormDialog({
           </div>
 
           <div className="space-y-1">
-            <Label>Density <span className="text-gray-400 font-normal text-xs">(g/ml, optional)</span></Label>
+            <Label>{t('ingredients.form.density')} <span className="text-gray-400 font-normal text-xs">{t('ingredients.form.densityHint')}</span></Label>
             <Input type="number" step="0.01" min="0" {...register('density')} className="w-32" />
           </div>
 
           <div>
-            <p className="text-sm font-medium text-[#1A1A1A] mb-2">Dietary flags</p>
+            <p className="text-sm font-medium text-[#1A1A1A] mb-2">{t('ingredients.form.dietaryFlags')}</p>
             <div className="grid grid-cols-2 gap-y-1.5 gap-x-4">
               {DIETARY.map(({ name, label }) => (
                 <label key={name} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -272,9 +277,9 @@ function IngredientFormDialog({
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>{t('ingredients.form.cancel')}</Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? <Spinner className="h-4 w-4" /> : ingredient ? 'Save Changes' : 'Create'}
+              {isPending ? <Spinner className="h-4 w-4" /> : ingredient ? t('ingredients.form.save') : t('ingredients.form.create')}
             </Button>
           </div>
         </form>

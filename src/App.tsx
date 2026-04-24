@@ -6,6 +6,7 @@ import { MealPlan } from '@/pages/MealPlan'
 import { Recipes } from '@/pages/Recipes'
 import { Ingredients } from '@/pages/Ingredients'
 import { ShoppingList } from '@/pages/ShoppingList'
+import { RetailProducts } from '@/pages/RetailProducts'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/ingredients" element={<Ingredients />} />
             <Route path="/shopping-list" element={<ShoppingList />} />
+            <Route path="/retail-products" element={<RetailProducts />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Plus, Pencil, Trash2, Search, Clock, X } from 'lucide-react'
 import { useForm, useFieldArray, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -77,6 +78,7 @@ function defaultValues(recipe?: Recipe, ingredientMap?: Map<string, string>): Fo
 
 export function Recipes() {
   const qc = useQueryClient()
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<Recipe | null | 'new'>(null)
 
@@ -105,24 +107,24 @@ export function Recipes() {
   return (
     <div>
       <Header
-        title="Recipes"
-        subtitle={`${recipes.length} recipes in library`}
+        title={t('recipes.title')}
+        subtitle={t('recipes.subtitle', { count: recipes.length })}
         actions={
           <Button onClick={() => setEditTarget('new')}>
-            <Plus className="h-4 w-4" /> Add Recipe
+            <Plus className="h-4 w-4" /> {t('recipes.addRecipe')}
           </Button>
         }
       />
 
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <Input placeholder="Search recipes…" value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+        <Input placeholder={t('recipes.search')} value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
       </div>
 
       {isLoading ? (
         <div className="flex justify-center py-12"><Spinner /></div>
       ) : filtered.length === 0 ? (
-        <Card><CardContent className="py-10 text-center text-sm text-gray-400">No recipes found</CardContent></Card>
+        <Card><CardContent className="py-10 text-center text-sm text-gray-400">{t('recipes.noResults')}</CardContent></Card>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map(r => (
@@ -131,15 +133,15 @@ export function Recipes() {
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{r.name}</p>
                   <div className="flex gap-1 shrink-0 flex-wrap justify-end">
-                    {(r.tags ?? []).map(t => (
-                      <Badge key={t} variant={TAG_COLOR[t] ?? 'gray'}>{t}</Badge>
+                    {(r.tags ?? []).map(tag => (
+                      <Badge key={tag} variant={TAG_COLOR[tag] ?? 'gray'}>{tag}</Badge>
                     ))}
                   </div>
                 </div>
 
                 <div className="flex gap-3 text-xs text-gray-500 mb-3">
                   <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {r.prepTimeMinutes + r.cookTimeMinutes}m</span>
-                  <span>{r.servings} servings</span>
+                  <span>{t('recipes.servings', { count: r.servings })}</span>
                   {r.estimatedCostPerServing != null && (
                     <span className="text-[#4F7942] font-semibold">{formatCurrency(r.estimatedCostPerServing)}/srv</span>
                   )}
@@ -164,10 +166,10 @@ export function Recipes() {
                 <div className="flex gap-2">
                   <Button variant="secondary" size="sm" className="flex-1"
                     onClick={() => setEditTarget(r)}>
-                    <Pencil className="h-3.5 w-3.5" /> Edit
+                    <Pencil className="h-3.5 w-3.5" /> {t('recipes.edit')}
                   </Button>
                   <Button variant="danger" size="sm" onClick={() => {
-                    if (confirm(`Delete "${r.name}"?`)) deleteMutation.mutate(r.id)
+                    if (confirm(t('recipes.delete', { name: r.name }))) deleteMutation.mutate(r.id)
                   }}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
@@ -208,6 +210,7 @@ function RecipeFormDialog({
   isPending: boolean
   error?: string
 }) {
+  const { t } = useTranslation()
   const [ingSearchOpen, setIngSearchOpen] = useState(false)
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<FormValues>({
@@ -228,38 +231,38 @@ function RecipeFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{recipe ? 'Edit Recipe' : 'New Recipe'}</DialogTitle>
+          <DialogTitle>{recipe ? t('recipes.form.editTitle') : t('recipes.form.newTitle')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 overflow-y-auto max-h-[70dvh] pr-1">
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2 space-y-1">
-              <Label>Name *</Label>
-              <Input {...register('name')} placeholder="e.g. Grilled Chicken Bowl" />
+              <Label>{t('recipes.form.name')}</Label>
+              <Input {...register('name')} placeholder={t('recipes.form.namePlaceholder')} />
               {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-1">
-              <Label>Prep time (min) *</Label>
+              <Label>{t('recipes.form.prepTime')}</Label>
               <Input type="number" min="1" {...register('prepTimeMinutes')} />
             </div>
             <div className="space-y-1">
-              <Label>Cook time (min) *</Label>
+              <Label>{t('recipes.form.cookTime')}</Label>
               <Input type="number" min="1" {...register('cookTimeMinutes')} />
             </div>
             <div className="space-y-1">
-              <Label>Servings *</Label>
+              <Label>{t('recipes.form.servings')}</Label>
               <Input type="number" min="1" {...register('servings')} />
             </div>
           </div>
 
           <div className="space-y-1">
-            <Label>Steps <span className="text-gray-400 font-normal text-xs">(one per line)</span></Label>
-            <Textarea {...register('steps')} rows={4} placeholder="Chop vegetables&#10;Heat pan…" />
+            <Label>{t('recipes.form.steps')} <span className="text-gray-400 font-normal text-xs">{t('recipes.form.stepsHint')}</span></Label>
+            <Textarea {...register('steps')} rows={4} placeholder={t('recipes.form.stepsPlaceholder')} />
           </div>
 
           <div>
-            <Label className="mb-2 block">Tags</Label>
+            <Label className="mb-2 block">{t('recipes.form.tags')}</Label>
             <div className="flex gap-2 flex-wrap">
               {TAGS.map(tag => (
                 <button
@@ -281,9 +284,9 @@ function RecipeFormDialog({
           {/* Ingredients */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label>Ingredients *</Label>
+              <Label>{t('recipes.form.ingredients')}</Label>
               <Button type="button" variant="outline" size="sm" onClick={() => setIngSearchOpen(true)}>
-                <Plus className="h-3.5 w-3.5" /> Add
+                <Plus className="h-3.5 w-3.5" /> {t('recipes.form.add')}
               </Button>
             </div>
             {errors.ingredients && (
@@ -292,7 +295,7 @@ function RecipeFormDialog({
 
             {fields.length === 0 ? (
               <p className="text-sm text-gray-400 py-3 text-center border border-dashed rounded-[12px]">
-                No ingredients yet — click Add
+                {t('recipes.form.noIngredients')}
               </p>
             ) : (
               <div className="space-y-2">
@@ -323,9 +326,9 @@ function RecipeFormDialog({
           {error && <p className="text-sm text-red-500 bg-red-50 rounded-[12px] px-3 py-2">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>{t('recipes.form.cancel')}</Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? <Spinner className="h-4 w-4" /> : recipe ? 'Save Changes' : 'Create Recipe'}
+              {isPending ? <Spinner className="h-4 w-4" /> : recipe ? t('recipes.form.save') : t('recipes.form.create')}
             </Button>
           </div>
         </form>

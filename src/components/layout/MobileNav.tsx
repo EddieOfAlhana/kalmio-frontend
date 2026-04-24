@@ -1,16 +1,19 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf } from 'lucide-react'
+import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Store } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
-const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Home' },
-  { to: '/meal-plans', icon: UtensilsCrossed, label: 'Plans' },
-  { to: '/recipes', icon: ChefHat, label: 'Recipes' },
-  { to: '/ingredients', icon: Leaf, label: 'Ingredients' },
-  { to: '/shopping-list', icon: ShoppingCart, label: 'Shop' },
-]
-
 export function MobileNav() {
+  const { t } = useTranslation()
+
+  const navItems = [
+    { to: '/', icon: LayoutDashboard, label: t('nav.home') },
+    { to: '/meal-plans', icon: UtensilsCrossed, label: t('nav.plans') },
+    { to: '/recipes', icon: ChefHat, label: t('nav.recipes') },
+    { to: '/shopping-list', icon: ShoppingCart, label: t('nav.shop') },
+    { to: '/retail-products', icon: Store, label: t('nav.retail') },
+  ]
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-[#1A1A1A] border-t border-white/10 safe-area-pb">
       <div className="flex items-center justify-around h-16">

@@ -1,16 +1,21 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf } from 'lucide-react'
+import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-
-const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/meal-plans', icon: UtensilsCrossed, label: 'Meal Plans' },
-  { to: '/recipes', icon: ChefHat, label: 'Recipes' },
-  { to: '/ingredients', icon: Leaf, label: 'Ingredients' },
-  { to: '/shopping-list', icon: ShoppingCart, label: 'Shopping List' },
-]
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export function Sidebar() {
+  const { t } = useTranslation()
+
+  const navItems = [
+    { to: '/', icon: LayoutDashboard, label: t('nav.dashboard') },
+    { to: '/meal-plans', icon: UtensilsCrossed, label: t('nav.mealPlans') },
+    { to: '/recipes', icon: ChefHat, label: t('nav.recipes') },
+    { to: '/ingredients', icon: Leaf, label: t('nav.ingredients') },
+    { to: '/shopping-list', icon: ShoppingCart, label: t('nav.shoppingList') },
+    { to: '/retail-products', icon: Store, label: t('nav.retail') },
+  ]
+
   return (
     <aside className="hidden md:flex flex-col w-64 min-h-screen bg-[#1A1A1A] text-white shrink-0">
       {/* Logo */}
@@ -40,8 +45,9 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="px-6 py-4 border-t border-white/10">
-        <p className="text-xs text-white/40">Nutrition Engine v0.1</p>
+      <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between">
+        <p className="text-xs text-white/40">{t('common.version')}</p>
+        <LanguageSwitcher />
       </div>
     </aside>
   )
