@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useForm, type Resolver } from 'react-hook-form'
@@ -12,12 +12,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import { Slider } from '@/components/ui/slider'
 import { Spinner } from '@/components/ui/spinner'
 import { MacroRing } from '@/components/ui/macro-ring'
 import { mealPlansService } from '@/services/mealPlans'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { formatCurrency, formatMacro } from '@/lib/utils'
-import type { GeneratedMeal, MealType, Macros } from '@/types'
+import type { GeneratedMeal, MealType, Macros, ConstraintWeights } from '@/types'
 
 const MEAL_COLOR: Record<MealType, string> = {
   BREAKFAST: '#F28C28', LUNCH: '#4F7942', DINNER: '#1A1A1A', SNACK: '#6b7280',
@@ -37,6 +38,47 @@ const schema = z.object({
 })
 type FormValues = z.infer<typeof schema>
 
+type WeightKey = keyof ConstraintWeights
+
+function distributeWeights(
+  key: WeightKey,
+  newValue: number,
+  current: ConstraintWeights,
+  activeKeys: WeightKey[],
+): ConstraintWeights {
+  const others = activeKeys.filter(k => k !== key)
+  if (others.length === 0) return current
+
+  const sumOthers = others.reduce((s, k) => s + current[k], 0)
+  const remaining = 100 - newValue
+  const next = { ...current, [key]: newValue }
+
+  if (sumOthers === 0) {
+    const share = Math.floor(remaining / others.length)
+    others.forEach((k, i) => { next[k] = i === others.length - 1 ? remaining - share * (others.length - 1) : share })
+  } else {
+    let allocated = 0
+    others.forEach((k, i) => {
+      if (i === others.length - 1) {
+        next[k] = Math.max(0, remaining - allocated)
+      } else {
+        const val = Math.max(0, Math.round((current[k] / sumOthers) * remaining))
+        next[k] = val
+        allocated += val
+      }
+    })
+  }
+  return next
+}
+
+function equalWeights(activeKeys: WeightKey[]): ConstraintWeights {
+  const base: ConstraintWeights = { waste: 0, budget: 0, prepTime: 0, recipeRepeat: 0 }
+  if (activeKeys.length === 0) return base
+  const share = Math.floor(100 / activeKeys.length)
+  activeKeys.forEach((k, i) => { base[k] = i === 0 ? 100 - share * (activeKeys.length - 1) : share })
+  return base
+}
+
 const ZERO_MACROS: Macros = { kcal: 0, protein: 0, fat: 0, carbs: 0 }
 
 function sumMacros(meals: GeneratedMeal[]): Macros {
@@ -54,10 +96,36 @@ export function MealPlan() {
   const { plan, setPlan } = useMealPlanStore()
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set([0]))
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema) as Resolver<FormValues>,
     defaultValues: { days: 7, mealsPerDay: 3, kcalTarget: 2000, proteinMin: 150, maxRecipeRepetitions: 2 },
   })
+
+  const budgetMaxRaw = watch('budgetMax')
+  const prepTimeMaxRaw = watch('prepTimeMax')
+  const budgetEnabled = !!budgetMaxRaw
+  const prepTimeEnabled = !!prepTimeMaxRaw
+
+  const activeKeys = (['waste', 'budget', 'prepTime', 'recipeRepeat'] as WeightKey[]).filter(k => {
+    if (k === 'budget') return budgetEnabled
+    if (k === 'prepTime') return prepTimeEnabled
+    return true
+  })
+
+  const [weights, setWeights] = useState<ConstraintWeights>(() => equalWeights(['waste', 'recipeRepeat']))
+
+  const prevActiveRef = useRef(activeKeys.join(','))
+  useEffect(() => {
+    const next = activeKeys.join(',')
+    if (next !== prevActiveRef.current) {
+      prevActiveRef.current = next
+      setWeights(equalWeights(activeKeys))
+    }
+  })
+
+  function handleWeightChange(key: WeightKey, value: number) {
+    setWeights(prev => distributeWeights(key, value, prev, activeKeys))
+  }
 
   const mutation = useMutation({
     mutationFn: mealPlansService.generate,
@@ -74,6 +142,7 @@ export function MealPlan() {
         budgetMax: v.budgetMax ?? null,
         prepTimeMax: v.prepTimeMax ?? null,
         maxRecipeRepetitions: v.maxRecipeRepetitions ?? null,
+        constraintWeights: weights,
       },
     })
   }
@@ -141,6 +210,37 @@ export function MealPlan() {
               <Label>{t('mealPlan.form.maxRepeats')} <span className="text-gray-400 text-xs">{t('mealPlan.form.maxRepeatsHint')}</span></Label>
               <Input type="number" min="1" placeholder={t('mealPlan.form.optional')} {...register('maxRecipeRepetitions')} />
               {errors.maxRecipeRepetitions && <p className="text-xs text-red-500">{errors.maxRecipeRepetitions.message}</p>}
+            </div>
+
+            {/* Constraint priority sliders */}
+            <div className="col-span-2 md:col-span-3 pt-2">
+              <p className="text-sm font-medium text-[#1A1A1A] mb-0.5">{t('mealPlan.form.weightsTitle')}</p>
+              <p className="text-xs text-gray-400 mb-3">{t('mealPlan.form.weightsHint')}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+                {([
+                  { key: 'waste' as WeightKey, label: t('mealPlan.form.weightWaste'), enabled: true },
+                  { key: 'budget' as WeightKey, label: t('mealPlan.form.weightBudget'), enabled: budgetEnabled },
+                  { key: 'prepTime' as WeightKey, label: t('mealPlan.form.weightPrepTime'), enabled: prepTimeEnabled },
+                  { key: 'recipeRepeat' as WeightKey, label: t('mealPlan.form.weightRecipeRepeat'), enabled: true },
+                ]).map(({ key, label, enabled }) => (
+                  <div key={key} className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <Label className={!enabled ? 'text-gray-400' : undefined}>{label}</Label>
+                      <span className={`text-sm font-semibold tabular-nums ${enabled ? 'text-[#4F7942]' : 'text-gray-300'}`}>
+                        {weights[key]}%
+                      </span>
+                    </div>
+                    <Slider
+                      value={weights[key]}
+                      disabled={!enabled}
+                      onChange={v => handleWeightChange(key, v)}
+                    />
+                    {!enabled && (
+                      <p className="text-xs text-gray-400">{t('mealPlan.form.weightDisabled')}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="col-span-2 md:col-span-3 flex items-center gap-3 pt-1">

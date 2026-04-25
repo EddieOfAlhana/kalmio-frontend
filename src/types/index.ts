@@ -135,6 +135,13 @@ export interface UpdateRetailProductRequest {
 
 // ── Meal Plans ────────────────────────────────────────────────────────────
 
+export interface ConstraintWeights {
+  waste: number
+  budget: number
+  prepTime: number
+  recipeRepeat: number
+}
+
 export interface GenerateMealPlanRequest {
   days: number
   mealsPerDay: number
@@ -145,6 +152,7 @@ export interface GenerateMealPlanRequest {
     prepTimeMax?: number | null
     forbiddenIngredientIds?: string[]
     maxRecipeRepetitions?: number | null
+    constraintWeights?: ConstraintWeights | null
   }
   servingConfig?: {
     minMultiplier: number
