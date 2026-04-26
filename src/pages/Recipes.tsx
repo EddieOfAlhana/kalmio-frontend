@@ -79,7 +79,7 @@ function defaultValues(recipe?: Recipe, ingredientMap?: Map<string, string>): Fo
 export function Recipes() {
   const qc = useQueryClient()
   const { t, i18n } = useTranslation()
-  const lang = i18n.language as 'en' | 'hu'
+  const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<Recipe | null | 'new'>(null)
 

@@ -76,7 +76,7 @@ function defaultValues(ing?: Ingredient): FormValues {
 export function Ingredients() {
   const qc = useQueryClient()
   const { t, i18n } = useTranslation()
-  const lang = i18n.language as 'en' | 'hu'
+  const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<Ingredient | null | 'new'>(null)
 
