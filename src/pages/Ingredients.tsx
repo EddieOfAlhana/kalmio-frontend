@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ingredientsService } from '@/services/ingredients'
-import type { Ingredient, IngredientCategory } from '@/types'
+import type { Ingredient, IngredientCategory, IngredientTranslations } from '@/types'
 
 const CATEGORIES: IngredientCategory[] = ['PROTEIN', 'CARB', 'FAT', 'VEGGIE', 'SPICE']
 const CATEGORY_COLOR: Record<string, 'green' | 'orange' | 'gray' | 'black'> = {
@@ -79,6 +79,7 @@ export function Ingredients() {
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<Ingredient | null | 'new'>(null)
+  const [translationTarget, setTranslationTarget] = useState<Ingredient | null>(null)
 
   const { data: ingredients = [], isLoading } = useQuery({
     queryKey: ['ingredients'],
@@ -101,6 +102,11 @@ export function Ingredients() {
   const approveMutation = useMutation({
     mutationFn: ingredientsService.approveTranslation,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['ingredients'] }),
+  })
+  const updateTranslationMutation = useMutation({
+    mutationFn: ({ id, body }: { id: string; body: IngredientTranslations }) =>
+      ingredientsService.updateTranslation(id, body),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['ingredients'] }); setTranslationTarget(null) },
   })
 
   const filtered = ingredients.filter(i => {
@@ -150,12 +156,15 @@ export function Ingredients() {
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <p className="font-semibold text-sm text-[#1A1A1A]">{displayName}</p>
                         {ing.machineTranslated && (
-                          <span
-                            title={t('ingredients.machineTranslated.tooltip')}
-                            className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 cursor-default"
-                          >
-                            {t('ingredients.machineTranslated.badge')}
-                          </span>
+                          <MtBadgeMenu
+                            label={t('ingredients.machineTranslated.badge')}
+                            tooltip={t('ingredients.machineTranslated.tooltip')}
+                            approveLabel={t('ingredients.machineTranslated.approve')}
+                            editLabel={t('ingredients.machineTranslated.edit')}
+                            approvePending={approveMutation.isPending}
+                            onApprove={() => approveMutation.mutate(ing.id)}
+                            onEdit={() => setTranslationTarget(ing)}
+                          />
                         )}
                       </div>
                       {displayAliases?.length > 0 && (
@@ -183,18 +192,6 @@ export function Ingredients() {
                     <Button variant="secondary" size="sm" className="flex-1" onClick={() => setEditTarget(ing)}>
                       <Pencil className="h-3.5 w-3.5" /> {t('ingredients.edit')}
                     </Button>
-                    {ing.machineTranslated && (
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        title={t('ingredients.machineTranslated.approveTitle')}
-                        onClick={() => approveMutation.mutate(ing.id)}
-                        disabled={approveMutation.isPending}
-                      >
-                        <CheckCircle className="h-3.5 w-3.5 text-[#4F7942]" />
-                        {t('ingredients.machineTranslated.approve')}
-                      </Button>
-                    )}
                     <Button variant="danger" size="sm" onClick={() => {
                       if (confirm(t('ingredients.delete', { name: displayName }))) deleteMutation.mutate(ing.id)
                     }}>
@@ -222,7 +219,149 @@ export function Ingredients() {
         }}
         isPending={createMutation.isPending || updateMutation.isPending}
       />
+
+      <IngredientTranslationDialog
+        open={translationTarget !== null}
+        ingredient={translationTarget ?? undefined}
+        onOpenChange={open => { if (!open) setTranslationTarget(null) }}
+        onSubmit={body => {
+          if (translationTarget) updateTranslationMutation.mutate({ id: translationTarget.id, body })
+        }}
+        isPending={updateTranslationMutation.isPending}
+      />
     </div>
+  )
+}
+
+// ── MT badge hover menu ───────────────────────────────────────────────────
+
+function MtBadgeMenu({
+  label, tooltip, approveLabel, editLabel, approvePending, onApprove, onEdit,
+}: {
+  label: string
+  tooltip: string
+  approveLabel: string
+  editLabel: string
+  approvePending: boolean
+  onApprove: () => void
+  onEdit: () => void
+}) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <span
+        title={tooltip}
+        className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 cursor-default select-none"
+      >
+        {label}
+      </span>
+      {open && (
+        <div className="absolute left-0 top-full z-20 pt-1 min-w-max">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+          <button
+            type="button"
+            onClick={e => { e.stopPropagation(); onEdit() }}
+            className="flex w-full items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <Pencil className="h-3 w-3" />
+            {editLabel}
+          </button>
+          <button
+            type="button"
+            onClick={e => { e.stopPropagation(); onApprove() }}
+            disabled={approvePending}
+            className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#4F7942] hover:bg-green-50 transition-colors disabled:opacity-50"
+          >
+            <CheckCircle className="h-3 w-3" />
+            {approveLabel}
+          </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Translation edit dialog ───────────────────────────────────────────────
+
+function IngredientTranslationDialog({
+  open, ingredient, onOpenChange, onSubmit, isPending,
+}: {
+  open: boolean
+  ingredient?: Ingredient
+  onOpenChange: (o: boolean) => void
+  onSubmit: (v: IngredientTranslations) => void
+  isPending: boolean
+}) {
+  const { t } = useTranslation()
+  const { register, handleSubmit, reset } = useForm({
+    values: {
+      enName: ingredient?.translations?.en?.name ?? ingredient?.name ?? '',
+      enAliases: ingredient?.translations?.en?.aliases?.join(', ') ?? ingredient?.aliases?.join(', ') ?? '',
+      huName: ingredient?.translations?.hu?.name ?? ingredient?.name ?? '',
+      huAliases: ingredient?.translations?.hu?.aliases?.join(', ') ?? ingredient?.aliases?.join(', ') ?? '',
+    },
+  })
+
+  function onSubmitForm(v: { enName: string; enAliases: string; huName: string; huAliases: string }) {
+    const split = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean)
+    onSubmit({
+      en: { name: v.enName, aliases: split(v.enAliases) },
+      hu: { name: v.huName, aliases: split(v.huAliases) },
+    })
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={open => { if (!open) { reset(); onOpenChange(false) } }}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t('ingredients.machineTranslated.editTitle')}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-4">
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                🇬🇧 {t('ingredients.machineTranslated.enSection')}
+              </p>
+              <div className="space-y-1">
+                <Label>{t('ingredients.machineTranslated.name')}</Label>
+                <Input {...register('enName')} />
+              </div>
+              <div className="space-y-1">
+                <Label>{t('ingredients.machineTranslated.aliases')}</Label>
+                <Input {...register('enAliases')} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                🇭🇺 {t('ingredients.machineTranslated.huSection')}
+              </p>
+              <div className="space-y-1">
+                <Label>{t('ingredients.machineTranslated.name')}</Label>
+                <Input {...register('huName')} />
+              </div>
+              <div className="space-y-1">
+                <Label>{t('ingredients.machineTranslated.aliases')}</Label>
+                <Input {...register('huAliases')} />
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button type="submit" disabled={isPending}>
+              {isPending ? <Spinner className="h-4 w-4" /> : t('common.save')}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   )
 }
 

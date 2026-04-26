@@ -108,9 +108,15 @@
     "delete": "Delete \"{{name}}\"?",
     "machineTranslated": {
       "badge": "MT",
-      "tooltip": "Machine translated — click Approve to confirm",
+      "tooltip": "Machine translated — hover to review",
       "approve": "Approve",
-      "approveTitle": "Approve translation"
+      "approveTitle": "Approve translation",
+      "edit": "Edit translation",
+      "editTitle": "Edit Translation",
+      "enSection": "English",
+      "huSection": "Hungarian",
+      "name": "Name",
+      "steps": "Steps (one per line)"
     },
     "form": {
       "editTitle": "Edit Recipe",
@@ -171,9 +177,15 @@
     "searchByName": "Search by name or alias…",
     "machineTranslated": {
       "badge": "MT",
-      "tooltip": "Machine translated — click Approve to confirm",
+      "tooltip": "Machine translated — hover to review",
       "approve": "Approve",
-      "approveTitle": "Approve translation"
+      "approveTitle": "Approve translation",
+      "edit": "Edit translation",
+      "editTitle": "Edit Translation",
+      "enSection": "English",
+      "huSection": "Hungarian",
+      "name": "Name",
+      "aliases": "Aliases (comma-separated)"
     }
   },
   "retail": {

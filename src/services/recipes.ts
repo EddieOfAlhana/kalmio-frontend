@@ -1,5 +1,5 @@
 import { api } from '@/lib/api'
-import type { Recipe, CreateRecipeRequest, UpdateRecipeRequest } from '@/types'
+import type { Recipe, CreateRecipeRequest, UpdateRecipeRequest, RecipeTranslations } from '@/types'
 
 export const recipesService = {
   list: () => api.get<Recipe[]>('/api/recipes').then(r => r.data),
@@ -8,4 +8,5 @@ export const recipesService = {
   update: (id: string, body: UpdateRecipeRequest) => api.put<Recipe>(`/api/recipes/${id}`, body).then(r => r.data),
   delete: (id: string) => api.delete(`/api/recipes/${id}`),
   approveTranslation: (id: string) => api.post<Recipe>(`/api/recipes/${id}/approve-translation`).then(r => r.data),
+  updateTranslation: (id: string, body: RecipeTranslations) => api.put<Recipe>(`/api/recipes/${id}/translation`, body).then(r => r.data),
 }

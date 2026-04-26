@@ -108,9 +108,15 @@
     "delete": "Törlöd: \"{{name}}\"?",
     "machineTranslated": {
       "badge": "GT",
-      "tooltip": "Gépi fordítás — kattints a Jóváhagyásra a megerősítéshez",
+      "tooltip": "Gépi fordítás — vidd fölé az egeret",
       "approve": "Jóváhagyás",
-      "approveTitle": "Fordítás jóváhagyása"
+      "approveTitle": "Fordítás jóváhagyása",
+      "edit": "Fordítás szerkesztése",
+      "editTitle": "Fordítás szerkesztése",
+      "enSection": "Angol",
+      "huSection": "Magyar",
+      "name": "Név",
+      "steps": "Lépések (soronként egy)"
     },
     "form": {
       "editTitle": "Recept szerkesztése",
@@ -171,9 +177,15 @@
     "searchByName": "Keresés név vagy alternatív név alapján…",
     "machineTranslated": {
       "badge": "GT",
-      "tooltip": "Gépi fordítás — kattints a Jóváhagyásra a megerősítéshez",
+      "tooltip": "Gépi fordítás — vidd fölé az egeret",
       "approve": "Jóváhagyás",
-      "approveTitle": "Fordítás jóváhagyása"
+      "approveTitle": "Fordítás jóváhagyása",
+      "edit": "Fordítás szerkesztése",
+      "editTitle": "Fordítás szerkesztése",
+      "enSection": "Angol",
+      "huSection": "Magyar",
+      "name": "Név",
+      "aliases": "Alternatív nevek (vesszővel elválasztva)"
     }
   },
   "retail": {
