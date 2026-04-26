@@ -39,7 +39,7 @@ export function Dashboard() {
         title={t('dashboard.title')}
         subtitle={t('dashboard.subtitle')}
         actions={
-          <Button onClick={() => navigate('/meal-plans')}>
+          <Button onClick={() => navigate('/app/meal-plans')}>
             <UtensilsCrossed className="h-4 w-4" />
             {t('dashboard.newPlan')}
           </Button>
@@ -49,10 +49,10 @@ export function Dashboard() {
       {/* Quick stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         {[
-          { icon: ChefHat, label: t('dashboard.stats.recipes'), value: recipes.length, to: '/recipes', color: '#F28C28' },
-          { icon: Leaf, label: t('dashboard.stats.ingredients'), value: ingredients.length, to: '/ingredients', color: '#4F7942' },
-          { icon: UtensilsCrossed, label: t('dashboard.stats.activePlan'), value: activePlan ? `${activePlan.days}d` : '—', to: '/meal-plans', color: '#1A1A1A' },
-          { icon: ShoppingCart, label: t('dashboard.stats.totalCost'), value: activePlan ? formatCurrency(activePlan.totalEstimatedCost) : '—', to: '/shopping-list', color: '#F28C28' },
+          { icon: ChefHat, label: t('dashboard.stats.recipes'), value: recipes.length, to: '/app/recipes', color: '#F28C28' },
+          { icon: Leaf, label: t('dashboard.stats.ingredients'), value: ingredients.length, to: '/app/ingredients', color: '#4F7942' },
+          { icon: UtensilsCrossed, label: t('dashboard.stats.activePlan'), value: activePlan ? `${activePlan.days}d` : '—', to: '/app/meal-plans', color: '#1A1A1A' },
+          { icon: ShoppingCart, label: t('dashboard.stats.totalCost'), value: activePlan ? formatCurrency(activePlan.totalEstimatedCost) : '—', to: '/app/shopping-list', color: '#F28C28' },
         ].map(({ icon: Icon, label, value, to, color }) => (
           <button key={label} onClick={() => navigate(to)} className="text-left focus:outline-none">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
@@ -77,7 +77,7 @@ export function Dashboard() {
             <h2 className="text-base font-headline font-bold text-[#1A1A1A]">
               {t('dashboard.activePlan.title', { days: activePlan.days })}
             </h2>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/meal-plans')}>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/app/meal-plans')}>
               {t('dashboard.activePlan.view')} <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </div>
@@ -121,7 +121,7 @@ export function Dashboard() {
             ))}
           </div>
           {activePlan.days > 4 && (
-            <Button variant="ghost" size="sm" className="mt-2" onClick={() => navigate('/meal-plans')}>
+            <Button variant="ghost" size="sm" className="mt-2" onClick={() => navigate('/app/meal-plans')}>
               {t('dashboard.activePlan.moreDays', { count: activePlan.days - 4 })} <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           )}
@@ -132,7 +132,7 @@ export function Dashboard() {
             <UtensilsCrossed className="h-10 w-10 text-[#F28C28] mb-3" />
             <h3 className="font-headline font-bold text-[#1A1A1A] mb-1">{t('dashboard.noActivePlan.title')}</h3>
             <p className="text-sm text-gray-500 mb-4">{t('dashboard.noActivePlan.description')}</p>
-            <Button onClick={() => navigate('/meal-plans')}>{t('dashboard.noActivePlan.button')}</Button>
+            <Button onClick={() => navigate('/app/meal-plans')}>{t('dashboard.noActivePlan.button')}</Button>
           </CardContent>
         </Card>
       )}

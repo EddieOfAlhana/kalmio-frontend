@@ -234,8 +234,6 @@ function RetailProductFormDialog({
 
   const { fields, append, remove } = useFieldArray({ control, name: 'ingredientMappings' })
 
-  const ingredientById = Object.fromEntries(ingredients.map(i => [i.id, i]))
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">

@@ -1,19 +1,21 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store } from 'lucide-react'
+import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store, LogOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { useAuthStore } from '@/store/auth'
 
 export function Sidebar() {
   const { t } = useTranslation()
+  const signOut = useAuthStore((s) => s.signOut)
 
   const navItems = [
-    { to: '/', icon: LayoutDashboard, label: t('nav.dashboard') },
-    { to: '/meal-plans', icon: UtensilsCrossed, label: t('nav.mealPlans') },
-    { to: '/recipes', icon: ChefHat, label: t('nav.recipes') },
-    { to: '/ingredients', icon: Leaf, label: t('nav.ingredients') },
-    { to: '/shopping-list', icon: ShoppingCart, label: t('nav.shoppingList') },
-    { to: '/retail-products', icon: Store, label: t('nav.retail') },
+    { to: '/app', icon: LayoutDashboard, label: t('nav.dashboard') },
+    { to: '/app/meal-plans', icon: UtensilsCrossed, label: t('nav.mealPlans') },
+    { to: '/app/recipes', icon: ChefHat, label: t('nav.recipes') },
+    { to: '/app/ingredients', icon: Leaf, label: t('nav.ingredients') },
+    { to: '/app/shopping-list', icon: ShoppingCart, label: t('nav.shoppingList') },
+    { to: '/app/retail-products', icon: Store, label: t('nav.retail') },
   ]
 
   return (
@@ -29,7 +31,7 @@ export function Sidebar() {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === '/app'}
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-sm font-medium transition-colors',
@@ -45,9 +47,18 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between">
-        <p className="text-xs text-white/40">{t('common.version')}</p>
-        <LanguageSwitcher />
+      <div className="px-4 py-4 border-t border-white/10 flex items-center justify-between gap-2">
+        <p className="text-xs text-white/40 truncate">{t('common.version')}</p>
+        <div className="flex items-center gap-1 shrink-0">
+          <LanguageSwitcher />
+          <button
+            onClick={signOut}
+            title={t('common.signOut')}
+            className="p-2 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     </aside>
   )

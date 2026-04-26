@@ -43,7 +43,7 @@ export function ShoppingList() {
             <ShoppingCart className="h-10 w-10 text-[#F28C28] mb-3" />
             <h3 className="font-headline font-bold text-[#1A1A1A] mb-1">{t('shoppingList.noActivePlan.title')}</h3>
             <p className="text-sm text-gray-500 mb-4">{t('shoppingList.noActivePlan.description')}</p>
-            <Button onClick={() => navigate('/meal-plans')}>{t('shoppingList.noActivePlan.button')}</Button>
+            <Button onClick={() => navigate('/app/meal-plans')}>{t('shoppingList.noActivePlan.button')}</Button>
           </CardContent>
         </Card>
       </div>
@@ -69,7 +69,7 @@ export function ShoppingList() {
         title={t('shoppingList.title')}
         subtitle={plan ? t('shoppingList.subtitle', { days: plan.days }) : undefined}
         actions={
-          <Button variant="secondary" onClick={() => navigate('/meal-plans')}>
+          <Button variant="secondary" onClick={() => navigate('/app/meal-plans')}>
             {t('shoppingList.backToPlan')}
           </Button>
         }
