@@ -78,7 +78,6 @@ export function AuthCallback() {
 
       if (verifyError) {
         // Verification failed — still proceed at AAL1
-        console.warn('WebAuthn verify error:', verifyError.message)
       }
 
       navigate('/app', { replace: true })
