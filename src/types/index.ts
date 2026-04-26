@@ -25,6 +25,16 @@ export interface DietaryConstraints {
   paleo: boolean
 }
 
+export interface IngredientLocaleTranslation {
+  name: string
+  aliases: string[]
+}
+
+export interface IngredientTranslations {
+  en: IngredientLocaleTranslation | null
+  hu: IngredientLocaleTranslation | null
+}
+
 export interface Ingredient {
   id: string
   name: string
@@ -33,6 +43,8 @@ export interface Ingredient {
   macros: Macros
   constraints: DietaryConstraints
   density: number | null
+  translations: IngredientTranslations | null
+  machineTranslated: boolean
 }
 
 export interface CreateIngredientRequest {
@@ -55,6 +67,16 @@ export interface RecipeIngredientRef {
   unit: Unit
 }
 
+export interface RecipeLocaleTranslation {
+  name: string
+  steps: string[]
+}
+
+export interface RecipeTranslations {
+  en: RecipeLocaleTranslation | null
+  hu: RecipeLocaleTranslation | null
+}
+
 export interface Recipe {
   id: string
   name: string
@@ -66,6 +88,8 @@ export interface Recipe {
   estimatedCostPerServing: number | null
   ingredients: RecipeIngredientRef[]
   tags: RecipeTag[]
+  translations: RecipeTranslations | null
+  machineTranslated: boolean
 }
 
 export interface CreateRecipeRequest {

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Pencil, Trash2, Search, Clock, X } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle } from 'lucide-react'
 import { useForm, useFieldArray, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -78,13 +78,14 @@ function defaultValues(recipe?: Recipe, ingredientMap?: Map<string, string>): Fo
 
 export function Recipes() {
   const qc = useQueryClient()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = i18n.language as 'en' | 'hu'
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<Recipe | null | 'new'>(null)
 
   const { data: recipes = [], isLoading } = useQuery({ queryKey: ['recipes'], queryFn: recipesService.list })
   const { data: ingredients = [] } = useQuery({ queryKey: ['ingredients'], queryFn: ingredientsService.list, staleTime: 30_000 })
-  const ingredientMap = new Map(ingredients.map(i => [i.id, i.name]))
+  const ingredientMap = new Map(ingredients.map(i => [i.id, i.translations?.[lang]?.name ?? i.name]))
 
   const createMutation = useMutation({
     mutationFn: recipesService.create,
@@ -99,10 +100,16 @@ export function Recipes() {
     mutationFn: recipesService.delete,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['recipes'] }),
   })
+  const approveMutation = useMutation({
+    mutationFn: recipesService.approveTranslation,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['recipes'] }),
+  })
 
-  const filtered = recipes.filter(r =>
-    !search || r.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = recipes.filter(r => {
+    if (!search) return true
+    const displayName = r.translations?.[lang]?.name ?? r.name
+    return displayName.toLowerCase().includes(search.toLowerCase())
+  })
 
   return (
     <div>
@@ -127,56 +134,83 @@ export function Recipes() {
         <Card><CardContent className="py-10 text-center text-sm text-gray-400">{t('recipes.noResults')}</CardContent></Card>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map(r => (
-            <Card key={r.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="pt-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{r.name}</p>
-                  <div className="flex gap-1 shrink-0 flex-wrap justify-end">
-                    {(r.tags ?? []).map(tag => (
-                      <Badge key={tag} variant={TAG_COLOR[tag] ?? 'gray'}>{tag}</Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex gap-3 text-xs text-gray-500 mb-3">
-                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {r.prepTimeMinutes + r.cookTimeMinutes}m</span>
-                  <span>{t('recipes.servings', { count: r.servings })}</span>
-                  {r.estimatedCostPerServing != null && (
-                    <span className="text-[#4F7942] font-semibold">{formatCurrency(r.estimatedCostPerServing)}/srv</span>
-                  )}
-                </div>
-
-                {r.macros && (
-                  <div className="grid grid-cols-4 gap-1 text-center mb-3">
-                    {[
-                      { label: 'kcal', value: r.macros.kcal },
-                      { label: 'P', value: r.macros.protein },
-                      { label: 'F', value: r.macros.fat },
-                      { label: 'C', value: r.macros.carbs },
-                    ].map(({ label, value }) => (
-                      <div key={label} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
-                        <p className="text-xs font-bold text-[#1A1A1A]">{Number(value).toFixed(0)}</p>
-                        <p className="text-[10px] text-gray-400">{label}</p>
+          {filtered.map(r => {
+            const displayName = r.translations?.[lang]?.name ?? r.name
+            return (
+              <Card key={r.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="pt-4">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{displayName}</p>
+                        {r.machineTranslated && (
+                          <span
+                            title={t('recipes.machineTranslated.tooltip')}
+                            className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 cursor-default shrink-0"
+                          >
+                            {t('recipes.machineTranslated.badge')}
+                          </span>
+                        )}
                       </div>
-                    ))}
+                    </div>
+                    <div className="flex gap-1 shrink-0 flex-wrap justify-end">
+                      {(r.tags ?? []).map(tag => (
+                        <Badge key={tag} variant={TAG_COLOR[tag] ?? 'gray'}>{tag}</Badge>
+                      ))}
+                    </div>
                   </div>
-                )}
 
-                <div className="flex gap-2">
-                  <Button variant="secondary" size="sm" className="flex-1"
-                    onClick={() => setEditTarget(r)}>
-                    <Pencil className="h-3.5 w-3.5" /> {t('recipes.edit')}
-                  </Button>
-                  <Button variant="danger" size="sm" onClick={() => {
-                    if (confirm(t('recipes.delete', { name: r.name }))) deleteMutation.mutate(r.id)
-                  }}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <div className="flex gap-3 text-xs text-gray-500 mb-3">
+                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {r.prepTimeMinutes + r.cookTimeMinutes}m</span>
+                    <span>{t('recipes.servings', { count: r.servings })}</span>
+                    {r.estimatedCostPerServing != null && (
+                      <span className="text-[#4F7942] font-semibold">{formatCurrency(r.estimatedCostPerServing)}/srv</span>
+                    )}
+                  </div>
+
+                  {r.macros && (
+                    <div className="grid grid-cols-4 gap-1 text-center mb-3">
+                      {[
+                        { label: 'kcal', value: r.macros.kcal },
+                        { label: 'P', value: r.macros.protein },
+                        { label: 'F', value: r.macros.fat },
+                        { label: 'C', value: r.macros.carbs },
+                      ].map(({ label, value }) => (
+                        <div key={label} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
+                          <p className="text-xs font-bold text-[#1A1A1A]">{Number(value).toFixed(0)}</p>
+                          <p className="text-[10px] text-gray-400">{label}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" className="flex-1"
+                      onClick={() => setEditTarget(r)}>
+                      <Pencil className="h-3.5 w-3.5" /> {t('recipes.edit')}
+                    </Button>
+                    {r.machineTranslated && (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        title={t('recipes.machineTranslated.approveTitle')}
+                        onClick={() => approveMutation.mutate(r.id)}
+                        disabled={approveMutation.isPending}
+                      >
+                        <CheckCircle className="h-3.5 w-3.5 text-[#4F7942]" />
+                        {t('recipes.machineTranslated.approve')}
+                      </Button>
+                    )}
+                    <Button variant="danger" size="sm" onClick={() => {
+                      if (confirm(t('recipes.delete', { name: displayName }))) deleteMutation.mutate(r.id)
+                    }}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       )}
 
@@ -188,7 +222,7 @@ export function Recipes() {
         onSubmit={values => {
           const body = toRequest(values)
           if (editTarget === 'new') createMutation.mutate(body)
-          else if (editTarget) updateMutation.mutate({ id: editTarget.id, body })
+          else if (editTarget) updateMutation.mutate({ id: (editTarget as Recipe).id, body })
         }}
         isPending={createMutation.isPending || updateMutation.isPending}
         error={createMutation.error?.message ?? updateMutation.error?.message}

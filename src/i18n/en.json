@@ -20,7 +20,8 @@
     "create": "Create",
     "add": "Add",
     "delete": "Delete",
-    "search": "Search"
+    "search": "Search",
+    "signOut": "Sign out"
   },
   "language": {
     "en": "EN",
@@ -105,6 +106,12 @@
     "servings_other": "{{count}} servings",
     "edit": "Edit",
     "delete": "Delete \"{{name}}\"?",
+    "machineTranslated": {
+      "badge": "MT",
+      "tooltip": "Machine translated — click Approve to confirm",
+      "approve": "Approve",
+      "approveTitle": "Approve translation"
+    },
     "form": {
       "editTitle": "Edit Recipe",
       "newTitle": "New Recipe",
@@ -161,7 +168,13 @@
       "paleo": "Paleo"
     },
     "chooseIngredient": "Choose an Ingredient",
-    "searchByName": "Search by name or alias…"
+    "searchByName": "Search by name or alias…",
+    "machineTranslated": {
+      "badge": "MT",
+      "tooltip": "Machine translated — click Approve to confirm",
+      "approve": "Approve",
+      "approveTitle": "Approve translation"
+    }
   },
   "retail": {
     "title": "Retail Products",
@@ -197,6 +210,71 @@
       "create": "Create Product",
       "save": "Save Changes"
     }
+  },
+  "landing": {
+    "nav": {
+      "cta": "Try it"
+    },
+    "hero": {
+      "headline": "Healthy eating. Math, not magic.",
+      "subheadline": "Forget crash dieting and complicated calorie tables. Kalmio automatically plans your week around your goals, budget, and taste.",
+      "cta": "Try it now"
+    },
+    "pain": {
+      "title": "Why your previous attempts didn't work",
+      "myth1": {
+        "problem": "Healthy food is boring",
+        "solution": "Diverse, chef-inspired recipes — different every week."
+      },
+      "myth2": {
+        "problem": "Eating healthy is expensive",
+        "solution": "Optimised shopping lists that prevent food waste. Save up to 50,000 HUF/month."
+      },
+      "myth3": {
+        "problem": "I don't have time to plan",
+        "solution": "The solver assembles your entire week in 1 second."
+      }
+    },
+    "fomo": {
+      "text": "Join our early-access beta community. Be one of the few people who actually hit their goals this year — frictionlessly."
+    },
+    "steps": {
+      "title": "Three steps, done",
+      "step1": {
+        "title": "Set your goal",
+        "desc": "Calories, protein, budget — you decide, we optimise."
+      },
+      "step2": {
+        "title": "Set your constraints",
+        "desc": "Weekly budget, max prep time, preferences — the solver handles all of it."
+      },
+      "step3": {
+        "title": "Cook and enjoy",
+        "desc": "You get a full weekly plan and shopping list. Nothing else to do."
+      }
+    },
+    "finalCta": {
+      "title": "Ready?",
+      "subtitle": "Generate your first meal plan now — for free.",
+      "button": "Generate Meal Plan"
+    }
+  },
+  "auth": {
+    "heroQuote": "Healthy eating.\nMath, not magic.",
+    "heroSub": "Optimised meal plans built around your goals.",
+    "headline": "Welcome",
+    "subheadline": "Sign in or create your account — no password needed.",
+    "continueWithPasskey": "Continue with Passkey",
+    "continueWithEmail": "Continue with Email",
+    "emailLabel": "Email address",
+    "invalidEmail": "Please enter a valid email address",
+    "or": "or",
+    "noPassword": "No password needed — we'll email you a sign-in link.",
+    "sending": "Sending…",
+    "checkEmail": "Check your inbox",
+    "checkEmailHint": "We sent a magic link to {{email}}. Click it to sign in.",
+    "checkEmailPasskeyHint": "We sent a magic link to {{email}}. Click it — your passkey will be verified automatically.",
+    "tryDifferentEmail": "Try a different email"
   },
   "shoppingList": {
     "title": "Shopping List",

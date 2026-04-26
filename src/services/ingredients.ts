@@ -7,4 +7,5 @@ export const ingredientsService = {
   create: (body: CreateIngredientRequest) => api.post<Ingredient>('/api/ingredients', body).then(r => r.data),
   update: (id: string, body: UpdateIngredientRequest) => api.put<Ingredient>(`/api/ingredients/${id}`, body).then(r => r.data),
   delete: (id: string) => api.delete(`/api/ingredients/${id}`),
+  approveTranslation: (id: string) => api.post<Ingredient>(`/api/ingredients/${id}/approve-translation`).then(r => r.data),
 }

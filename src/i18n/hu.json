@@ -20,7 +20,8 @@
     "create": "Létrehozás",
     "add": "Hozzáadás",
     "delete": "Törlés",
-    "search": "Keresés"
+    "search": "Keresés",
+    "signOut": "Kijelentkezés"
   },
   "language": {
     "en": "EN",
@@ -105,6 +106,12 @@
     "servings_other": "{{count}} adag",
     "edit": "Szerkesztés",
     "delete": "Törlöd: \"{{name}}\"?",
+    "machineTranslated": {
+      "badge": "GT",
+      "tooltip": "Gépi fordítás — kattints a Jóváhagyásra a megerősítéshez",
+      "approve": "Jóváhagyás",
+      "approveTitle": "Fordítás jóváhagyása"
+    },
     "form": {
       "editTitle": "Recept szerkesztése",
       "newTitle": "Új recept",
@@ -161,7 +168,13 @@
       "paleo": "Paleo"
     },
     "chooseIngredient": "Válassz hozzávalót",
-    "searchByName": "Keresés név vagy alternatív név alapján…"
+    "searchByName": "Keresés név vagy alternatív név alapján…",
+    "machineTranslated": {
+      "badge": "GT",
+      "tooltip": "Gépi fordítás — kattints a Jóváhagyásra a megerősítéshez",
+      "approve": "Jóváhagyás",
+      "approveTitle": "Fordítás jóváhagyása"
+    }
   },
   "retail": {
     "title": "Kiskereskedelmi termékek",
@@ -197,6 +210,71 @@
       "create": "Termék létrehozása",
       "save": "Mentés"
     }
+  },
+  "landing": {
+    "nav": {
+      "cta": "Próbáld ki"
+    },
+    "hero": {
+      "headline": "Egészséges étkezés. Matek, nem mágia.",
+      "subheadline": "Felejtsd el a koplalást és a bonyolult kalóriatáblázatokat. A Kalmio automatikusan összeállítja a hetedet a céljaid, a pénztárcád és az ízlésed alapján.",
+      "cta": "Próbáld ki most"
+    },
+    "pain": {
+      "title": "Miért nem működtek az eddigi próbálkozások?",
+      "myth1": {
+        "problem": "Az egészséges étel unalmas",
+        "solution": "Változatos, séf-inspirált receptek — minden héten másképp."
+      },
+      "myth2": {
+        "problem": "Egészségesen enni drága",
+        "solution": "Optimalizált bevásárlólista, ami megakadályozza az élelmiszerpazarlást. Spórolj akár 50 000 Ft/hó."
+      },
+      "myth3": {
+        "problem": "Nincs időm megtervezni",
+        "solution": "A megoldómotor 1 másodperc alatt összeállítja az egész hetedet."
+      }
+    },
+    "fomo": {
+      "text": "Csatlakozz a korai hozzáférésű béta közösségünkhöz. Legyél te is azon kevesek egyike, akik idén tényleg elérik a céljaikat – súrlódásmentesen."
+    },
+    "steps": {
+      "title": "Három lépés, és kész",
+      "step1": {
+        "title": "Add meg a célod",
+        "desc": "Kalória, fehérje, büdzsé – te döntesz, mi optimalizálunk."
+      },
+      "step2": {
+        "title": "Állítsd be a kereted",
+        "desc": "Heti keret, max előkészítési idő, ízlések – mindent figyelembe vesz a rendszer."
+      },
+      "step3": {
+        "title": "Főzz és élvezd",
+        "desc": "Kapsz egy teljes heti étrendet és bevásárlólistát. Semmi más tennivaló."
+      }
+    },
+    "finalCta": {
+      "title": "Készen állsz?",
+      "subtitle": "Generáld le az első étrendedet most — ingyen.",
+      "button": "Étrend generálása"
+    }
+  },
+  "auth": {
+    "heroQuote": "Egészséges étkezés.\nMatek, nem mágia.",
+    "heroSub": "A céljaid köré épített, optimalizált étrendek.",
+    "headline": "Üdvözlünk!",
+    "subheadline": "Lépj be vagy hozz létre fiókot — jelszó nélkül.",
+    "continueWithPasskey": "Folytatás jelszókulccsal",
+    "continueWithEmail": "Folytatás e-maillel",
+    "emailLabel": "E-mail cím",
+    "invalidEmail": "Adj meg érvényes e-mail címet",
+    "or": "vagy",
+    "noPassword": "Nincs jelszóra szükség — küldünk egy belépési linket.",
+    "sending": "Küldés…",
+    "checkEmail": "Ellenőrizd a postaládád",
+    "checkEmailHint": "Küldtünk egy belépési linket a következő címre: {{email}}. Kattints rá a bejelentkezéshez.",
+    "checkEmailPasskeyHint": "Küldtünk egy belépési linket a következő címre: {{email}}. Kattints rá — a jelszókulcsod automatikusan ellenőrzésre kerül.",
+    "tryDifferentEmail": "Próbálj más e-mail címet"
   },
   "shoppingList": {
     "title": "Bevásárlólista",

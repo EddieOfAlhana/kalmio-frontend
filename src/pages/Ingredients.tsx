@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Pencil, Trash2, Search } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, CheckCircle } from 'lucide-react'
 import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -75,7 +75,8 @@ function defaultValues(ing?: Ingredient): FormValues {
 
 export function Ingredients() {
   const qc = useQueryClient()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = i18n.language as 'en' | 'hu'
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<Ingredient | null | 'new'>(null)
 
@@ -97,11 +98,18 @@ export function Ingredients() {
     mutationFn: ingredientsService.delete,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['ingredients'] }),
   })
+  const approveMutation = useMutation({
+    mutationFn: ingredientsService.approveTranslation,
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['ingredients'] }),
+  })
 
-  const filtered = ingredients.filter(i =>
-    !search || i.name.toLowerCase().includes(search.toLowerCase()) ||
-    (i.aliases ?? []).some(a => a.toLowerCase().includes(search.toLowerCase()))
-  )
+  const filtered = ingredients.filter(i => {
+    if (!search) return true
+    const displayName = i.translations?.[lang]?.name ?? i.name
+    const displayAliases = i.translations?.[lang]?.aliases ?? i.aliases ?? []
+    return displayName.toLowerCase().includes(search.toLowerCase()) ||
+      displayAliases.some(a => a.toLowerCase().includes(search.toLowerCase()))
+  })
 
   return (
     <div>
@@ -131,46 +139,72 @@ export function Ingredients() {
         <Card><CardContent className="py-10 text-center text-sm text-gray-400">{t('ingredients.noResults')}</CardContent></Card>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map(ing => (
-            <Card key={ing.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="pt-4">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div>
-                    <p className="font-semibold text-sm text-[#1A1A1A]">{ing.name}</p>
-                    {ing.aliases?.length > 0 && (
-                      <p className="text-xs text-gray-400">{ing.aliases.join(', ')}</p>
-                    )}
-                  </div>
-                  <Badge variant={CATEGORY_COLOR[ing.category] ?? 'gray'}>{ing.category}</Badge>
-                </div>
-
-                <div className="grid grid-cols-4 gap-1 text-center mb-3">
-                  {[
-                    { label: 'kcal', value: ing.macros.kcal, color: '#F28C28' },
-                    { label: 'P', value: ing.macros.protein, color: '#F28C28' },
-                    { label: 'F', value: ing.macros.fat, color: '#4F7942' },
-                    { label: 'C', value: ing.macros.carbs, color: '#1A1A1A' },
-                  ].map(({ label, value, color }) => (
-                    <div key={label} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
-                      <p className="text-xs font-bold" style={{ color }}>{Number(value).toFixed(0)}</p>
-                      <p className="text-[10px] text-gray-400">{label}</p>
+          {filtered.map(ing => {
+            const displayName = ing.translations?.[lang]?.name ?? ing.name
+            const displayAliases = ing.translations?.[lang]?.aliases ?? ing.aliases
+            return (
+              <Card key={ing.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="pt-4">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="font-semibold text-sm text-[#1A1A1A]">{displayName}</p>
+                        {ing.machineTranslated && (
+                          <span
+                            title={t('ingredients.machineTranslated.tooltip')}
+                            className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 cursor-default"
+                          >
+                            {t('ingredients.machineTranslated.badge')}
+                          </span>
+                        )}
+                      </div>
+                      {displayAliases?.length > 0 && (
+                        <p className="text-xs text-gray-400">{displayAliases.join(', ')}</p>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <Badge variant={CATEGORY_COLOR[ing.category] ?? 'gray'}>{ing.category}</Badge>
+                  </div>
 
-                <div className="flex gap-2">
-                  <Button variant="secondary" size="sm" className="flex-1" onClick={() => setEditTarget(ing)}>
-                    <Pencil className="h-3.5 w-3.5" /> {t('ingredients.edit')}
-                  </Button>
-                  <Button variant="danger" size="sm" onClick={() => {
-                    if (confirm(t('ingredients.delete', { name: ing.name }))) deleteMutation.mutate(ing.id)
-                  }}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <div className="grid grid-cols-4 gap-1 text-center mb-3">
+                    {[
+                      { label: 'kcal', value: ing.macros.kcal, color: '#F28C28' },
+                      { label: 'P', value: ing.macros.protein, color: '#F28C28' },
+                      { label: 'F', value: ing.macros.fat, color: '#4F7942' },
+                      { label: 'C', value: ing.macros.carbs, color: '#1A1A1A' },
+                    ].map(({ label, value, color }) => (
+                      <div key={label} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
+                        <p className="text-xs font-bold" style={{ color }}>{Number(value).toFixed(0)}</p>
+                        <p className="text-[10px] text-gray-400">{label}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" className="flex-1" onClick={() => setEditTarget(ing)}>
+                      <Pencil className="h-3.5 w-3.5" /> {t('ingredients.edit')}
+                    </Button>
+                    {ing.machineTranslated && (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        title={t('ingredients.machineTranslated.approveTitle')}
+                        onClick={() => approveMutation.mutate(ing.id)}
+                        disabled={approveMutation.isPending}
+                      >
+                        <CheckCircle className="h-3.5 w-3.5 text-[#4F7942]" />
+                        {t('ingredients.machineTranslated.approve')}
+                      </Button>
+                    )}
+                    <Button variant="danger" size="sm" onClick={() => {
+                      if (confirm(t('ingredients.delete', { name: displayName }))) deleteMutation.mutate(ing.id)
+                    }}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       )}
 
@@ -183,7 +217,7 @@ export function Ingredients() {
           if (editTarget === 'new') {
             createMutation.mutate(body)
           } else if (editTarget) {
-            updateMutation.mutate({ id: editTarget.id, body })
+            updateMutation.mutate({ id: (editTarget as Ingredient).id, body })
           }
         }}
         isPending={createMutation.isPending || updateMutation.isPending}
