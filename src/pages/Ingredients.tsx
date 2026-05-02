@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ingredientsService } from '@/services/ingredients'
+import { useAuthStore } from '@/store/auth'
 import type { Ingredient, IngredientCategory, IngredientTranslations } from '@/types'
 
 const CATEGORIES: IngredientCategory[] = ['PROTEIN', 'CARB', 'FAT', 'VEGGIE', 'SPICE']
@@ -31,6 +32,7 @@ const schema = z.object({
   fat: z.coerce.number().min(0),
   carbs: z.coerce.number().min(0),
   density: z.coerce.number().optional().nullable(),
+  gramsPerPiece: z.coerce.number().optional().nullable(),
   vegetarian: z.boolean(),
   vegan: z.boolean(),
   lactoseFree: z.boolean(),
@@ -51,6 +53,7 @@ function toRequest(v: FormValues) {
       milkProteinFree: v.milkProteinFree, glutenFree: v.glutenFree, paleo: v.paleo,
     },
     density: v.density ?? null,
+    gramsPerPiece: v.gramsPerPiece ?? null,
   }
 }
 
@@ -64,6 +67,7 @@ function defaultValues(ing?: Ingredient): FormValues {
     fat: ing?.macros.fat ?? 0,
     carbs: ing?.macros.carbs ?? 0,
     density: ing?.density ?? null,
+    gramsPerPiece: ing?.gramsPerPiece ?? null,
     vegetarian: ing?.constraints.vegetarian ?? false,
     vegan: ing?.constraints.vegan ?? false,
     lactoseFree: ing?.constraints.lactoseFree ?? false,
@@ -76,6 +80,7 @@ function defaultValues(ing?: Ingredient): FormValues {
 export function Ingredients() {
   const qc = useQueryClient()
   const { t, i18n } = useTranslation()
+  const isAdmin = useAuthStore((s) => s.isAdmin)
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<Ingredient | null | 'new'>(null)
@@ -122,11 +127,11 @@ export function Ingredients() {
       <Header
         title={t('ingredients.title')}
         subtitle={t('ingredients.subtitle', { count: ingredients.length })}
-        actions={
+        actions={isAdmin ? (
           <Button onClick={() => setEditTarget('new')}>
             <Plus className="h-4 w-4" /> {t('ingredients.addIngredient')}
           </Button>
-        }
+        ) : undefined}
       />
 
       <div className="relative mb-4">
@@ -155,7 +160,7 @@ export function Ingredients() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <p className="font-semibold text-sm text-[#1A1A1A]">{displayName}</p>
-                        {ing.machineTranslated && (
+                        {ing.machineTranslated && isAdmin && (
                           <MtBadgeMenu
                             label={t('ingredients.machineTranslated.badge')}
                             tooltip={t('ingredients.machineTranslated.tooltip')}
@@ -188,16 +193,18 @@ export function Ingredients() {
                     ))}
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" className="flex-1" onClick={() => setEditTarget(ing)}>
-                      <Pencil className="h-3.5 w-3.5" /> {t('ingredients.edit')}
-                    </Button>
-                    <Button variant="danger" size="sm" onClick={() => {
-                      if (confirm(t('ingredients.delete', { name: displayName }))) deleteMutation.mutate(ing.id)
-                    }}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+                  {isAdmin && (
+                    <div className="flex gap-2">
+                      <Button variant="secondary" size="sm" className="flex-1" onClick={() => setEditTarget(ing)}>
+                        <Pencil className="h-3.5 w-3.5" /> {t('ingredients.edit')}
+                      </Button>
+                      <Button variant="danger" size="sm" onClick={() => {
+                        if (confirm(t('ingredients.delete', { name: displayName }))) deleteMutation.mutate(ing.id)
+                      }}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )
@@ -432,9 +439,15 @@ function IngredientFormDialog({
             </div>
           </div>
 
-          <div className="space-y-1">
-            <Label>{t('ingredients.form.density')} <span className="text-gray-400 font-normal text-xs">{t('ingredients.form.densityHint')}</span></Label>
-            <Input type="number" step="0.01" min="0" {...register('density')} className="w-32" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <Label>{t('ingredients.form.density')} <span className="text-gray-400 font-normal text-xs">{t('ingredients.form.densityHint')}</span></Label>
+              <Input type="number" step="0.01" min="0" {...register('density')} className="w-32" />
+            </div>
+            <div className="space-y-1">
+              <Label>{t('ingredients.form.gramsPerPiece')} <span className="text-gray-400 font-normal text-xs">{t('ingredients.form.gramsPerPieceHint')}</span></Label>
+              <Input type="number" step="1" min="0" {...register('gramsPerPiece')} className="w-32" />
+            </div>
           </div>
 
           <div>

@@ -43,6 +43,8 @@ export interface Ingredient {
   macros: Macros
   constraints: DietaryConstraints
   density: number | null
+  /** Canonical grams per piece — required if any recipe uses this ingredient in PIECE units. */
+  gramsPerPiece: number | null
   translations: IngredientTranslations | null
   machineTranslated: boolean
 }
@@ -54,6 +56,7 @@ export interface CreateIngredientRequest {
   macros: { kcal: number; protein: number; fat: number; carbs: number }
   constraints: DietaryConstraints
   density?: number | null
+  gramsPerPiece?: number | null
 }
 
 export type UpdateIngredientRequest = CreateIngredientRequest

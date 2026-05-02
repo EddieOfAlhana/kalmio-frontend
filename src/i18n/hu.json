@@ -8,7 +8,9 @@
     "home": "Főoldal",
     "plans": "Tervek",
     "shop": "Bolt",
-    "retail": "Kiskereskedelem"
+    "retail": "Kiskereskedelem",
+    "settings": "Beállítások",
+    "admin": "Admin"
   },
   "common": {
     "version": "Táplálkozási Motor v0.1",
@@ -160,6 +162,8 @@
       "macrosHint": "100g/ml vagy 1 db alapján",
       "density": "Sűrűség",
       "densityHint": "(g/ml, opcionális)",
+      "gramsPerPiece": "Gramm / db",
+      "gramsPerPieceHint": "(szükséges, ha receptben DB-ban szerepel)",
       "dietaryFlags": "Diétás jelölők",
       "cancel": "Mégse",
       "create": "Létrehozás",
@@ -221,6 +225,25 @@
       "cancel": "Mégse",
       "create": "Termék létrehozása",
       "save": "Mentés"
+    }
+  },
+  "settings": {
+    "title": "Beállítások",
+    "subtitle": "Preferenciák kezelése",
+    "language": "Nyelv",
+    "languageLabel": "Felület nyelve",
+    "mealPlanDefaults": "Étrendtervezés alapértékek",
+    "mealPlanDefaultsHint": "Ezek az értékek előre kitöltik az étrend generáló űrlapot.",
+    "saveError": "Nem sikerült menteni a beállításokat.",
+    "saveSuccess": "Beállítások elmentve."
+  },
+  "admin": {
+    "users": {
+      "title": "Felhasználók kezelése",
+      "subtitle_one": "{{count}} regisztrált felhasználó",
+      "subtitle_other": "{{count}} regisztrált felhasználó",
+      "promote": "Admin kinevezése",
+      "demote": "Admin visszavonása"
     }
   },
   "landing": {

@@ -8,7 +8,9 @@
     "home": "Home",
     "plans": "Plans",
     "shop": "Shop",
-    "retail": "Retail"
+    "retail": "Retail",
+    "settings": "Settings",
+    "admin": "Admin"
   },
   "common": {
     "version": "Nutrition Engine v0.1",
@@ -160,6 +162,8 @@
       "macrosHint": "per 100g/ml or 1 piece",
       "density": "Density",
       "densityHint": "(g/ml, optional)",
+      "gramsPerPiece": "Grams / piece",
+      "gramsPerPieceHint": "(needed when used as PIECE in recipes)",
       "dietaryFlags": "Dietary flags",
       "cancel": "Cancel",
       "create": "Create",
@@ -221,6 +225,25 @@
       "cancel": "Cancel",
       "create": "Create Product",
       "save": "Save Changes"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your preferences",
+    "language": "Language",
+    "languageLabel": "Interface language",
+    "mealPlanDefaults": "Meal plan defaults",
+    "mealPlanDefaultsHint": "These values will pre-fill the meal plan generator form.",
+    "saveError": "Failed to save settings.",
+    "saveSuccess": "Settings saved."
+  },
+  "admin": {
+    "users": {
+      "title": "User Management",
+      "subtitle_one": "{{count}} registered user",
+      "subtitle_other": "{{count}} registered users",
+      "promote": "Make admin",
+      "demote": "Remove admin"
     }
   },
   "landing": {
