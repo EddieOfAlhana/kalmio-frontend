@@ -5,7 +5,7 @@ import {
 import type {
   PublicKeyCredentialCreationOptionsJSON,
   PublicKeyCredentialRequestOptionsJSON,
-} from '@simplewebauthn/types'
+} from '@simplewebauthn/browser'
 import { api } from '@/lib/api'
 
 // ── Types mirroring the backend DTOs ──────────────────────────────────────
