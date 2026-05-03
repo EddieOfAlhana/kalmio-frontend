@@ -144,9 +144,15 @@ export function Recipes() {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map(r => {
             const displayName = r.translations?.[lang]?.name ?? r.name
+            const photoUrl = `/assets/recipe-photos/${r.id}.png`
             return (
-              <Card key={r.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="pt-4">
+              <Card key={r.id} className="relative hover:shadow-md transition-shadow overflow-hidden">
+                <div
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url('${photoUrl}')` }}
+                />
+                <div className="absolute inset-0 bg-white/70" />
+                <CardContent className="pt-4 relative">
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
