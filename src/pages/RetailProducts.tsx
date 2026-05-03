@@ -16,6 +16,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { retailService } from '@/services/retail'
 import { ingredientsService } from '@/services/ingredients'
+import { useAuthStore } from '@/store/auth'
 import type { RetailProduct, RetailProvider, Ingredient } from '@/types'
 
 const UNITS = ['G', 'ML', 'PIECE'] as const
@@ -77,6 +78,7 @@ function defaultValues(product?: RetailProduct, defaultProviderId?: string): For
 export function RetailProducts() {
   const qc = useQueryClient()
   const { t } = useTranslation()
+  const isAdmin = useAuthStore((s) => s.isAdmin)
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<RetailProduct | null | 'new'>(null)
 
@@ -123,11 +125,11 @@ export function RetailProducts() {
       <Header
         title={t('retail.title')}
         subtitle={t('retail.subtitle', { count: products.length })}
-        actions={
+        actions={isAdmin ? (
           <Button onClick={() => setEditTarget('new')}>
             <Plus className="h-4 w-4" /> {t('retail.addProduct')}
           </Button>
-        }
+        ) : undefined}
       />
 
       <div className="relative mb-4">
@@ -176,16 +178,18 @@ export function RetailProducts() {
                   <p className="text-xs text-gray-400 mb-3">{providerById[product.providerId].name}</p>
                 )}
 
-                <div className="flex gap-2">
-                  <Button variant="secondary" size="sm" className="flex-1" onClick={() => setEditTarget(product)}>
-                    <Pencil className="h-3.5 w-3.5" /> {t('retail.edit')}
-                  </Button>
-                  <Button variant="danger" size="sm" onClick={() => {
-                    if (confirm(t('retail.delete', { name: product.name }))) deleteMutation.mutate(product.id)
-                  }}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
+                {isAdmin && (
+                  <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" className="flex-1" onClick={() => setEditTarget(product)}>
+                      <Pencil className="h-3.5 w-3.5" /> {t('retail.edit')}
+                    </Button>
+                    <Button variant="danger" size="sm" onClick={() => {
+                      if (confirm(t('retail.delete', { name: product.name }))) deleteMutation.mutate(product.id)
+                    }}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

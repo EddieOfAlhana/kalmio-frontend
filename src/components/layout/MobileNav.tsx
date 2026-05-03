@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Store, LogOut } from 'lucide-react'
+import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Store, LogOut, Settings } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
@@ -14,6 +14,7 @@ export function MobileNav() {
     { to: '/app/recipes', icon: ChefHat, label: t('nav.recipes') },
     { to: '/app/shopping-list', icon: ShoppingCart, label: t('nav.shop') },
     { to: '/app/retail-products', icon: Store, label: t('nav.retail') },
+    { to: '/app/settings', icon: Settings, label: t('nav.settings') },
   ]
 
   return (

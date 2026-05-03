@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store, LogOut } from 'lucide-react'
+import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store, LogOut, Settings, ShieldCheck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/auth'
 export function Sidebar() {
   const { t } = useTranslation()
   const signOut = useAuthStore((s) => s.signOut)
+  const isAdmin = useAuthStore((s) => s.isAdmin)
 
   const navItems = [
     { to: '/app', icon: LayoutDashboard, label: t('nav.dashboard') },
@@ -45,11 +46,40 @@ export function Sidebar() {
             {label}
           </NavLink>
         ))}
+
+        {isAdmin && (
+          <NavLink
+            to="/app/admin/users"
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-sm font-medium transition-colors',
+                isActive
+                  ? 'bg-[#F28C28] text-white'
+                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+              )
+            }
+          >
+            <ShieldCheck className="h-4 w-4 shrink-0" />
+            {t('nav.admin')}
+          </NavLink>
+        )}
       </nav>
 
       <div className="px-4 py-4 border-t border-white/10 flex items-center justify-between gap-2">
         <p className="text-xs text-white/40 truncate">{t('common.version')}</p>
         <div className="flex items-center gap-1 shrink-0">
+          <NavLink
+            to="/app/settings"
+            title={t('nav.settings')}
+            className={({ isActive }) =>
+              cn(
+                'p-2 rounded-lg transition-colors',
+                isActive ? 'text-[#F28C28]' : 'text-white/50 hover:text-white hover:bg-white/10'
+              )
+            }
+          >
+            <Settings className="h-4 w-4" />
+          </NavLink>
           <LanguageSwitcher />
           <button
             onClick={signOut}

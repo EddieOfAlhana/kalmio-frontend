@@ -235,7 +235,23 @@
     "mealPlanDefaults": "Étrendtervezés alapértékek",
     "mealPlanDefaultsHint": "Ezek az értékek előre kitöltik az étrend generáló űrlapot.",
     "saveError": "Nem sikerült menteni a beállításokat.",
-    "saveSuccess": "Beállítások elmentve."
+    "saveSuccess": "Beállítások elmentve.",
+    "security": {
+      "title": "Biztonság",
+      "passkeysHint": "Lépj be gyorsabban az eszközöd biometriájával vagy PIN-kódjával — a következő bejelentkezéshez már nem kell e-mail link.",
+      "addPasskey": "Jelszókulcs hozzáadása",
+      "adding": "Regisztráció…",
+      "noPasskeys": "Nincs jelszókulcs regisztrálva — adj hozzá egyet a gyorsabb bejelentkezéshez.",
+      "unnamedPasskey": "Jelszókulcs",
+      "registeredOn": "Hozzáadva: {{date}}",
+      "addSuccess": "Jelszókulcs sikeresen hozzáadva",
+      "addError": "Nem sikerült a jelszókulcs regisztrálása.",
+      "removeSuccess": "Jelszókulcs eltávolítva",
+      "removeError": "Nem sikerült a jelszókulcs törlése.",
+      "confirmDeleteTitle": "Jelszókulcs eltávolítása?",
+      "confirmDeleteDesc": "Eltávolítja a(z) \"{{name}}\" jelszókulcsot? Ezután nem használhatja bejelentkezéshez.",
+      "namePlaceholder": "Eszköz neve (nem kötelező)"
+    }
   },
   "admin": {
     "users": {
@@ -300,15 +316,17 @@
     "headline": "Üdvözlünk!",
     "subheadline": "Lépj be vagy hozz létre fiókot — jelszó nélkül.",
     "continueWithPasskey": "Folytatás jelszókulccsal",
+    "passkeyVerifying": "Azonosítás…",
+    "passkeyForEmail": "Jelszókulcs",
+    "useEmailInstead": "Inkább e-maillel",
+    "passkeyError": "A jelszókulcsos bejelentkezés nem sikerült. Győződj meg róla, hogy van regisztrált jelszókulcsod ehhez a fiókhoz.",
     "continueWithEmail": "Folytatás e-maillel",
     "emailLabel": "E-mail cím",
     "invalidEmail": "Adj meg érvényes e-mail címet",
     "or": "vagy",
     "noPassword": "Nincs jelszóra szükség — küldünk egy belépési linket.",
-    "sending": "Küldés…",
     "checkEmail": "Ellenőrizd a postaládád",
     "checkEmailHint": "Küldtünk egy belépési linket a következő címre: {{email}}. Kattints rá a bejelentkezéshez.",
-    "checkEmailPasskeyHint": "Küldtünk egy belépési linket a következő címre: {{email}}. Kattints rá — a jelszókulcsod automatikusan ellenőrzésre kerül.",
     "tryDifferentEmail": "Próbálj más e-mail címet"
   },
   "shoppingList": {

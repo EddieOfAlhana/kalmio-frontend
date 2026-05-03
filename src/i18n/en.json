@@ -235,7 +235,23 @@
     "mealPlanDefaults": "Meal plan defaults",
     "mealPlanDefaultsHint": "These values will pre-fill the meal plan generator form.",
     "saveError": "Failed to save settings.",
-    "saveSuccess": "Settings saved."
+    "saveSuccess": "Settings saved.",
+    "security": {
+      "title": "Security",
+      "passkeysHint": "Sign in faster with your device's biometrics or PIN — no email link needed on future visits.",
+      "addPasskey": "Add passkey",
+      "adding": "Registering…",
+      "noPasskeys": "No passkeys enrolled — add one below for faster sign-in.",
+      "unnamedPasskey": "Passkey",
+      "registeredOn": "Added {{date}}",
+      "addSuccess": "Passkey added successfully",
+      "addError": "Failed to register passkey.",
+      "removeSuccess": "Passkey removed",
+      "removeError": "Failed to remove passkey.",
+      "confirmDeleteTitle": "Remove passkey?",
+      "confirmDeleteDesc": "Remove \"{{name}}\"? You won't be able to use it to sign in.",
+      "namePlaceholder": "Name this device (optional)"
+    }
   },
   "admin": {
     "users": {
@@ -300,15 +316,17 @@
     "headline": "Welcome",
     "subheadline": "Sign in or create your account — no password needed.",
     "continueWithPasskey": "Continue with Passkey",
+    "passkeyVerifying": "Verifying…",
+    "passkeyForEmail": "Passkey",
+    "useEmailInstead": "Use email instead",
+    "passkeyError": "Passkey sign-in failed. Make sure you have a passkey registered for this account.",
     "continueWithEmail": "Continue with Email",
     "emailLabel": "Email address",
     "invalidEmail": "Please enter a valid email address",
     "or": "or",
     "noPassword": "No password needed — we'll email you a sign-in link.",
-    "sending": "Sending…",
     "checkEmail": "Check your inbox",
     "checkEmailHint": "We sent a magic link to {{email}}. Click it to sign in.",
-    "checkEmailPasskeyHint": "We sent a magic link to {{email}}. Click it — your passkey will be verified automatically.",
     "tryDifferentEmail": "Try a different email"
   },
   "shoppingList": {

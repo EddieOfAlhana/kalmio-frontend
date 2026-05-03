@@ -19,6 +19,7 @@ import { IngredientSearchDialog } from '@/components/IngredientSearchDialog'
 import { recipesService } from '@/services/recipes'
 import { ingredientsService } from '@/services/ingredients'
 import { formatCurrency } from '@/lib/utils'
+import { useAuthStore } from '@/store/auth'
 import type { Recipe, RecipeTag, Unit, RecipeTranslations } from '@/types'
 
 const TAGS: RecipeTag[] = ['QUICK', 'CHEAP', 'MEALPREP', 'HIGH_PROTEIN']
@@ -79,6 +80,7 @@ function defaultValues(recipe?: Recipe, ingredientMap?: Map<string, string>): Fo
 export function Recipes() {
   const qc = useQueryClient()
   const { t, i18n } = useTranslation()
+  const isAdmin = useAuthStore((s) => s.isAdmin)
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<Recipe | null | 'new'>(null)
@@ -122,11 +124,11 @@ export function Recipes() {
       <Header
         title={t('recipes.title')}
         subtitle={t('recipes.subtitle', { count: recipes.length })}
-        actions={
+        actions={isAdmin ? (
           <Button onClick={() => setEditTarget('new')}>
             <Plus className="h-4 w-4" /> {t('recipes.addRecipe')}
           </Button>
-        }
+        ) : undefined}
       />
 
       <div className="relative mb-4">
@@ -149,7 +151,7 @@ export function Recipes() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{displayName}</p>
-                        {r.machineTranslated && (
+                        {r.machineTranslated && isAdmin && (
                           <MtBadgeMenu
                             label={t('recipes.machineTranslated.badge')}
                             tooltip={t('recipes.machineTranslated.tooltip')}
@@ -193,17 +195,19 @@ export function Recipes() {
                     </div>
                   )}
 
-                  <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" className="flex-1"
-                      onClick={() => setEditTarget(r)}>
-                      <Pencil className="h-3.5 w-3.5" /> {t('recipes.edit')}
-                    </Button>
-                    <Button variant="danger" size="sm" onClick={() => {
-                      if (confirm(t('recipes.delete', { name: displayName }))) deleteMutation.mutate(r.id)
-                    }}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+                  {isAdmin && (
+                    <div className="flex gap-2">
+                      <Button variant="secondary" size="sm" className="flex-1"
+                        onClick={() => setEditTarget(r)}>
+                        <Pencil className="h-3.5 w-3.5" /> {t('recipes.edit')}
+                      </Button>
+                      <Button variant="danger" size="sm" onClick={() => {
+                        if (confirm(t('recipes.delete', { name: displayName }))) deleteMutation.mutate(r.id)
+                      }}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )

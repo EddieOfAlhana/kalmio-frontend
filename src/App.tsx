@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AppShell } from '@/components/layout/AppShell'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { AdminRoute } from '@/components/AdminRoute'
 import { LandingPage } from '@/pages/LandingPage'
 import { Auth } from '@/pages/Auth'
 import { AuthCallback } from '@/pages/AuthCallback'
@@ -12,8 +13,12 @@ import { Recipes } from '@/pages/Recipes'
 import { Ingredients } from '@/pages/Ingredients'
 import { ShoppingList } from '@/pages/ShoppingList'
 import { RetailProducts } from '@/pages/RetailProducts'
+import { Settings } from '@/pages/Settings'
+import { UserManagement } from '@/pages/admin/UserManagement'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store/auth'
+import { usersService } from '@/services/users'
+import { Toaster } from '@/components/ui/toast'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
@@ -21,6 +26,8 @@ const queryClient = new QueryClient({
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const setSession = useAuthStore((s) => s.setSession)
+  const setAppRole = useAuthStore((s) => s.setAppRole)
+  const session = useAuthStore((s) => s.session)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
@@ -32,12 +39,23 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [setSession])
 
+  useEffect(() => {
+    if (session) {
+      usersService.getMe()
+        .then(user => setAppRole(user.role))
+        .catch(() => setAppRole('USER'))
+    } else {
+      setAppRole(null)
+    }
+  }, [session, setAppRole])
+
   return <>{children}</>
 }
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster />
       <BrowserRouter>
         <AuthProvider>
           <Routes>
@@ -52,6 +70,10 @@ export default function App() {
                 <Route path="ingredients" element={<Ingredients />} />
                 <Route path="shopping-list" element={<ShoppingList />} />
                 <Route path="retail-products" element={<RetailProducts />} />
+                <Route path="settings" element={<Settings />} />
+                <Route element={<AdminRoute />}>
+                  <Route path="admin/users" element={<UserManagement />} />
+                </Route>
               </Route>
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
