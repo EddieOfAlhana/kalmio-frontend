@@ -255,6 +255,8 @@ export interface RetailProductInfo {
   unit: Unit
   remoteUrl: string | null
   estimatedCost: number | null
+  wasteAmount: number | null
+  wasteCost: number | null
 }
 
 export interface ShoppingListItem {
@@ -269,5 +271,6 @@ export interface ShoppingListItem {
 export interface ShoppingList {
   items: ShoppingListItem[]
   totalEstimatedCost: number | null
+  totalWasteCost: number | null
   currency: string
 }

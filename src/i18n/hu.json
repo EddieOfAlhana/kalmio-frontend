@@ -347,12 +347,20 @@
     "summary": {
       "totalItems": "Összes tétel",
       "estimatedTotal": "Becsült összeg",
-      "noRetailMatch": "Nincs kiskereskedelmi egyezés"
+      "noRetailMatch": "Nincs kiskereskedelmi egyezés",
+      "totalWaste": "Becsült hulladék"
     },
     "missingItems_one": "{{count}} hozzávalóhoz nincs Tesco termék. Vásárold meg külön.",
     "missingItems_other": "{{count}} hozzávalóhoz nincs Tesco termék. Vásárold meg külön.",
     "totalNeeded": "Szükséges összesen:",
     "noRetailProduct": "Nincs elérhető kiskereskedelmi termék — vásárold meg külön",
-    "tesco": "Tesco"
+    "tesco": "Tesco",
+    "waste": {
+      "amount": "Hulladék: {{amount}} {{unit}}",
+      "cost": "~{{cost}}",
+      "summaryTitle": "Becsült hulladék",
+      "summaryDesc": "Megvásárolt, de nem szükséges mennyiség a kiszerelések miatt",
+      "none": "Nincs hulladék — pontos kiszerelési illeszkedés"
+    }
   }
 }

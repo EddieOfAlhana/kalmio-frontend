@@ -347,12 +347,20 @@
     "summary": {
       "totalItems": "Total items",
       "estimatedTotal": "Estimated total",
-      "noRetailMatch": "No retail match"
+      "noRetailMatch": "No retail match",
+      "totalWaste": "Estimated waste"
     },
     "missingItems_one": "{{count}} ingredient has no Tesco product match. Buy these separately.",
     "missingItems_other": "{{count}} ingredients have no Tesco product match. Buy these separately.",
     "totalNeeded": "Total needed:",
     "noRetailProduct": "No retail product available — buy separately",
-    "tesco": "Tesco"
+    "tesco": "Tesco",
+    "waste": {
+      "amount": "Waste: {{amount}} {{unit}}",
+      "cost": "~{{cost}}",
+      "summaryTitle": "Estimated waste",
+      "summaryDesc": "Portions bought but not needed due to package sizes",
+      "none": "No waste — exact package fits"
+    }
   }
 }

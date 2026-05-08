@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ShoppingCart, ExternalLink, AlertCircle, Package } from 'lucide-react'
+import { ShoppingCart, ExternalLink, AlertCircle, Package, Trash2 } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -62,6 +62,16 @@ export function ShoppingList() {
     : {}
 
   const missingCount = shoppingList?.items.filter(i => !i.retailProduct).length ?? 0
+  const wasteItems = shoppingList?.items.filter(
+    i => i.retailProduct?.wasteAmount != null && i.retailProduct.wasteAmount > 0
+  ) ?? []
+
+  const totalWasteGrams = wasteItems
+    .filter(i => i.retailProduct!.unit === 'G')
+    .reduce((sum, i) => sum + (i.retailProduct!.wasteAmount ?? 0), 0)
+
+  const totalWasteCost = shoppingList?.totalWasteCost
+    ?? wasteItems.reduce((sum, i) => sum + (i.retailProduct!.wasteCost ?? 0), 0)
 
   return (
     <div>
@@ -109,6 +119,18 @@ export function ShoppingList() {
                 </p>
               </CardContent>
             </Card>
+            {shoppingList.totalWasteCost != null && (
+              <Card className={shoppingList.totalWasteCost > 0 ? 'border-orange-200 bg-orange-50' : ''}>
+                <CardContent className="pt-4">
+                  <p className={`text-xs mb-1 ${shoppingList.totalWasteCost > 0 ? 'text-orange-600' : 'text-gray-500'}`}>
+                    {t('shoppingList.summary.totalWaste')}
+                  </p>
+                  <p className={`text-xl font-headline font-bold ${shoppingList.totalWasteCost > 0 ? 'text-orange-700' : 'text-[#4F7942]'}`}>
+                    {formatCurrency(shoppingList.totalWasteCost, shoppingList.currency)}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
             {missingCount > 0 && (
               <Card className="border-amber-200 bg-amber-50">
                 <CardContent className="pt-4">
@@ -142,6 +164,47 @@ export function ShoppingList() {
               </CardContent>
             </Card>
           ))}
+
+          {/* Waste summary */}
+          <Card className={wasteItems.length > 0 ? 'border-orange-200' : ''}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Trash2 className="h-4 w-4 text-orange-500" />
+                {t('shoppingList.waste.summaryTitle')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {wasteItems.length === 0 ? (
+                <p className="text-sm text-[#4F7942]">{t('shoppingList.waste.none')}</p>
+              ) : (
+                <>
+                  <p className="text-xs text-gray-500 mb-3">{t('shoppingList.waste.summaryDesc')}</p>
+                  <div className="space-y-2">
+                    {wasteItems.map(item => (
+                      <div key={item.ingredientId + item.unit} className="flex items-center justify-between text-sm">
+                        <span className="text-[#1A1A1A] font-medium">{item.ingredientName}</span>
+                        <span className="text-orange-600 text-xs">
+                          {item.retailProduct!.wasteAmount!.toFixed(item.retailProduct!.unit === 'PIECE' ? 0 : 0)} {item.retailProduct!.unit}
+                          {' · '}
+                          {t('shoppingList.waste.cost', { cost: formatCurrency(item.retailProduct!.wasteCost, shoppingList.currency) })}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  {(totalWasteCost > 0 || totalWasteGrams > 0) && (
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-orange-100">
+                      <span className="text-sm font-semibold text-[#1A1A1A]">{t('shoppingList.summary.totalWaste')}</span>
+                      <span className="text-sm font-bold text-orange-700">
+                        {totalWasteGrams > 0 && <>{Math.round(totalWasteGrams)} g</>}
+                        {totalWasteGrams > 0 && totalWasteCost > 0 && ' · '}
+                        {totalWasteCost > 0 && formatCurrency(totalWasteCost, shoppingList.currency)}
+                      </span>
+                    </div>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
@@ -168,14 +231,27 @@ function ShoppingItem({ item, currency }: { item: ShoppingListItem; currency: st
         </p>
 
         {hasProduct ? (
-          <div className="mt-1.5 flex items-center gap-2 flex-wrap">
-            <p className="text-xs text-[#1A1A1A]">
-              <span className="font-medium">{item.retailProduct!.name}</span>
-              {item.retailProduct!.brand && <span className="text-gray-400"> · {item.retailProduct!.brand}</span>}
-            </p>
-            <p className="text-xs text-gray-400">
-              {item.retailProduct!.packageSize}{item.retailProduct!.unit} · {formatCurrency(item.retailProduct!.price, currency)}
-            </p>
+          <div className="mt-1.5 flex flex-col gap-0.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-xs text-[#1A1A1A]">
+                <span className="font-medium">{item.retailProduct!.name}</span>
+                {item.retailProduct!.brand && <span className="text-gray-400"> · {item.retailProduct!.brand}</span>}
+              </p>
+              <p className="text-xs text-gray-400">
+                {item.retailProduct!.packageSize}{item.retailProduct!.unit} · {formatCurrency(item.retailProduct!.price, currency)}
+              </p>
+            </div>
+            {item.retailProduct!.wasteAmount != null && item.retailProduct!.wasteAmount > 0 && (
+              <p className="text-xs text-orange-500">
+                {t('shoppingList.waste.amount', {
+                  amount: item.retailProduct!.wasteAmount.toFixed(item.retailProduct!.unit === 'PIECE' ? 0 : 0),
+                  unit: item.retailProduct!.unit,
+                })}
+                {item.retailProduct!.wasteCost != null && (
+                  <> · {t('shoppingList.waste.cost', { cost: formatCurrency(item.retailProduct!.wasteCost, currency) })}</>
+                )}
+              </p>
+            )}
           </div>
         ) : (
           <p className="text-xs text-amber-600 mt-1">{t('shoppingList.noRetailProduct')}</p>
