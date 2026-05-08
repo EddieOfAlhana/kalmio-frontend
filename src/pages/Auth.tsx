@@ -34,11 +34,9 @@ export function Auth() {
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   const storeSessionFromToken = (accessToken: string) => {
-    // Decode JWT payload to extract user info
     const payload = JSON.parse(atob(accessToken.split('.')[1]))
     const expiresAt = payload.exp as number
 
-    // Build a minimal Session object compatible with Supabase's Session type
     const session = {
       access_token: accessToken,
       refresh_token: '',
@@ -55,17 +53,6 @@ export function Auth() {
         created_at: '',
       },
     } as import('@supabase/supabase-js').Session
-
-    // Write into Supabase's localStorage key so the Axios interceptor finds it
-    const projectRef = import.meta.env.VITE_SUPABASE_URL
-      ?.replace('https://', '')
-      .replace('.supabase.co', '')
-    if (projectRef) {
-      localStorage.setItem(
-        `sb-${projectRef}-auth-token`,
-        JSON.stringify({ access_token: accessToken, refresh_token: '', expires_at: expiresAt }),
-      )
-    }
 
     setSession(session)
   }
