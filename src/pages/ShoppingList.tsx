@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ShoppingCart, ExternalLink, AlertCircle, Package, Trash2 } from 'lucide-react'
+import { ShoppingCart, ExternalLink, AlertCircle, Package, Trash2, Archive } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -178,7 +178,12 @@ export function ShoppingList() {
                 <p className="text-sm text-[#4F7942]">{t('shoppingList.waste.none')}</p>
               ) : (
                 <>
-                  <p className="text-xs text-gray-500 mb-3">{t('shoppingList.waste.summaryDesc')}</p>
+                  <p className="text-xs text-gray-500 mb-3">
+                    {t('shoppingList.waste.summaryDesc')}
+                    {shoppingList.items.some(i => i.pantryItem) && (
+                      <span className="ml-1 text-green-600">{t('shoppingList.waste.pantryExcluded')}</span>
+                    )}
+                  </p>
                   <div className="space-y-2">
                     {wasteItems.map(item => (
                       <div key={item.ingredientId + item.unit} className="flex items-center justify-between text-sm">
@@ -225,7 +230,15 @@ function ShoppingItem({ item, currency }: { item: ShoppingListItem; currency: st
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-sm text-[#1A1A1A]">{item.ingredientName}</p>
+        <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+          <p className="font-semibold text-sm text-[#1A1A1A]">{item.ingredientName}</p>
+          {item.pantryItem && (
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700">
+              <Archive className="h-2.5 w-2.5" />
+              {t('shoppingList.pantryLabel')}
+            </span>
+          )}
+        </div>
         <p className="text-xs text-gray-500">
           {t('shoppingList.totalNeeded')} <span className="font-medium">{item.totalAmount.toFixed(1)} {item.unit}</span>
         </p>

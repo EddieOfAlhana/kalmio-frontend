@@ -47,6 +47,8 @@ export interface Ingredient {
   gramsPerPiece: number | null
   translations: IngredientTranslations | null
   machineTranslated: boolean
+  /** Shelf-stable pantry staple — excluded from waste calculations. */
+  pantryItem: boolean
 }
 
 export interface CreateIngredientRequest {
@@ -57,6 +59,7 @@ export interface CreateIngredientRequest {
   constraints: DietaryConstraints
   density?: number | null
   gramsPerPiece?: number | null
+  pantryItem: boolean
 }
 
 export type UpdateIngredientRequest = CreateIngredientRequest
@@ -265,6 +268,7 @@ export interface ShoppingListItem {
   ingredientCategory: IngredientCategory | null
   totalAmount: number
   unit: Unit
+  pantryItem: boolean
   retailProduct: RetailProductInfo | null
 }
 

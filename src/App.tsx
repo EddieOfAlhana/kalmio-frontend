@@ -26,6 +26,7 @@ const queryClient = new QueryClient({
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const setSession = useAuthStore((s) => s.setSession)
+  const updateSession = useAuthStore((s) => s.updateSession)
   const setAppRole = useAuthStore((s) => s.setAppRole)
   const session = useAuthStore((s) => s.session)
 
@@ -35,7 +36,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       .catch(() => setSession(null))
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
+      updateSession(session)
     })
 
     return () => subscription.unsubscribe()

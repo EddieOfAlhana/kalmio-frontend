@@ -167,6 +167,8 @@
       "densityHint": "(g/ml, optional)",
       "gramsPerPiece": "Grams / piece",
       "gramsPerPieceHint": "(needed when used as PIECE in recipes)",
+      "pantryItem": "Pantry item",
+      "pantryItemHint": "(shelf-stable — excluded from waste)",
       "dietaryFlags": "Dietary flags",
       "cancel": "Cancel",
       "create": "Create",
@@ -179,6 +181,10 @@
       "milkProteinFree": "Milk protein-free",
       "glutenFree": "Gluten-free",
       "paleo": "Paleo"
+    },
+    "pantryItem": {
+      "badge": "Pantry",
+      "tooltip": "Pantry item — excluded from waste calculations"
     },
     "chooseIngredient": "Choose an Ingredient",
     "searchByName": "Search by name or alias…",
@@ -355,11 +361,13 @@
     "totalNeeded": "Total needed:",
     "noRetailProduct": "No retail product available — buy separately",
     "tesco": "Tesco",
+    "pantryLabel": "Pantry",
     "waste": {
       "amount": "Waste: {{amount}} {{unit}}",
       "cost": "~{{cost}}",
       "summaryTitle": "Estimated waste",
       "summaryDesc": "Portions bought but not needed due to package sizes",
+      "pantryExcluded": "Pantry items excluded.",
       "none": "No waste — exact package fits"
     }
   }

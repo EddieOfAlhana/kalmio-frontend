@@ -167,6 +167,8 @@
       "densityHint": "(g/ml, opcionális)",
       "gramsPerPiece": "Gramm / db",
       "gramsPerPieceHint": "(szükséges, ha receptben DB-ban szerepel)",
+      "pantryItem": "Kamrai alapanyag",
+      "pantryItemHint": "(tartós — nem számít hulladékba)",
       "dietaryFlags": "Diétás jelölők",
       "cancel": "Mégse",
       "create": "Létrehozás",
@@ -179,6 +181,10 @@
       "milkProteinFree": "Tejfehérje-mentes",
       "glutenFree": "Gluténmentes",
       "paleo": "Paleo"
+    },
+    "pantryItem": {
+      "badge": "Kamra",
+      "tooltip": "Kamrai alapanyag — nem számít bele a hulladékba"
     },
     "chooseIngredient": "Válassz hozzávalót",
     "searchByName": "Keresés név vagy alternatív név alapján…",
@@ -355,11 +361,13 @@
     "totalNeeded": "Szükséges összesen:",
     "noRetailProduct": "Nincs elérhető kiskereskedelmi termék — vásárold meg külön",
     "tesco": "Tesco",
+    "pantryLabel": "Kamra",
     "waste": {
       "amount": "Hulladék: {{amount}} {{unit}}",
       "cost": "~{{cost}}",
       "summaryTitle": "Becsült hulladék",
       "summaryDesc": "Megvásárolt, de nem szükséges mennyiség a kiszerelések miatt",
+      "pantryExcluded": "Kamrai alapanyagok kizárva.",
       "none": "Nincs hulladék — pontos kiszerelési illeszkedés"
     }
   }

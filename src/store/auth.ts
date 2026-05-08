@@ -11,6 +11,7 @@ interface AuthState {
   appRole: AppRole | null
   isAdmin: boolean
   setSession: (session: Session | null) => void
+  updateSession: (session: Session | null) => void
   setAppRole: (role: AppRole | null) => void
   signOut: () => Promise<void>
 }
@@ -23,6 +24,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAdmin: false,
   setSession: (session) =>
     set({ session, user: session?.user ?? null, initialized: true }),
+  updateSession: (session) =>
+    set({ session, user: session?.user ?? null }),
   setAppRole: (role) =>
     set({ appRole: role, isAdmin: role === 'ADMIN' }),
   signOut: async () => {

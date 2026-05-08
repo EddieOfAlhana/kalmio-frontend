@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Pencil, Trash2, Search, CheckCircle } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, CheckCircle, Archive } from 'lucide-react'
 import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -33,6 +33,7 @@ const schema = z.object({
   carbs: z.coerce.number().min(0),
   density: z.coerce.number().optional().nullable(),
   gramsPerPiece: z.coerce.number().optional().nullable(),
+  pantryItem: z.boolean(),
   vegetarian: z.boolean(),
   vegan: z.boolean(),
   lactoseFree: z.boolean(),
@@ -54,6 +55,7 @@ function toRequest(v: FormValues) {
     },
     density: v.density ?? null,
     gramsPerPiece: v.gramsPerPiece ?? null,
+    pantryItem: v.pantryItem,
   }
 }
 
@@ -68,6 +70,7 @@ function defaultValues(ing?: Ingredient): FormValues {
     carbs: ing?.macros.carbs ?? 0,
     density: ing?.density ?? null,
     gramsPerPiece: ing?.gramsPerPiece ?? null,
+    pantryItem: ing?.pantryItem ?? false,
     vegetarian: ing?.constraints.vegetarian ?? false,
     vegan: ing?.constraints.vegan ?? false,
     lactoseFree: ing?.constraints.lactoseFree ?? false,
@@ -176,7 +179,18 @@ export function Ingredients() {
                         <p className="text-xs text-gray-400">{displayAliases.join(', ')}</p>
                       )}
                     </div>
-                    <Badge variant={CATEGORY_COLOR[ing.category] ?? 'gray'}>{ing.category}</Badge>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {ing.pantryItem && (
+                        <span
+                          title={t('ingredients.pantryItem.tooltip')}
+                          className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700"
+                        >
+                          <Archive className="h-2.5 w-2.5" />
+                          {t('ingredients.pantryItem.badge')}
+                        </span>
+                      )}
+                      <Badge variant={CATEGORY_COLOR[ing.category] ?? 'gray'}>{ing.category}</Badge>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-4 gap-1 text-center mb-3">
@@ -460,6 +474,14 @@ function IngredientFormDialog({
                 </label>
               ))}
             </div>
+          </div>
+
+          <div className="border-t pt-3">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input type="checkbox" {...register('pantryItem')} className="accent-[#4F7942] h-4 w-4 rounded" />
+              <span className="font-medium text-[#1A1A1A]">{t('ingredients.form.pantryItem')}</span>
+              <span className="text-xs text-gray-400">{t('ingredients.form.pantryItemHint')}</span>
+            </label>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
