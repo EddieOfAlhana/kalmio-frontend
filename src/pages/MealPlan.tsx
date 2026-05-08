@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
-import { Zap, Clock, ChevronDown, ChevronUp, ShoppingCart } from 'lucide-react'
+import axios from 'axios'
+import { Zap, Clock, ChevronDown, ChevronUp, ShoppingCart, CheckCircle } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,10 +16,10 @@ import { Badge } from '@/components/ui/badge'
 import { Slider } from '@/components/ui/slider'
 import { Spinner } from '@/components/ui/spinner'
 import { MacroRing } from '@/components/ui/macro-ring'
-import { mealPlansService } from '@/services/mealPlans'
+import { mealPlansService, savedPlanToMealPlan } from '@/services/mealPlans'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { formatCurrency, formatMacro } from '@/lib/utils'
-import type { GeneratedMeal, MealType, Macros, ConstraintWeights } from '@/types'
+import type { GeneratedMeal, GenerateMealPlanRequest, MealType, Macros, ConstraintWeights } from '@/types'
 
 const MEAL_COLOR: Record<MealType, string> = {
   BREAKFAST: '#F28C28', LUNCH: '#4F7942', DINNER: '#1A1A1A', SNACK: '#6b7280',
@@ -96,6 +97,20 @@ export function MealPlan() {
   const { plan, setPlan } = useMealPlanStore()
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set([0]))
 
+  const { data: savedPlan } = useQuery({
+    queryKey: ['saved-meal-plans'],
+    queryFn: mealPlansService.listSaved,
+    enabled: plan === null,
+    select: plans => plans.length > 0 ? savedPlanToMealPlan(plans[0]) : null,
+    staleTime: Infinity,
+  })
+
+  useEffect(() => {
+    if (savedPlan && !plan) {
+      setPlan(savedPlan)
+    }
+  }, [savedPlan, plan, setPlan])
+
   const { register, handleSubmit, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema) as Resolver<FormValues>,
     defaultValues: { days: 7, mealsPerDay: 3, kcalTarget: 2000, proteinMin: 150, maxRecipeRepetitions: 2 },
@@ -127,13 +142,18 @@ export function MealPlan() {
     setWeights(prev => distributeWeights(key, value, prev, activeKeys))
   }
 
+  const forceRef = useRef(false)
+  const lastBodyRef = useRef<GenerateMealPlanRequest | null>(null)
+
   const mutation = useMutation({
-    mutationFn: mealPlansService.generate,
-    onSuccess: result => { setPlan(result); setExpandedDays(new Set([0])) },
+    mutationFn: (body: GenerateMealPlanRequest) => mealPlansService.generate(body, forceRef.current),
+    onSuccess: result => { forceRef.current = false; setPlan(result); setExpandedDays(new Set([0])) },
   })
 
-  function onSubmit(v: FormValues) {
-    mutation.mutate({
+  const is409 = mutation.isError && axios.isAxiosError(mutation.error) && mutation.error.response?.status === 409
+
+  function buildBody(v: FormValues): GenerateMealPlanRequest {
+    return {
       days: v.days,
       mealsPerDay: v.mealsPerDay,
       constraints: {
@@ -144,7 +164,21 @@ export function MealPlan() {
         maxRecipeRepetitions: v.maxRecipeRepetitions ?? null,
         constraintWeights: weights,
       },
-    })
+    }
+  }
+
+  function onSubmit(v: FormValues) {
+    const body = buildBody(v)
+    lastBodyRef.current = body
+    forceRef.current = false
+    mutation.mutate(body)
+  }
+
+  function handleForceGenerate() {
+    if (lastBodyRef.current) {
+      forceRef.current = true
+      mutation.mutate(lastBodyRef.current)
+    }
   }
 
   function toggleDay(day: number) {
@@ -254,12 +288,26 @@ export function MealPlan() {
               {mutation.isPending && (
                 <p className="text-sm text-gray-500">{t('mealPlan.form.solverNote')}</p>
               )}
-              {mutation.isError && (
+              {mutation.isError && !is409 && (
                 <p className="text-sm text-red-500">
                   {(mutation.error as Error).message ?? t('mealPlan.form.error')}
                 </p>
               )}
             </div>
+
+            {is409 && (
+              <div className="col-span-2 md:col-span-3 flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+                <p className="text-sm text-amber-800">{t('mealPlan.form.existingPlanWarning')}</p>
+                <div className="flex shrink-0 gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => mutation.reset()}>
+                    {t('common.cancel')}
+                  </Button>
+                  <Button type="button" size="sm" disabled={mutation.isPending} onClick={handleForceGenerate}>
+                    {t('mealPlan.form.generateAnyway')}
+                  </Button>
+                </div>
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>
@@ -267,6 +315,14 @@ export function MealPlan() {
       {/* Results */}
       {plan && (
         <div>
+          {/* Saved confirmation */}
+          {plan.savedPlanId && (
+            <div className="flex items-center gap-2 mb-4 text-sm text-[#4F7942]">
+              <CheckCircle className="h-4 w-4 shrink-0" />
+              <span>{t('mealPlan.savedConfirmation')}</span>
+            </div>
+          )}
+
           {/* Total summary */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
             {[

@@ -81,8 +81,11 @@
       "generate": "Generate Plan",
       "solving": "Solving…",
       "solverNote": "The solver may take up to 15 seconds…",
-      "error": "Generation failed. Make sure you have recipes."
+      "error": "Generation failed. Make sure you have recipes.",
+      "existingPlanWarning": "You already have a saved meal plan. Generate and save a new one anyway?",
+      "generateAnyway": "Generate anyway"
     },
+    "savedConfirmation": "Plan saved to your account",
     "summary": {
       "totalKcal": "Average cal / day",
       "totalProtein": "Average protein / day",

@@ -204,7 +204,40 @@ export interface MealPlan {
   mealsPerDay: number
   score: string
   totalEstimatedCost: number | null
+  savedPlanId: string | null
   meals: GeneratedMeal[]
+}
+
+// ── Saved Meal Plans ──────────────────────────────────────────────────────
+
+export interface SavedSlotMacros {
+  kcal: number
+  protein: number
+  fat: number
+  carbs: number
+}
+
+export interface SavedMealSlot {
+  id: string
+  dayNumber: number
+  mealType: MealType
+  recipeId: string
+  recipeName: string
+  recipePrepTimeMinutes: number
+  recipeCookTimeMinutes: number
+  recipeTags: RecipeTag[]
+  servingMultiplier: number
+  macros: SavedSlotMacros | null
+  estimatedCost: number | null
+}
+
+export interface SavedMealPlan {
+  id: string
+  name: string
+  days: number
+  mealsPerDay: number
+  slots: SavedMealSlot[]
+  createdAt: string
 }
 
 // ── Shopping List ─────────────────────────────────────────────────────────

@@ -81,8 +81,11 @@
       "generate": "Terv generálása",
       "solving": "Megoldás folyamatban…",
       "solverNote": "A megoldómotor akár 15 másodpercet is igénybe vehet…",
-      "error": "A generálás sikertelen. Győződj meg róla, hogy vannak receptjeid."
+      "error": "A generálás sikertelen. Győződj meg róla, hogy vannak receptjeid.",
+      "existingPlanWarning": "Már van elmentett étrendterved. Mégis generálsz és mentesz egy újat?",
+      "generateAnyway": "Mégis generálás"
     },
+    "savedConfirmation": "A terv mentve a fiókodba",
     "summary": {
       "totalKcal": "Átlag kcal / nap",
       "totalProtein": "Átlag fehérje / nap",
