@@ -293,12 +293,14 @@
   },
   "landing": {
     "nav": {
-      "cta": "Try it"
+      "cta": "Try it",
+      "ctaLoggedIn": "Open App"
     },
     "hero": {
       "headline": "Healthy eating. Math, not magic.",
       "subheadline": "Forget crash dieting and complicated calorie tables. Kalmio automatically plans your week around your goals, budget, and taste.",
-      "cta": "Try it now"
+      "cta": "Try it now",
+      "ctaLoggedIn": "Open my plan"
     },
     "pain": {
       "title": "Why your previous attempts didn't work",
@@ -336,7 +338,8 @@
     "finalCta": {
       "title": "Ready?",
       "subtitle": "Generate your first meal plan now — for free.",
-      "button": "Generate Meal Plan"
+      "button": "Generate Meal Plan",
+      "buttonLoggedIn": "Go to my plan"
     }
   },
   "auth": {

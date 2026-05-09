@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { useAuthStore } from '@/store/auth'
 import { ArrowRight, CheckCircle2, XCircle, Clock, Leaf, ShoppingCart } from 'lucide-react'
 
 const fadeUp = {
@@ -17,6 +18,7 @@ const stagger = {
 
 export function LandingPage() {
   const { t } = useTranslation()
+  const user = useAuthStore((s) => s.user)
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export function LandingPage() {
               to="/app/meal-plans"
               className="inline-flex items-center gap-1.5 bg-[#F28C28] text-white text-sm font-semibold px-5 py-2 rounded-full hover:opacity-90 transition-opacity"
             >
-              {t('landing.nav.cta')}
+              {user ? t('landing.nav.ctaLoggedIn') : t('landing.nav.cta')}
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -123,7 +125,7 @@ export function LandingPage() {
               to="/app/meal-plans"
               className="inline-flex items-center gap-2 bg-[#F28C28] hover:bg-[#e07820] text-white font-bold text-lg px-8 py-4 rounded-full transition-colors shadow-lg"
             >
-              {t('landing.hero.cta')}
+              {user ? t('landing.hero.ctaLoggedIn') : t('landing.hero.cta')}
               <ArrowRight className="h-5 w-5" />
             </Link>
           </motion.div>
@@ -204,7 +206,7 @@ export function LandingPage() {
             to="/app/meal-plans"
             className="inline-flex items-center gap-2 bg-white text-[#F28C28] font-bold text-base px-8 py-4 rounded-full hover:bg-white/90 transition-colors"
           >
-            {t('landing.hero.cta')}
+            {user ? t('landing.hero.ctaLoggedIn') : t('landing.hero.cta')}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </motion.div>
@@ -266,7 +268,7 @@ export function LandingPage() {
             to="/app/meal-plans"
             className="inline-flex items-center gap-2 bg-[#F28C28] hover:bg-[#e07820] text-white font-bold text-lg px-10 py-4 rounded-full transition-colors"
           >
-            {t('landing.finalCta.button')}
+            {user ? t('landing.finalCta.buttonLoggedIn') : t('landing.finalCta.button')}
             <ArrowRight className="h-5 w-5" />
           </Link>
         </motion.div>

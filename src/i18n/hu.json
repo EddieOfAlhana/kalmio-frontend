@@ -293,12 +293,14 @@
   },
   "landing": {
     "nav": {
-      "cta": "Próbáld ki"
+      "cta": "Próbáld ki",
+      "ctaLoggedIn": "Megnyitom"
     },
     "hero": {
       "headline": "Egészséges étkezés. Matek, nem mágia.",
       "subheadline": "Felejtsd el a koplalást és a bonyolult kalóriatáblázatokat. A Kalmio automatikusan összeállítja a hetedet a céljaid, a pénztárcád és az ízlésed alapján.",
-      "cta": "Próbáld ki most"
+      "cta": "Próbáld ki most",
+      "ctaLoggedIn": "Megnyitom az étrendem"
     },
     "pain": {
       "title": "Miért nem működtek az eddigi próbálkozások?",
@@ -336,7 +338,8 @@
     "finalCta": {
       "title": "Készen állsz?",
       "subtitle": "Generáld le az első étrendedet most — ingyen.",
-      "button": "Étrend generálása"
+      "button": "Étrend generálása",
+      "buttonLoggedIn": "Az étrendemhez"
     }
   },
   "auth": {

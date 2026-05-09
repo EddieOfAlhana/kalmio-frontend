@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store, LogOut, Settings, ShieldCheck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
@@ -23,7 +23,7 @@ export function Sidebar() {
     <aside className="hidden md:flex flex-col w-64 min-h-screen bg-[#1A1A1A] text-white shrink-0">
       {/* Logo */}
       <div className="h-16 flex items-center px-6 border-b border-white/10">
-        <span className="text-[#F28C28] font-headline text-xl font-bold tracking-tight">KALMIO</span>
+        <Link to="/" className="text-[#F28C28] font-headline text-xl font-bold tracking-tight hover:opacity-80 transition-opacity">KALMIO</Link>
       </div>
 
       {/* Nav */}
