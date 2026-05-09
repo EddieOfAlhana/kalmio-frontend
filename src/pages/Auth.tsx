@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Loader2, Fingerprint, Mail, CheckCircle2, ArrowLeft, ChevronDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
+import { buildSessionFromAccessToken, persistPasskeyToken } from '@/lib/passkeySession'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -34,27 +35,8 @@ export function Auth() {
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   const storeSessionFromToken = (accessToken: string) => {
-    const payload = JSON.parse(atob(accessToken.split('.')[1]))
-    const expiresAt = payload.exp as number
-
-    const session = {
-      access_token: accessToken,
-      refresh_token: '',
-      expires_at: expiresAt,
-      expires_in: expiresAt - Math.floor(Date.now() / 1000),
-      token_type: 'bearer' as const,
-      user: {
-        id: payload.sub as string,
-        email: payload.email as string,
-        role: 'authenticated',
-        app_metadata: {},
-        user_metadata: {},
-        aud: 'authenticated',
-        created_at: '',
-      },
-    } as import('@supabase/supabase-js').Session
-
-    setSession(session)
+    persistPasskeyToken(accessToken)
+    setSession(buildSessionFromAccessToken(accessToken))
   }
 
   // ── Passkey flows ─────────────────────────────────────────────────────────

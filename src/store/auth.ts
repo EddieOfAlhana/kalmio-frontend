@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import { clearPasskeyToken } from '@/lib/passkeySession'
 
 export type AppRole = 'USER' | 'ADMIN'
 
@@ -29,6 +30,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAppRole: (role) =>
     set({ appRole: role, isAdmin: role === 'ADMIN' }),
   signOut: async () => {
+    clearPasskeyToken()
     await supabase.auth.signOut()
     set({ session: null, user: null, appRole: null, isAdmin: false })
   },

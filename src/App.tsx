@@ -17,6 +17,7 @@ import { Settings } from '@/pages/Settings'
 import { UserManagement } from '@/pages/admin/UserManagement'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store/auth'
+import { restorePasskeySession, clearPasskeyToken } from '@/lib/passkeySession'
 import { usersService } from '@/services/users'
 import { Toaster } from '@/components/ui/toast'
 
@@ -26,17 +27,21 @@ const queryClient = new QueryClient({
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const setSession = useAuthStore((s) => s.setSession)
-  const updateSession = useAuthStore((s) => s.updateSession)
   const setAppRole = useAuthStore((s) => s.setAppRole)
   const session = useAuthStore((s) => s.session)
 
   useEffect(() => {
-    supabase.auth.getSession()
-      .then(({ data: { session } }) => setSession(session))
-      .catch(() => setSession(null))
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      updateSession(session)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        clearPasskeyToken()
+        setSession(session)
+      } else if (event === 'INITIAL_SESSION') {
+        const restored = restorePasskeySession()
+        setSession(restored)
+      } else {
+        clearPasskeyToken()
+        setSession(null)
+      }
     })
 
     return () => subscription.unsubscribe()
