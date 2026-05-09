@@ -705,6 +705,7 @@ function MealDetailDialog({ meal, open, onClose }: { meal: GeneratedMeal; open: 
   const { t, i18n } = useTranslation()
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [photoFailed, setPhotoFailed] = useState(false)
+  useEffect(() => { setPhotoFailed(false) }, [meal.recipe.id, open])
 
   const { data: recipe, isLoading } = useQuery({
     queryKey: ['recipe', meal.recipe.id],

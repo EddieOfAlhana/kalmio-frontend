@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle } from 'lucide-react'
@@ -296,6 +296,7 @@ function RecipeDetailDialog({
   const { t, i18n } = useTranslation()
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [photoFailed, setPhotoFailed] = useState(false)
+  useEffect(() => { setPhotoFailed(false) }, [recipe?.id])
 
   if (!recipe) return null
 
