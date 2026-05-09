@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle, BookOpen } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle } from 'lucide-react'
 import { useForm, useFieldArray, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -150,17 +150,24 @@ export function Recipes() {
             const displayName = r.translations?.[lang]?.name ?? r.name
             const photoUrl = `/assets/recipe-photos/${r.id}.png`
             return (
-              <Card key={r.id} className="relative hover:shadow-md transition-shadow overflow-hidden">
+              <Card
+                key={r.id}
+                className="relative hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
+                onClick={() => setDetailTarget(r)}
+              >
                 <div
                   className="absolute inset-0 bg-cover bg-center"
                   style={{ backgroundImage: `url('${photoUrl}')` }}
                 />
                 <div className="absolute inset-0 bg-white/70" />
-                <CardContent className="pt-4 relative">
-                  {/* Name row — no tags here to prevent overlap */}
-                  <div className="flex items-start gap-1.5 mb-1">
-                    <p className="font-semibold text-sm text-[#1A1A1A] leading-snug flex-1 min-w-0">{displayName}</p>
-                    {r.machineTranslated && isAdmin && (
+
+                {/* Admin action buttons — top-right overlay */}
+                {isAdmin && (
+                  <div
+                    className="absolute top-2 right-2 z-10 flex gap-1"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    {r.machineTranslated && (
                       <MtBadgeMenu
                         label={t('recipes.machineTranslated.badge')}
                         tooltip={t('recipes.machineTranslated.tooltip')}
@@ -170,6 +177,34 @@ export function Recipes() {
                         onApprove={() => approveMutation.mutate(r.id)}
                         onEdit={() => setTranslationTarget(r)}
                       />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setEditTarget(r)}
+                      className="p-1.5 rounded-lg bg-white/80 hover:bg-white text-gray-600 hover:text-[#1A1A1A] transition-colors shadow-sm"
+                      aria-label={t('recipes.edit')}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { if (confirm(t('recipes.delete', { name: displayName }))) deleteMutation.mutate(r.id) }}
+                      className="p-1.5 rounded-lg bg-white/80 hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors shadow-sm"
+                      aria-label={t('common.delete')}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
+
+                <CardContent className="pt-4 relative">
+                  {/* Name row */}
+                  <div className="flex items-start gap-1.5 mb-1">
+                    <p className="font-semibold text-sm text-[#1A1A1A] leading-snug flex-1 min-w-0 pr-1">{displayName}</p>
+                    {r.machineTranslated && !isAdmin && (
+                      <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700">
+                        {t('recipes.machineTranslated.badge')}
+                      </span>
                     )}
                   </div>
 
@@ -193,7 +228,7 @@ export function Recipes() {
                   </div>
 
                   {r.macros && (
-                    <div className="grid grid-cols-4 gap-1 text-center mb-3">
+                    <div className="grid grid-cols-4 gap-1 text-center">
                       {[
                         { label: 'kcal', value: r.macros.kcal },
                         { label: 'P', value: r.macros.protein },
@@ -207,26 +242,6 @@ export function Recipes() {
                       ))}
                     </div>
                   )}
-
-                  <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" className="flex-1"
-                      onClick={() => setDetailTarget(r)}>
-                      <BookOpen className="h-3.5 w-3.5" /> {t('recipes.viewDetails')}
-                    </Button>
-                    {isAdmin && (
-                      <>
-                        <Button variant="secondary" size="sm"
-                          onClick={() => setEditTarget(r)}>
-                          <Pencil className="h-3.5 w-3.5" /> {t('recipes.edit')}
-                        </Button>
-                        <Button variant="danger" size="sm" onClick={() => {
-                          if (confirm(t('recipes.delete', { name: displayName }))) deleteMutation.mutate(r.id)
-                        }}>
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </>
-                    )}
-                  </div>
                 </CardContent>
               </Card>
             )
