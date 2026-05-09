@@ -106,6 +106,7 @@
       "servingMultiplier": "Servings",
       "swapRecipe": "Swap Recipe",
       "saving": "Saving…",
+      "saved": "Saved",
       "saveError": "Failed to save changes"
     },
     "recipePicker": {

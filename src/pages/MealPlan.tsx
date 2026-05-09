@@ -521,52 +521,87 @@ function MealSlotCard({
   const { t } = useTranslation()
   const [editing, setEditing] = useState(false)
   const [multiplier, setMultiplier] = useState(meal.servingMultiplier)
-  const [pendingRecipe, setPendingRecipe] = useState<Recipe | null>(null)
   const [pickerOpen, setPickerOpen] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [saveError, setSaveError] = useState<string | null>(null)
 
-  const displayRecipe = pendingRecipe ?? meal.recipe
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const originalMealRef = useRef<GeneratedMeal>(meal)
+  const lastSavedRef = useRef({ multiplier: meal.servingMultiplier, recipeId: meal.recipe.id })
+  const latestEditRef = useRef({ multiplier: meal.servingMultiplier, recipe: meal.recipe })
+  const saveVersionRef = useRef(0)
+
+  useEffect(() => {
+    return () => { if (debounceTimer.current) clearTimeout(debounceTimer.current) }
+  }, [])
 
   function handleEdit() {
+    originalMealRef.current = meal
+    lastSavedRef.current = { multiplier: meal.servingMultiplier, recipeId: meal.recipe.id }
+    latestEditRef.current = { multiplier: meal.servingMultiplier, recipe: meal.recipe }
     setMultiplier(meal.servingMultiplier)
-    setPendingRecipe(null)
     setSaveError(null)
+    setSaveStatus('idle')
     setEditing(true)
   }
 
   function handleCancel() {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current)
+    debounceTimer.current = null
+    onUpdate(originalMealRef.current)
     setEditing(false)
-    setPendingRecipe(null)
     setSaveError(null)
+    setSaveStatus('idle')
   }
 
-  async function handleSave() {
-    if (!savedPlanId) return
-    setSaving(true)
+  function applyChange(newMultiplier: number, newRecipe: Recipe) {
+    onUpdate({ ...meal, servingMultiplier: newMultiplier, recipe: newRecipe })
+    latestEditRef.current = { multiplier: newMultiplier, recipe: newRecipe }
+    if (debounceTimer.current) clearTimeout(debounceTimer.current)
+    setSaveStatus('idle')
     setSaveError(null)
-    try {
-      const body: { recipeId?: string; servingMultiplier?: number } = {}
-      const multRounded = Math.round(multiplier * 10) / 10
-      if (Math.abs(multRounded - meal.servingMultiplier) > 0.001) body.servingMultiplier = multRounded
-      if (pendingRecipe && pendingRecipe.id !== meal.recipe.id) body.recipeId = pendingRecipe.id
+    const version = ++saveVersionRef.current
+    debounceTimer.current = setTimeout(() => doBackendSave(version), 3000)
+  }
 
+  async function doBackendSave(version: number) {
+    if (!savedPlanId) return
+    setSaveStatus('saving')
+    try {
+      const { multiplier: mult, recipe } = latestEditRef.current
+      const body: { recipeId?: string; servingMultiplier?: number } = {}
+      const multRounded = Math.round(mult * 10) / 10
+      if (Math.abs(multRounded - lastSavedRef.current.multiplier) > 0.001)
+        body.servingMultiplier = multRounded
+      if (recipe.id !== lastSavedRef.current.recipeId)
+        body.recipeId = recipe.id
+      if (Object.keys(body).length === 0) {
+        if (saveVersionRef.current === version) setSaveStatus('saved')
+        return
+      }
       const updated = await mealPlansService.updateSlot(savedPlanId, meal.id, body)
-      onUpdate(savedSlotToMeal(updated))
-      setEditing(false)
-      setPendingRecipe(null)
+      if (saveVersionRef.current === version) {
+        lastSavedRef.current = { multiplier: updated.servingMultiplier, recipeId: updated.recipeId }
+        onUpdate(savedSlotToMeal(updated))
+        setSaveStatus('saved')
+      }
     } catch {
-      setSaveError(t('mealPlan.editSlot.saveError'))
-    } finally {
-      setSaving(false)
+      if (saveVersionRef.current === version) {
+        setSaveStatus('error')
+        setSaveError(t('mealPlan.editSlot.saveError'))
+      }
     }
   }
 
   function stepMultiplier(delta: number) {
-    setMultiplier(prev => {
-      const next = Math.round((prev + delta) * 10) / 10
-      return Math.min(MULTIPLIER_MAX, Math.max(MULTIPLIER_MIN, next))
-    })
+    const next = Math.round((latestEditRef.current.multiplier + delta) * 10) / 10
+    const clamped = Math.min(MULTIPLIER_MAX, Math.max(MULTIPLIER_MIN, next))
+    setMultiplier(clamped)
+    applyChange(clamped, latestEditRef.current.recipe)
+  }
+
+  function handleRecipeSelect(recipe: Recipe) {
+    applyChange(latestEditRef.current.multiplier, recipe)
   }
 
   return (
@@ -645,9 +680,7 @@ function MealSlotCard({
           {/* Recipe substitution */}
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1 mr-2">
-              <span className="text-xs text-gray-500 block truncate">
-                {pendingRecipe ? pendingRecipe.name : displayRecipe.name}
-              </span>
+              <span className="text-xs text-gray-500 block truncate">{meal.recipe.name}</span>
             </div>
             <Button
               type="button"
@@ -661,16 +694,21 @@ function MealSlotCard({
             </Button>
           </div>
 
-          {/* Error */}
-          {saveError && <p className="text-xs text-red-500">{saveError}</p>}
-
-          {/* Actions */}
-          <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" size="sm" onClick={handleCancel} disabled={saving}>
+          {/* Status + Cancel */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs">
+              {saveStatus === 'saving' && (
+                <><Spinner className="h-3 w-3" /><span className="text-gray-400">{t('mealPlan.editSlot.saving')}</span></>
+              )}
+              {saveStatus === 'saved' && (
+                <><Check className="h-3 w-3 text-[#4F7942]" /><span className="text-[#4F7942]">{t('mealPlan.editSlot.saved')}</span></>
+              )}
+              {saveStatus === 'error' && (
+                <span className="text-red-500">{saveError}</span>
+              )}
+            </div>
+            <Button type="button" variant="outline" size="sm" onClick={handleCancel}>
               {t('mealPlan.editSlot.cancel')}
-            </Button>
-            <Button type="button" size="sm" onClick={handleSave} disabled={saving} className="min-w-16">
-              {saving ? <><Spinner className="h-3 w-3" /> {t('mealPlan.editSlot.saving')}</> : t('mealPlan.editSlot.save')}
             </Button>
           </div>
         </div>
@@ -678,8 +716,8 @@ function MealSlotCard({
 
       <RecipePickerDialog
         open={pickerOpen}
-        currentRecipeId={displayRecipe.id}
-        onSelect={setPendingRecipe}
+        currentRecipeId={meal.recipe.id}
+        onSelect={handleRecipeSelect}
         onClose={() => setPickerOpen(false)}
       />
     </div>
