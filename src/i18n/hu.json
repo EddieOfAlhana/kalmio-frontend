@@ -8,7 +8,7 @@
     "home": "Főoldal",
     "plans": "Tervek",
     "shop": "Bolt",
-    "retail": "Kiskereskedelem",
+    "retail": "Bolti termékek",
     "settings": "Beállítások",
     "admin": "Admin"
   },
@@ -118,6 +118,7 @@
       "saved": "Mentve",
       "saveError": "Nem sikerült menteni a módosításokat"
     },
+    "viewRecipe": "Recept megtekintése",
     "recipePicker": {
       "title": "Válassz receptet",
       "search": "Receptek keresése…",
@@ -140,6 +141,29 @@
     "servings_other": "{{count}} adag",
     "edit": "Szerkesztés",
     "delete": "Törlöd: \"{{name}}\"?",
+    "viewDetails": "Részletek",
+    "detail": {
+      "prep": "Előkészítés",
+      "cook": "Főzés",
+      "servings": "Adagok",
+      "steps": "Elkészítés",
+      "noSteps": "Nincsenek elkészítési lépések.",
+      "ingredients": "Hozzávalók",
+      "noPhoto": "Nincs kép",
+      "perServing": "/ adag"
+    },
+    "tags": {
+      "QUICK": "Gyors",
+      "CHEAP": "Olcsó",
+      "MEALPREP": "Előkészíthető",
+      "HIGH_PROTEIN": "Magas fehérje",
+      "BREAKFAST": "Reggeli",
+      "MORNING_SNACK": "Tízórai",
+      "LUNCH": "Ebéd",
+      "AFTERNOON_SNACK": "Uzsonna",
+      "DINNER": "Vacsora",
+      "SNACK": "Snack"
+    },
     "machineTranslated": {
       "badge": "GT",
       "tooltip": "Gépi fordítás — vidd fölé az egeret",

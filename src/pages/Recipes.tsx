@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle, BookOpen } from 'lucide-react'
 import { useForm, useFieldArray, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -24,8 +24,11 @@ import type { Recipe, RecipeTag, Unit, RecipeTranslations } from '@/types'
 
 const TAGS: RecipeTag[] = ['QUICK', 'CHEAP', 'MEALPREP', 'HIGH_PROTEIN']
 const UNITS: Unit[] = ['G', 'ML', 'PIECE']
-const TAG_COLOR: Record<string, 'green' | 'orange' | 'gray'> = {
+const TAG_COLOR: Record<string, 'green' | 'orange' | 'gray' | 'black'> = {
   QUICK: 'orange', CHEAP: 'green', MEALPREP: 'gray', HIGH_PROTEIN: 'orange',
+  BREAKFAST: 'orange', MORNING_SNACK: 'orange',
+  LUNCH: 'green', AFTERNOON_SNACK: 'gray',
+  DINNER: 'black', SNACK: 'gray',
 }
 
 const schema = z.object({
@@ -85,6 +88,7 @@ export function Recipes() {
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<Recipe | null | 'new'>(null)
   const [translationTarget, setTranslationTarget] = useState<Recipe | null>(null)
+  const [detailTarget, setDetailTarget] = useState<Recipe | null>(null)
 
   const { data: recipes = [], isLoading } = useQuery({ queryKey: ['recipes'], queryFn: recipesService.list })
   const { data: ingredients = [] } = useQuery({ queryKey: ['ingredients'], queryFn: ingredientsService.list, staleTime: 30_000 })
@@ -153,35 +157,38 @@ export function Recipes() {
                 />
                 <div className="absolute inset-0 bg-white/70" />
                 <CardContent className="pt-4 relative">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{displayName}</p>
-                        {r.machineTranslated && isAdmin && (
-                          <MtBadgeMenu
-                            label={t('recipes.machineTranslated.badge')}
-                            tooltip={t('recipes.machineTranslated.tooltip')}
-                            approveLabel={t('recipes.machineTranslated.approve')}
-                            editLabel={t('recipes.machineTranslated.edit')}
-                            approvePending={approveMutation.isPending}
-                            onApprove={() => approveMutation.mutate(r.id)}
-                            onEdit={() => setTranslationTarget(r)}
-                          />
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-1 shrink-0 flex-wrap justify-end">
+                  {/* Name row — no tags here to prevent overlap */}
+                  <div className="flex items-start gap-1.5 mb-1">
+                    <p className="font-semibold text-sm text-[#1A1A1A] leading-snug flex-1 min-w-0">{displayName}</p>
+                    {r.machineTranslated && isAdmin && (
+                      <MtBadgeMenu
+                        label={t('recipes.machineTranslated.badge')}
+                        tooltip={t('recipes.machineTranslated.tooltip')}
+                        approveLabel={t('recipes.machineTranslated.approve')}
+                        editLabel={t('recipes.machineTranslated.edit')}
+                        approvePending={approveMutation.isPending}
+                        onApprove={() => approveMutation.mutate(r.id)}
+                        onEdit={() => setTranslationTarget(r)}
+                      />
+                    )}
+                  </div>
+
+                  {/* Tags row */}
+                  {(r.tags ?? []).length > 0 && (
+                    <div className="flex gap-1 flex-wrap mb-2">
                       {(r.tags ?? []).map(tag => (
-                        <Badge key={tag} variant={TAG_COLOR[tag] ?? 'gray'}>{tag}</Badge>
+                        <Badge key={tag} variant={TAG_COLOR[tag] ?? 'gray'}>
+                          {t(`recipes.tags.${tag}`, { defaultValue: tag })}
+                        </Badge>
                       ))}
                     </div>
-                  </div>
+                  )}
 
                   <div className="flex gap-3 text-xs text-gray-500 mb-3">
                     <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {r.prepTimeMinutes + r.cookTimeMinutes}m</span>
                     <span>{t('recipes.servings', { count: r.servings })}</span>
                     {r.estimatedCostPerServing != null && (
-                      <span className="text-[#4F7942] font-semibold">{formatCurrency(r.estimatedCostPerServing)}/srv</span>
+                      <span className="text-[#4F7942] font-semibold">{formatCurrency(r.estimatedCostPerServing)}{t('recipes.detail.perServing')}</span>
                     )}
                   </div>
 
@@ -201,19 +208,25 @@ export function Recipes() {
                     </div>
                   )}
 
-                  {isAdmin && (
-                    <div className="flex gap-2">
-                      <Button variant="secondary" size="sm" className="flex-1"
-                        onClick={() => setEditTarget(r)}>
-                        <Pencil className="h-3.5 w-3.5" /> {t('recipes.edit')}
-                      </Button>
-                      <Button variant="danger" size="sm" onClick={() => {
-                        if (confirm(t('recipes.delete', { name: displayName }))) deleteMutation.mutate(r.id)
-                      }}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  )}
+                  <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" className="flex-1"
+                      onClick={() => setDetailTarget(r)}>
+                      <BookOpen className="h-3.5 w-3.5" /> {t('recipes.viewDetails')}
+                    </Button>
+                    {isAdmin && (
+                      <>
+                        <Button variant="secondary" size="sm"
+                          onClick={() => setEditTarget(r)}>
+                          <Pencil className="h-3.5 w-3.5" /> {t('recipes.edit')}
+                        </Button>
+                        <Button variant="danger" size="sm" onClick={() => {
+                          if (confirm(t('recipes.delete', { name: displayName }))) deleteMutation.mutate(r.id)
+                        }}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             )
@@ -244,7 +257,138 @@ export function Recipes() {
         }}
         isPending={updateTranslationMutation.isPending}
       />
+
+      <RecipeDetailDialog
+        open={detailTarget !== null}
+        recipe={detailTarget ?? undefined}
+        ingredientMap={ingredientMap}
+        onOpenChange={open => { if (!open) setDetailTarget(null) }}
+      />
     </div>
+  )
+}
+
+// ── Recipe detail dialog ──────────────────────────────────────────────────
+
+function RecipeDetailDialog({
+  open, recipe, ingredientMap, onOpenChange,
+}: {
+  open: boolean
+  recipe?: Recipe
+  ingredientMap: Map<string, string>
+  onOpenChange: (o: boolean) => void
+}) {
+  const { t, i18n } = useTranslation()
+  const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
+
+  if (!recipe) return null
+
+  const displayName = recipe.translations?.[lang]?.name ?? recipe.name
+  const steps = recipe.translations?.[lang]?.steps ?? recipe.steps ?? []
+  const photoUrl = `/assets/recipe-photos/${recipe.id}.png`
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg max-h-[85dvh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="leading-snug pr-6">{displayName}</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          {/* Photo */}
+          <div className="w-full h-44 rounded-[12px] overflow-hidden bg-[#F9F7F2]">
+            <img
+              src={photoUrl}
+              alt={displayName}
+              className="w-full h-full object-cover"
+              onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+            />
+          </div>
+
+          {/* Tags */}
+          {(recipe.tags ?? []).length > 0 && (
+            <div className="flex gap-1 flex-wrap">
+              {(recipe.tags ?? []).map(tag => (
+                <Badge key={tag} variant={TAG_COLOR[tag] ?? 'gray'}>
+                  {t(`recipes.tags.${tag}`, { defaultValue: tag })}
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          {/* Timing row */}
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-[#F9F7F2] rounded-[10px] p-2.5 text-center">
+              <p className="text-[10px] text-gray-400 mb-0.5">{t('recipes.detail.prep')}</p>
+              <p className="text-sm font-bold text-[#1A1A1A]">{recipe.prepTimeMinutes}m</p>
+            </div>
+            <div className="bg-[#F9F7F2] rounded-[10px] p-2.5 text-center">
+              <p className="text-[10px] text-gray-400 mb-0.5">{t('recipes.detail.cook')}</p>
+              <p className="text-sm font-bold text-[#1A1A1A]">{recipe.cookTimeMinutes}m</p>
+            </div>
+            <div className="bg-[#F9F7F2] rounded-[10px] p-2.5 text-center">
+              <p className="text-[10px] text-gray-400 mb-0.5">{t('recipes.detail.servings')}</p>
+              <p className="text-sm font-bold text-[#1A1A1A]">{recipe.servings}</p>
+            </div>
+          </div>
+
+          {/* Macros */}
+          {recipe.macros && (
+            <div className="grid grid-cols-4 gap-1 text-center">
+              {[
+                { label: 'kcal', value: recipe.macros.kcal },
+                { label: 'P', value: recipe.macros.protein },
+                { label: 'F', value: recipe.macros.fat },
+                { label: 'C', value: recipe.macros.carbs },
+              ].map(({ label, value }) => (
+                <div key={label} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
+                  <p className="text-xs font-bold text-[#1A1A1A]">{Number(value).toFixed(0)}</p>
+                  <p className="text-[10px] text-gray-400">{label} {t('recipes.detail.perServing')}</p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Ingredients */}
+          {recipe.ingredients.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                {t('recipes.detail.ingredients')}
+              </p>
+              <ul className="space-y-1">
+                {recipe.ingredients.map(ing => (
+                  <li key={ing.id} className="flex items-center justify-between text-sm">
+                    <span className="text-[#1A1A1A]">{ingredientMap.get(ing.ingredientId) ?? ing.ingredientId}</span>
+                    <span className="text-gray-500 tabular-nums">{ing.amount} {ing.unit}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Steps */}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+              {t('recipes.detail.steps')}
+            </p>
+            {steps.length === 0 ? (
+              <p className="text-sm text-gray-400">{t('recipes.detail.noSteps')}</p>
+            ) : (
+              <ol className="space-y-2">
+                {steps.map((step, i) => (
+                  <li key={i} className="flex gap-2.5 text-sm">
+                    <span className="shrink-0 w-5 h-5 rounded-full bg-[#F28C28] text-white text-[10px] font-bold flex items-center justify-center mt-0.5">
+                      {i + 1}
+                    </span>
+                    <span className="text-[#1A1A1A] leading-relaxed">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 

@@ -9,7 +9,7 @@ export function savedSlotToMeal(s: SavedMealSlot): GeneratedMeal {
     recipe: {
       id: s.recipeId,
       name: s.recipeName,
-      steps: [],
+      steps: s.recipeSteps ?? [],
       prepTimeMinutes: s.recipePrepTimeMinutes,
       cookTimeMinutes: s.recipeCookTimeMinutes,
       servings: 1,
@@ -17,7 +17,7 @@ export function savedSlotToMeal(s: SavedMealSlot): GeneratedMeal {
       estimatedCostPerServing: null,
       ingredients: [],
       tags: s.recipeTags,
-      translations: null,
+      translations: s.recipeTranslations ?? null,
       machineTranslated: false,
     },
     servingMultiplier: Number(s.servingMultiplier),
@@ -27,12 +27,13 @@ export function savedSlotToMeal(s: SavedMealSlot): GeneratedMeal {
 }
 
 export function savedPlanToMealPlan(saved: SavedMealPlan): MealPlan {
+  const hasAnyCost = saved.slots.some(s => s.estimatedCost != null)
   return {
     id: saved.id,
     days: saved.days,
     mealsPerDay: saved.mealsPerDay,
     score: '',
-    totalEstimatedCost: saved.slots.every(s => s.estimatedCost != null)
+    totalEstimatedCost: hasAnyCost
       ? saved.slots.reduce((sum, s) => sum + (s.estimatedCost ?? 0), 0)
       : null,
     savedPlanId: saved.id,

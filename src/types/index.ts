@@ -3,7 +3,7 @@
 export type IngredientCategory = 'PROTEIN' | 'CARB' | 'FAT' | 'VEGGIE' | 'SPICE'
 export type Unit = 'G' | 'ML' | 'PIECE'
 export type MealType = 'BREAKFAST' | 'MORNING_SNACK' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER' | 'SNACK'
-export type RecipeTag = 'QUICK' | 'CHEAP' | 'MEALPREP' | 'HIGH_PROTEIN'
+export type RecipeTag = 'QUICK' | 'CHEAP' | 'MEALPREP' | 'HIGH_PROTEIN' | 'BREAKFAST' | 'MORNING_SNACK' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER' | 'SNACK'
 
 // ── Macros ────────────────────────────────────────────────────────────────
 
@@ -233,6 +233,8 @@ export interface SavedMealSlot {
   servingMultiplier: number
   macros: SavedSlotMacros | null
   estimatedCost: number | null
+  recipeSteps: string[]
+  recipeTranslations: RecipeTranslations | null
 }
 
 export interface SavedMealPlan {

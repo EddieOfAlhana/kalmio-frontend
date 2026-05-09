@@ -118,6 +118,7 @@
       "saved": "Saved",
       "saveError": "Failed to save changes"
     },
+    "viewRecipe": "View Recipe",
     "recipePicker": {
       "title": "Choose a Recipe",
       "search": "Search recipes…",
@@ -140,6 +141,29 @@
     "servings_other": "{{count}} servings",
     "edit": "Edit",
     "delete": "Delete \"{{name}}\"?",
+    "viewDetails": "Details",
+    "detail": {
+      "prep": "Prep",
+      "cook": "Cook",
+      "servings": "Servings",
+      "steps": "Instructions",
+      "noSteps": "No steps provided.",
+      "ingredients": "Ingredients",
+      "noPhoto": "No photo",
+      "perServing": "/ serving"
+    },
+    "tags": {
+      "QUICK": "Quick",
+      "CHEAP": "Budget",
+      "MEALPREP": "Meal Prep",
+      "HIGH_PROTEIN": "High Protein",
+      "BREAKFAST": "Breakfast",
+      "MORNING_SNACK": "Morning Snack",
+      "LUNCH": "Lunch",
+      "AFTERNOON_SNACK": "Afternoon Snack",
+      "DINNER": "Dinner",
+      "SNACK": "Snack"
+    },
     "machineTranslated": {
       "badge": "MT",
       "tooltip": "Machine translated — hover to review",

@@ -69,7 +69,7 @@ export function Dashboard() {
           { icon: ChefHat, label: t('dashboard.stats.recipes'), value: recipes.length, to: '/app/recipes', color: '#F28C28' },
           { icon: Leaf, label: t('dashboard.stats.ingredients'), value: ingredients.length, to: '/app/ingredients', color: '#4F7942' },
           { icon: UtensilsCrossed, label: t('dashboard.stats.activePlan'), value: activePlan ? `${activePlan.days}d` : '—', to: '/app/meal-plans', color: '#1A1A1A' },
-          { icon: ShoppingCart, label: t('dashboard.stats.totalCost'), value: activePlan ? formatCurrency(activePlan.totalEstimatedCost) : '—', to: '/app/shopping-list', color: '#F28C28' },
+          { icon: ShoppingCart, label: t('dashboard.stats.totalCost'), value: activePlan?.totalEstimatedCost != null ? formatCurrency(activePlan.totalEstimatedCost) : '—', to: '/app/shopping-list', color: '#F28C28' },
         ].map(({ icon: Icon, label, value, to, color }) => (
           <button key={label} onClick={() => navigate(to)} className="text-left focus:outline-none">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
