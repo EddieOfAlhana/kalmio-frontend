@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from 'react'
+import { useRef, useCallback } from 'react'
 
 interface KnobProps {
   value: number
@@ -80,8 +80,6 @@ export function Knob({
     if (e.key === 'ArrowUp' || e.key === 'ArrowRight') onChange(clamp(value + step))
     else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') onChange(clamp(value - step))
   }, [disabled, value, step, onChange])
-
-  const trackEnd = polarToXY(END_ANGLE, r)
 
   return (
     <div className="flex flex-col items-center gap-1 select-none">
