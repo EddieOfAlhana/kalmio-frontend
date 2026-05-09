@@ -395,6 +395,40 @@
     "tryDifferentEmail": "Try a different email",
     "tagline": "Healthy living. Simplified."
   },
+  "feedback": {
+    "panelTitle": "Feedback",
+    "buttonTitle": "Feedback & bug reports",
+    "buttonTitleShort": "Feedback",
+    "new": "New",
+    "send": "Submit",
+    "sending": "Submitting…",
+    "sent": "Feedback submitted — thank you!",
+    "error": "Something went wrong. Please try again.",
+    "statusUpdated": "Status updated.",
+    "empty": "No feedback yet.",
+    "submitFirst": "Submit your first report",
+    "noMessages": "No messages yet — start the discussion below.",
+    "typeLabel": "Type",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Short summary…",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Describe the issue or suggestion in detail…",
+    "replyPlaceholder": "Write a reply… (Cmd+Enter to send)",
+    "replyNotePlaceholder": "Optional note to user…",
+    "changeStatus": "Change status",
+    "admin": "Support",
+    "you": "You",
+    "types": {
+      "BUG": "Bug",
+      "SUGGESTION": "Suggestion",
+      "OTHER": "Other"
+    },
+    "statuses": {
+      "OPEN": "Open",
+      "FIXED": "Fixed",
+      "REJECTED": "Rejected"
+    }
+  },
   "shoppingList": {
     "title": "Shopping List",
     "subtitle": "Based on your {{days}}-day meal plan",

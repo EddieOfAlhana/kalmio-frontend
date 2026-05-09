@@ -246,6 +246,44 @@ export interface SavedMealPlan {
   createdAt: string
 }
 
+// ── Feedback ──────────────────────────────────────────────────────────────
+
+export type FeedbackType = 'BUG' | 'SUGGESTION' | 'OTHER'
+export type FeedbackStatus = 'OPEN' | 'FIXED' | 'REJECTED'
+
+export interface FeedbackMessage {
+  id: string
+  senderId: string
+  admin: boolean
+  body: string
+  createdAt: string
+}
+
+export interface FeedbackSummary {
+  id: string
+  userId: string
+  userEmail: string | null
+  type: FeedbackType
+  title: string
+  status: FeedbackStatus
+  createdAt: string
+  updatedAt: string
+  messageCount: number
+}
+
+export interface FeedbackDetail extends FeedbackSummary {
+  description: string
+  page: string | null
+  messages: FeedbackMessage[]
+}
+
+export interface CreateFeedbackRequest {
+  type: FeedbackType
+  title: string
+  description: string
+  page?: string
+}
+
 // ── Shopping List ─────────────────────────────────────────────────────────
 
 export interface ShoppingListRequest {

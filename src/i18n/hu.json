@@ -427,5 +427,39 @@
       "pantryExcluded": "Kamrai alapanyagok kizárva.",
       "none": "Nincs hulladék — pontos kiszerelési illeszkedés"
     }
+  },
+  "feedback": {
+    "panelTitle": "Visszajelzés",
+    "buttonTitle": "Visszajelzés és hibajelentés",
+    "buttonTitleShort": "Visszaj.",
+    "new": "Új",
+    "send": "Küldés",
+    "sending": "Küldés…",
+    "sent": "Visszajelzés elküldve — köszönjük!",
+    "error": "Hiba történt. Kérjük, próbáld újra.",
+    "statusUpdated": "Státusz frissítve.",
+    "empty": "Még nincs visszajelzés.",
+    "submitFirst": "Küldd el az első jelzésedet",
+    "noMessages": "Még nincs üzenet — kezdj el alább egy beszélgetést.",
+    "typeLabel": "Típus",
+    "titleLabel": "Cím",
+    "titlePlaceholder": "Rövid összefoglalás…",
+    "descriptionLabel": "Leírás",
+    "descriptionPlaceholder": "Írd le részletesen a problémát vagy javaslatot…",
+    "replyPlaceholder": "Válasz írása… (Cmd+Enter a küldéshez)",
+    "replyNotePlaceholder": "Opcionális megjegyzés a felhasználónak…",
+    "changeStatus": "Státusz módosítása",
+    "admin": "Támogatás",
+    "you": "Te",
+    "types": {
+      "BUG": "Hiba",
+      "SUGGESTION": "Javaslat",
+      "OTHER": "Egyéb"
+    },
+    "statuses": {
+      "OPEN": "Nyitott",
+      "FIXED": "Megoldva",
+      "REJECTED": "Elutasítva"
+    }
   }
 }
