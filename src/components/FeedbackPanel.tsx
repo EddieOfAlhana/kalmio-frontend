@@ -8,7 +8,7 @@ import { feedbackService } from '@/services/feedback'
 import { useAuthStore } from '@/store/auth'
 import { toast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
-import type { FeedbackDetail, FeedbackSummary, FeedbackType } from '@/types'
+import type { FeedbackSummary, FeedbackType } from '@/types'
 
 type View = { kind: 'list' } | { kind: 'create' } | { kind: 'detail'; id: string; isAdmin: boolean }
 
@@ -30,7 +30,6 @@ interface FeedbackPanelProps {
 }
 
 export function FeedbackPanel({ open, onOpenChange }: FeedbackPanelProps) {
-  const { t } = useTranslation()
   const isAdmin = useAuthStore(s => s.isAdmin)
   const [view, setView] = useState<View>({ kind: 'list' })
 
@@ -94,7 +93,6 @@ function ListView({
   onClose: () => void
 }) {
   const { t } = useTranslation()
-  const qc = useQueryClient()
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: isAdmin ? ['feedback', 'all'] : ['feedback', 'mine'],
@@ -353,7 +351,7 @@ function DetailView({
   const statusMutation = useMutation({
     mutationFn: ({ status, note }: { status: string; note: string }) =>
       feedbackService.updateStatus(id, status, note || undefined),
-    onSuccess: (updated) => {
+    onSuccess: () => {
       setStatusNote('')
       setShowStatusChange(false)
       qc.invalidateQueries({ queryKey: ['feedback', 'detail', id] })
