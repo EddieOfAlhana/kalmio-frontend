@@ -1,16 +1,16 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Store, LogOut, Settings, MessageSquarePlus } from 'lucide-react'
+import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Store, Settings, MessageSquarePlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
 import { FeedbackPanel } from '@/components/FeedbackPanel'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { feedbackService } from '@/services/feedback'
 
 export function MobileNav() {
   const { t } = useTranslation()
-  const signOut = useAuthStore((s) => s.signOut)
   const isAdmin = useAuthStore((s) => s.isAdmin)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
 
@@ -40,34 +40,28 @@ export function MobileNav() {
             end={to === '/app'}
             className={({ isActive }) =>
               cn(
-                'flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors',
+                'flex-1 min-w-0 flex flex-col items-center gap-0.5 py-2 rounded-lg text-xs font-medium transition-colors',
                 isActive ? 'text-[#F28C28]' : 'text-white/60'
               )
             }
           >
-            <Icon className="h-5 w-5" />
-            {label}
+            <Icon className="h-5 w-5 shrink-0" />
+            <span className="truncate w-full text-center">{label}</span>
           </NavLink>
         ))}
         <button
           onClick={() => setFeedbackOpen(true)}
-          className="relative flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg text-xs font-medium text-white/60 transition-colors"
+          className="relative flex-1 min-w-0 flex flex-col items-center gap-0.5 py-2 rounded-lg text-xs font-medium text-white/60 transition-colors"
         >
-          <MessageSquarePlus className="h-5 w-5" />
+          <MessageSquarePlus className="h-5 w-5 shrink-0" />
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 inline-flex items-center justify-center h-3.5 min-w-[0.875rem] px-0.5 rounded-full bg-[#F28C28] text-[8px] font-bold text-white leading-none">
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
-          {t('feedback.buttonTitleShort')}
+          <span className="truncate w-full text-center">{t('feedback.buttonTitleShort')}</span>
         </button>
-        <button
-          onClick={signOut}
-          className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-lg text-xs font-medium text-white/60 transition-colors"
-        >
-          <LogOut className="h-5 w-5" />
-          {t('common.signOut')}
-        </button>
+        <LanguageSwitcher mobile />
       </div>
     </nav>
     <FeedbackPanel open={feedbackOpen} onOpenChange={setFeedbackOpen} />

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { Fingerprint, Trash2 } from 'lucide-react'
+import { Fingerprint, Trash2, LogOut } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -40,6 +40,7 @@ export function Settings() {
   const { t, i18n } = useTranslation()
   const qc = useQueryClient()
   const setAppRole = useAuthStore((s) => s.setAppRole)
+  const signOut = useAuthStore((s) => s.signOut)
 
   const [passkeys, setPasskeys] = useState<PasskeyInfo[]>([])
   const [passkeysLoading, setPasskeysLoading] = useState(true)
@@ -293,6 +294,18 @@ export function Settings() {
       {mutation.isSuccess && (
         <p className="text-sm text-green-600 mt-2">{t('settings.saveSuccess')}</p>
       )}
+
+      <div className="max-w-lg mt-6 md:hidden">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={signOut}
+          className="w-full flex items-center justify-center gap-2 text-red-500 hover:text-red-600 hover:bg-red-50 border border-red-200"
+        >
+          <LogOut size={15} />
+          {t('common.signOut')}
+        </Button>
+      </div>
 
       <Dialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) setDeleteTarget(null) }}>
         <DialogContent>

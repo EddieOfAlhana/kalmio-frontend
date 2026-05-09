@@ -1,11 +1,28 @@
 import { useTranslation } from 'react-i18next'
 
-export function LanguageSwitcher() {
+interface Props {
+  mobile?: boolean
+}
+
+export function LanguageSwitcher({ mobile }: Props) {
   const { i18n } = useTranslation()
   const current = i18n.language?.startsWith('en') ? 'en' : 'hu'
 
   function toggle() {
     i18n.changeLanguage(current === 'hu' ? 'en' : 'hu')
+  }
+
+  if (mobile) {
+    return (
+      <button
+        onClick={toggle}
+        title={current === 'hu' ? 'Switch to English' : 'Váltás magyarra'}
+        className="flex-1 min-w-0 flex flex-col items-center gap-0.5 py-2 rounded-lg text-xs font-medium text-white/60 transition-colors"
+      >
+        <span className="text-base font-bold leading-none shrink-0">{current === 'hu' ? '🇭🇺' : '🇬🇧'}</span>
+        <span className="truncate w-full text-center">{current.toUpperCase()}</span>
+      </button>
+    )
   }
 
   return (
