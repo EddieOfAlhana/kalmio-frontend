@@ -10,7 +10,8 @@
     "shop": "Bolt",
     "retail": "Bolti termékek",
     "settings": "Beállítások",
-    "admin": "Admin"
+    "admin": "Admin",
+    "ipVault": "IP Trezor"
   },
   "common": {
     "version": "Táplálkozási Motor v0.1",
@@ -290,6 +291,24 @@
       "save": "Mentés"
     }
   },
+  "profile": {
+    "title": "Profil",
+    "subtitle": "Személyes adataid",
+    "editProfile": "Profil szerkesztése",
+    "personalInfo": "Személyes adatok",
+    "firstName": "Keresztnév",
+    "firstNamePlaceholder": "pl. Alex",
+    "lastName": "Vezetéknév",
+    "lastNamePlaceholder": "pl. Kovács",
+    "email": "E-mail cím",
+    "memberSince": "Tag azóta: {{date}}",
+    "saveSuccess": "Profil frissítve.",
+    "saveError": "Nem sikerült frissíteni a profilt.",
+    "avatarUploadHint": "Kattints vagy húzz ide egy képet a fotód módosításához",
+    "avatarUploading": "Feltöltés…",
+    "avatarUploadError": "Nem sikerült feltölteni a fotót.",
+    "avatarUploadSuccess": "Fotó frissítve."
+  },
   "settings": {
     "title": "Beállítások",
     "subtitle": "Preferenciák kezelése",
@@ -462,5 +481,28 @@
       "FIXED": "Megoldva",
       "REJECTED": "Elutasítva"
     }
+  },
+  "ipVault": {
+    "title": "IP Trezor",
+    "subtitle": "{{count}} dokumentum",
+    "newDocument": "Új dokumentum",
+    "editDocument": "Dokumentum szerkesztése",
+    "published": "Közzétett",
+    "draft": "Piszkozat",
+    "publish": "Közzétesz",
+    "unpublish": "Visszavon",
+    "slug": "Slug (URL-azonosító)",
+    "category": "Kategória",
+    "summary": "Befektetői összefoglaló",
+    "content": "Technikai tartalom",
+    "tags": "Címkék (vesszővel elválasztva)",
+    "changeNote": "Változtatás megjegyzése",
+    "changeNotePlaceholder": "Mi változott ebben a verzióban?",
+    "investorAccess": "Befektetői hozzáférési tokenek",
+    "tokenLabel": "Token megnevezése (pl. A befektető)",
+    "copyLink": "Link másolása",
+    "copied": "Másolva!",
+    "lastUsed": "Utoljára használva",
+    "neverUsed": "Még nem használták"
   }
 }

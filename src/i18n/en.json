@@ -10,7 +10,8 @@
     "shop": "Shop",
     "retail": "Retail",
     "settings": "Settings",
-    "admin": "Admin"
+    "admin": "Admin",
+    "ipVault": "IP Vault"
   },
   "common": {
     "version": "Nutrition Engine v0.1",
@@ -290,6 +291,24 @@
       "save": "Save Changes"
     }
   },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Your personal information",
+    "editProfile": "Edit your profile",
+    "personalInfo": "Personal information",
+    "firstName": "First name",
+    "firstNamePlaceholder": "e.g. Alex",
+    "lastName": "Last name",
+    "lastNamePlaceholder": "e.g. Smith",
+    "email": "Email address",
+    "memberSince": "Member since {{date}}",
+    "saveSuccess": "Profile updated.",
+    "saveError": "Failed to update profile.",
+    "avatarUploadHint": "Click or drop an image to change your photo",
+    "avatarUploading": "Uploading…",
+    "avatarUploadError": "Failed to upload photo.",
+    "avatarUploadSuccess": "Photo updated."
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your preferences",
@@ -462,5 +481,28 @@
       "pantryExcluded": "Pantry items excluded.",
       "none": "No waste — exact package fits"
     }
+  },
+  "ipVault": {
+    "title": "IP Vault",
+    "subtitle": "{{count}} documents",
+    "newDocument": "New Document",
+    "editDocument": "Edit Document",
+    "published": "Published",
+    "draft": "Draft",
+    "publish": "Publish",
+    "unpublish": "Unpublish",
+    "slug": "Slug (URL-safe ID)",
+    "category": "Category",
+    "summary": "Executive Summary",
+    "content": "Technical Content",
+    "tags": "Tags (comma-separated)",
+    "changeNote": "Change Note",
+    "changeNotePlaceholder": "What changed in this version?",
+    "investorAccess": "Investor Access Tokens",
+    "tokenLabel": "Token label (e.g. Investor A)",
+    "copyLink": "Copy Link",
+    "copied": "Copied!",
+    "lastUsed": "Last used",
+    "neverUsed": "Never used"
   }
 }
