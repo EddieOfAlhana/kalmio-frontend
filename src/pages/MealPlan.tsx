@@ -704,6 +704,7 @@ function RecipePickerDialog({
 function MealDetailDialog({ meal, open, onClose }: { meal: GeneratedMeal; open: boolean; onClose: () => void }) {
   const { t, i18n } = useTranslation()
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
+  const [photoFailed, setPhotoFailed] = useState(false)
 
   const { data: recipe, isLoading } = useQuery({
     queryKey: ['recipe', meal.recipe.id],
@@ -727,15 +728,17 @@ function MealDetailDialog({ meal, open, onClose }: { meal: GeneratedMeal; open: 
           <div className="flex justify-center py-8"><Spinner className="h-6 w-6" /></div>
         ) : (
           <div className="space-y-4">
-            {/* Photo */}
-            <div className="w-full h-40 rounded-[12px] overflow-hidden bg-[#F9F7F2] flex items-center justify-center">
-              <img
-                src={photoUrl}
-                alt={displayName}
-                className="w-full h-full object-cover"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-              />
-            </div>
+            {/* Photo — hidden entirely if image fails to load */}
+            {!photoFailed && (
+              <div className="w-full h-40 rounded-[12px] overflow-hidden bg-[#F9F7F2]">
+                <img
+                  src={photoUrl}
+                  alt={displayName}
+                  className="w-full h-full object-cover"
+                  onError={() => setPhotoFailed(true)}
+                />
+              </div>
+            )}
 
             {/* Timing + macros row */}
             {recipe && (

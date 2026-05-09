@@ -295,6 +295,7 @@ function RecipeDetailDialog({
 }) {
   const { t, i18n } = useTranslation()
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
+  const [photoFailed, setPhotoFailed] = useState(false)
 
   if (!recipe) return null
 
@@ -310,15 +311,17 @@ function RecipeDetailDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Photo */}
-          <div className="w-full h-44 rounded-[12px] overflow-hidden bg-[#F9F7F2]">
-            <img
-              src={photoUrl}
-              alt={displayName}
-              className="w-full h-full object-cover"
-              onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-            />
-          </div>
+          {/* Photo — hidden entirely if image fails to load */}
+          {!photoFailed && (
+            <div className="w-full h-44 rounded-[12px] overflow-hidden bg-[#F9F7F2]">
+              <img
+                src={photoUrl}
+                alt={displayName}
+                className="w-full h-full object-cover"
+                onError={() => setPhotoFailed(true)}
+              />
+            </div>
+          )}
 
           {/* Tags */}
           {(recipe.tags ?? []).length > 0 && (
