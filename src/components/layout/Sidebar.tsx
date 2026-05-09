@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Link } from 'react-router-dom'
-import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store, LogOut, Settings, ShieldCheck, MessageSquarePlus } from 'lucide-react'
+import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store, LogOut, Settings, ShieldCheck, MessageSquarePlus, Vault, ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
@@ -8,6 +8,8 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useAuthStore } from '@/store/auth'
 import { FeedbackPanel } from '@/components/FeedbackPanel'
 import { feedbackService } from '@/services/feedback'
+import { usersService } from '@/services/users'
+import { UserAvatar } from '@/components/ui/UserAvatar'
 
 export function Sidebar() {
   const { t } = useTranslation()
@@ -19,6 +21,12 @@ export function Sidebar() {
     queryKey: ['feedback', 'unread'],
     queryFn: isAdmin ? feedbackService.getAdminUnreadCount : feedbackService.getUnreadCount,
     refetchInterval: 30_000,
+  })
+
+  const { data: me } = useQuery({
+    queryKey: ['me'],
+    queryFn: usersService.getMe,
+    staleTime: 60_000,
   })
 
   const navItems = [
@@ -39,6 +47,35 @@ export function Sidebar() {
           <span className="text-[10px] text-white/40 tracking-wide leading-none">{t('auth.tagline')}</span>
         </Link>
       </div>
+
+      {/* User profile chip */}
+      <NavLink
+        to="/app/profile"
+        className={({ isActive }) =>
+          cn(
+            'flex items-center gap-3 px-4 py-3 border-b border-white/10 transition-colors',
+            isActive ? 'bg-white/10' : 'hover:bg-white/5'
+          )
+        }
+      >
+        <UserAvatar
+          firstName={me?.firstName}
+          lastName={me?.lastName}
+          email={me?.email}
+          size="sm"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-white truncate leading-tight">
+            {me?.firstName
+              ? [me.firstName, me.lastName].filter(Boolean).join(' ')
+              : (me?.email ?? t('profile.title'))}
+          </p>
+          {me?.firstName && (
+            <p className="text-[11px] text-white/40 truncate leading-tight">{me.email}</p>
+          )}
+        </div>
+        <ChevronRight className="h-3.5 w-3.5 text-white/30 shrink-0" />
+      </NavLink>
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1">
@@ -62,20 +99,36 @@ export function Sidebar() {
         ))}
 
         {isAdmin && (
-          <NavLink
-            to="/app/admin/users"
-            className={({ isActive }) =>
-              cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-[#F28C28] text-white'
-                  : 'text-white/70 hover:bg-white/10 hover:text-white'
-              )
-            }
-          >
-            <ShieldCheck className="h-4 w-4 shrink-0" />
-            {t('nav.admin')}
-          </NavLink>
+          <>
+            <NavLink
+              to="/app/admin/users"
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-[#F28C28] text-white'
+                    : 'text-white/70 hover:bg-white/10 hover:text-white'
+                )
+              }
+            >
+              <ShieldCheck className="h-4 w-4 shrink-0" />
+              {t('nav.admin')}
+            </NavLink>
+            <NavLink
+              to="/app/admin/ip-vault"
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-[12px] text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-[#F28C28] text-white'
+                    : 'text-white/70 hover:bg-white/10 hover:text-white'
+                )
+              }
+            >
+              <Vault className="h-4 w-4 shrink-0" />
+              {t('nav.ipVault')}
+            </NavLink>
+          </>
         )}
       </nav>
 

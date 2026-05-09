@@ -14,7 +14,10 @@ import { Ingredients } from '@/pages/Ingredients'
 import { ShoppingList } from '@/pages/ShoppingList'
 import { RetailProducts } from '@/pages/RetailProducts'
 import { Settings } from '@/pages/Settings'
+import { Profile } from '@/pages/Profile'
 import { UserManagement } from '@/pages/admin/UserManagement'
+import { IpVault } from '@/pages/admin/IpVault'
+import { InvestorVault } from '@/pages/InvestorVault'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store/auth'
 import { restorePasskeySession, clearPasskeyToken } from '@/lib/passkeySession'
@@ -81,11 +84,14 @@ export default function App() {
                 <Route path="shopping-list" element={<ShoppingList />} />
                 <Route path="retail-products" element={<RetailProducts />} />
                 <Route path="settings" element={<Settings />} />
+                <Route path="profile" element={<Profile />} />
                 <Route element={<AdminRoute />}>
                   <Route path="admin/users" element={<UserManagement />} />
+                  <Route path="admin/ip-vault" element={<IpVault />} />
                 </Route>
               </Route>
             </Route>
+            <Route path="/vault" element={<InvestorVault />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AuthProvider>

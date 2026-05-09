@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { Fingerprint, Trash2, LogOut } from 'lucide-react'
+import { Fingerprint, Trash2, LogOut, ChevronRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import { Select } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { toast } from '@/components/ui/toast'
+import { UserAvatar } from '@/components/ui/UserAvatar'
 import { usersService, type UpdateSettingsRequest } from '@/services/users'
 import { listPasskeys, registerPasskey, deletePasskey, type PasskeyInfo } from '@/services/passkey'
 import { useAuthStore } from '@/store/auth'
@@ -157,6 +159,28 @@ export function Settings() {
         title={t('settings.title')}
         subtitle={t('settings.subtitle')}
       />
+
+      {/* Profile link — visible on mobile (desktop uses sidebar chip) */}
+      <Link
+        to="/app/profile"
+        className="flex items-center gap-3 p-4 rounded-xl bg-white border border-gray-100 hover:bg-gray-50 transition-colors max-w-lg md:hidden mb-6"
+      >
+        <UserAvatar
+          firstName={settings?.firstName}
+          lastName={settings?.lastName}
+          email={settings?.email}
+          size="md"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-[#1A1A1A] truncate">
+            {settings?.firstName
+              ? [settings.firstName, settings.lastName].filter(Boolean).join(' ')
+              : (settings?.email ?? t('profile.title'))}
+          </p>
+          <p className="text-xs text-gray-400 truncate">{t('profile.editProfile')}</p>
+        </div>
+        <ChevronRight className="h-4 w-4 text-gray-300 shrink-0" />
+      </Link>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-lg">
         {/* Language */}
