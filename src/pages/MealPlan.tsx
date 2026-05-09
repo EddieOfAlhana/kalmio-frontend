@@ -555,7 +555,15 @@ function MealSlotCard({
   }
 
   function applyChange(newMultiplier: number, newRecipe: Recipe) {
-    onUpdate({ ...meal, servingMultiplier: newMultiplier, recipe: newRecipe })
+    const newMacros: Macros | null = newRecipe.macros
+      ? {
+          kcal: newRecipe.macros.kcal * newMultiplier,
+          protein: newRecipe.macros.protein * newMultiplier,
+          fat: newRecipe.macros.fat * newMultiplier,
+          carbs: newRecipe.macros.carbs * newMultiplier,
+        }
+      : null
+    onUpdate({ ...meal, servingMultiplier: newMultiplier, recipe: newRecipe, macros: newMacros })
     latestEditRef.current = { multiplier: newMultiplier, recipe: newRecipe }
     if (debounceTimer.current) clearTimeout(debounceTimer.current)
     setSaveStatus('idle')
