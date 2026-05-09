@@ -23,7 +23,8 @@
     "add": "Add",
     "delete": "Delete",
     "search": "Search",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "offline": "No internet connection"
   },
   "language": {
     "en": "EN",

@@ -20,6 +20,7 @@ import { useAuthStore } from '@/store/auth'
 import { restorePasskeySession, clearPasskeyToken } from '@/lib/passkeySession'
 import { usersService } from '@/services/users'
 import { Toaster } from '@/components/ui/toast'
+import { OfflineBanner } from '@/components/OfflineBanner'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
@@ -64,6 +65,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Toaster />
+      <OfflineBanner />
       <BrowserRouter>
         <AuthProvider>
           <Routes>

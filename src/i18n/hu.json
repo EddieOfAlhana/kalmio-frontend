@@ -23,7 +23,8 @@
     "add": "Hozzáadás",
     "delete": "Törlés",
     "search": "Keresés",
-    "signOut": "Kijelentkezés"
+    "signOut": "Kijelentkezés",
+    "offline": "Nincs internetkapcsolat"
   },
   "language": {
     "en": "EN",

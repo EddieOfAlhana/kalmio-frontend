@@ -26,6 +26,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,svg,woff2}', 'assets/images/*.png'],
+        navigateFallback: 'index.html',
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
