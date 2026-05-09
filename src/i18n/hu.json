@@ -58,12 +58,21 @@
     "title": "Étrend",
     "subtitle": "Megoldómotor által generált, táplálkozásilag optimalizált heti tervek",
     "shoppingList": "Bevásárlólista",
+    "meals": {
+      "BREAKFAST": "Reggeli",
+      "MORNING_SNACK": "Tízórai",
+      "LUNCH": "Ebéd",
+      "AFTERNOON_SNACK": "Uzsonna",
+      "DINNER": "Vacsora",
+      "SNACK": "Esti snack"
+    },
     "form": {
       "title": "Új terv generálása",
       "days": "Napok",
       "daysHint": "(1–14)",
-      "mealsPerDay": "Étkezés / nap",
-      "mealsPerDayHint": "(1–6)",
+      "selectMeals": "Étkezések kiválasztása",
+      "mealCalories": "Kalória-elosztás étkezésenként",
+      "mealCaloriesHint": "Húzd fel/le a gombokat — az értékek mindig a napi kalóriacélt adják ki",
       "kcalTarget": "Kalória cél (kcal) *",
       "proteinMin": "Min fehérje (g)",
       "budgetMax": "Max büdzsé (HUF)",
@@ -359,7 +368,8 @@
     "noPassword": "Nincs jelszóra szükség — küldünk egy belépési linket.",
     "checkEmail": "Ellenőrizd a postaládád",
     "checkEmailHint": "Küldtünk egy belépési linket a következő címre: {{email}}. Kattints rá a bejelentkezéshez.",
-    "tryDifferentEmail": "Próbálj más e-mail címet"
+    "tryDifferentEmail": "Próbálj más e-mail címet",
+    "tagline": "Egészséges élet. Egyszerűen."
   },
   "shoppingList": {
     "title": "Bevásárlólista",

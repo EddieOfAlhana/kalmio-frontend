@@ -19,7 +19,6 @@ import { useAuthStore } from '@/store/auth'
 interface FormValues {
   languagePreference: string
   days: string
-  mealsPerDay: string
   kcalTarget: string
   proteinMin: string
   budgetMax: string
@@ -111,7 +110,6 @@ export function Settings() {
       reset({
         languagePreference: settings.languagePreference ?? i18n.resolvedLanguage ?? 'hu',
         days: settings.mealPlanPreferences?.days?.toString() ?? '',
-        mealsPerDay: settings.mealPlanPreferences?.mealsPerDay?.toString() ?? '',
         kcalTarget: settings.mealPlanPreferences?.kcalTarget?.toString() ?? '',
         proteinMin: settings.mealPlanPreferences?.proteinMin?.toString() ?? '',
         budgetMax: settings.mealPlanPreferences?.budgetMax?.toString() ?? '',
@@ -135,7 +133,6 @@ export function Settings() {
   const onSubmit = (values: FormValues) => {
     const prefs = {
       days: values.days ? parseInt(values.days) : undefined,
-      mealsPerDay: values.mealsPerDay ? parseInt(values.mealsPerDay) : undefined,
       kcalTarget: values.kcalTarget ? parseFloat(values.kcalTarget) : undefined,
       proteinMin: values.proteinMin ? parseFloat(values.proteinMin) : undefined,
       budgetMax: values.budgetMax ? parseFloat(values.budgetMax) : undefined,
@@ -185,10 +182,6 @@ export function Settings() {
               <div>
                 <Label>{t('mealPlan.form.days')}</Label>
                 <Input type="number" min={1} max={14} {...register('days')} className="mt-1" placeholder="7" />
-              </div>
-              <div>
-                <Label>{t('mealPlan.form.mealsPerDay')}</Label>
-                <Input type="number" min={1} max={6} {...register('mealsPerDay')} className="mt-1" placeholder="3" />
               </div>
             </div>
 

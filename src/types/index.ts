@@ -2,7 +2,7 @@
 
 export type IngredientCategory = 'PROTEIN' | 'CARB' | 'FAT' | 'VEGGIE' | 'SPICE'
 export type Unit = 'G' | 'ML' | 'PIECE'
-export type MealType = 'BREAKFAST' | 'LUNCH' | 'DINNER' | 'SNACK'
+export type MealType = 'BREAKFAST' | 'MORNING_SNACK' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER' | 'SNACK'
 export type RecipeTag = 'QUICK' | 'CHEAP' | 'MEALPREP' | 'HIGH_PROTEIN'
 
 // ── Macros ────────────────────────────────────────────────────────────────
@@ -174,7 +174,7 @@ export interface ConstraintWeights {
 
 export interface GenerateMealPlanRequest {
   days: number
-  mealsPerDay: number
+  selectedMeals: MealType[]
   constraints: {
     kcalTarget: number
     proteinMin?: number | null
@@ -183,6 +183,7 @@ export interface GenerateMealPlanRequest {
     forbiddenIngredientIds?: string[]
     maxRecipeRepetitions?: number | null
     constraintWeights?: ConstraintWeights | null
+    mealCalorieTargets?: Record<string, number> | null
   }
   servingConfig?: {
     minMultiplier: number

@@ -60,8 +60,12 @@ export function LandingPage() {
         }`}
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="text-[#F28C28] font-headline text-xl font-bold tracking-tight">
-            KALMIO
+          <Link to="/" className="hover:opacity-80 transition-opacity">
+            <img
+              src={scrolled ? '/assets/images/logo.png' : '/assets/images/logo-dark.png'}
+              alt="Kalmio"
+              className="h-10 object-contain object-left"
+            />
           </Link>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />

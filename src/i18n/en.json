@@ -58,12 +58,21 @@
     "title": "Meal Plan",
     "subtitle": "Solver-generated, nutrition-optimised weekly plans",
     "shoppingList": "Shopping List",
+    "meals": {
+      "BREAKFAST": "Breakfast",
+      "MORNING_SNACK": "Morning Snack",
+      "LUNCH": "Lunch",
+      "AFTERNOON_SNACK": "Afternoon Snack",
+      "DINNER": "Dinner",
+      "SNACK": "Evening Snack"
+    },
     "form": {
       "title": "Generate New Plan",
       "days": "Days",
       "daysHint": "(1–14)",
-      "mealsPerDay": "Meals / day",
-      "mealsPerDayHint": "(1–6)",
+      "selectMeals": "Meals to include",
+      "mealCalories": "Calorie distribution per meal",
+      "mealCaloriesHint": "Drag knobs up/down — values always sum to your daily calorie target",
       "kcalTarget": "Calorie target (kcal) *",
       "proteinMin": "Min protein (g)",
       "budgetMax": "Budget max (HUF)",
@@ -359,7 +368,8 @@
     "noPassword": "No password needed — we'll email you a sign-in link.",
     "checkEmail": "Check your inbox",
     "checkEmailHint": "We sent a magic link to {{email}}. Click it to sign in.",
-    "tryDifferentEmail": "Try a different email"
+    "tryDifferentEmail": "Try a different email",
+    "tagline": "Healthy living. Simplified."
   },
   "shoppingList": {
     "title": "Shopping List",

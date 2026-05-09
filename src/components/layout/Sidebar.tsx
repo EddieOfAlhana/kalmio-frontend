@@ -22,8 +22,11 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex flex-col w-64 min-h-screen bg-[#1A1A1A] text-white shrink-0">
       {/* Logo */}
-      <div className="h-16 flex items-center px-6 border-b border-white/10">
-        <Link to="/" className="text-[#F28C28] font-headline text-xl font-bold tracking-tight hover:opacity-80 transition-opacity">KALMIO</Link>
+      <div className="h-16 flex items-center px-4 border-b border-white/10">
+        <Link to="/" className="hover:opacity-80 transition-opacity flex flex-col gap-1">
+          <img src="/assets/images/logo.png" alt="Kalmio" className="h-9 object-contain object-left" />
+          <span className="text-[10px] text-white/40 tracking-wide leading-none">{t('auth.tagline')}</span>
+        </Link>
       </div>
 
       {/* Nav */}

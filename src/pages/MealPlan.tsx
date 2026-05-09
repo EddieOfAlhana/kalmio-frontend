@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import axios from 'axios'
 import { Zap, Clock, ChevronDown, ChevronUp, ShoppingCart, CheckCircle, Pencil, Check, Minus, Plus, RefreshCw } from 'lucide-react'
+import { Knob } from '@/components/ui/knob'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,21 +19,30 @@ import { Spinner } from '@/components/ui/spinner'
 import { MacroRing } from '@/components/ui/macro-ring'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { mealPlansService, savedPlanToMealPlan, savedSlotToMeal } from '@/services/mealPlans'
+import { usersService } from '@/services/users'
 import { recipesService } from '@/services/recipes'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { formatCurrency, formatMacro } from '@/lib/utils'
 import type { GeneratedMeal, GenerateMealPlanRequest, MealType, Macros, ConstraintWeights, Recipe } from '@/types'
 
+const MEAL_ORDER: MealType[] = ['BREAKFAST', 'MORNING_SNACK', 'LUNCH', 'AFTERNOON_SNACK', 'DINNER', 'SNACK']
+
 const MEAL_COLOR: Record<MealType, string> = {
-  BREAKFAST: '#F28C28', LUNCH: '#4F7942', DINNER: '#1A1A1A', SNACK: '#6b7280',
+  BREAKFAST: '#F28C28',
+  MORNING_SNACK: '#e8a23a',
+  LUNCH: '#4F7942',
+  AFTERNOON_SNACK: '#7a9e5c',
+  DINNER: '#1A1A1A',
+  SNACK: '#6b7280',
 }
+
+const DEFAULT_SELECTED: MealType[] = ['BREAKFAST', 'LUNCH', 'DINNER']
 
 const optionalInt = z.coerce.number().int().optional().nullable().transform(v => v || null)
 const optionalNum = z.coerce.number().optional().nullable().transform(v => v || null)
 
 const schema = z.object({
   days: z.coerce.number().int().min(1).max(14),
-  mealsPerDay: z.coerce.number().int().min(1).max(6),
   kcalTarget: z.coerce.number().min(500),
   proteinMin: optionalNum,
   budgetMax: optionalNum,
@@ -40,6 +50,64 @@ const schema = z.object({
   maxRecipeRepetitions: z.coerce.number().int().min(1).optional().nullable().transform(v => (v == null || v < 1) ? null : v),
 })
 type FormValues = z.infer<typeof schema>
+
+// ── Meal kcal distribution helpers ───────────────────────────────────────────
+
+function equalMealKcals(meals: MealType[], total: number): Record<MealType, number> {
+  const base: Record<string, number> = {}
+  if (meals.length === 0) return base as Record<MealType, number>
+  const share = Math.floor(total / meals.length)
+  meals.forEach((m, i) => { base[m] = i === 0 ? total - share * (meals.length - 1) : share })
+  return base as Record<MealType, number>
+}
+
+function distributeMealKcal(
+  key: MealType,
+  newVal: number,
+  current: Record<MealType, number>,
+  meals: MealType[],
+  total: number,
+): Record<MealType, number> {
+  const others = meals.filter(m => m !== key)
+  if (others.length === 0) return { ...current, [key]: total }
+  const clamped = Math.min(total, Math.max(0, newVal))
+  const remaining = total - clamped
+  const sumOthers = others.reduce((s, m) => s + (current[m] ?? 0), 0)
+  const next: Record<string, number> = { ...current, [key]: clamped }
+  if (sumOthers === 0) {
+    const share = Math.floor(remaining / others.length)
+    others.forEach((m, i) => { next[m] = i === others.length - 1 ? remaining - share * (others.length - 1) : share })
+  } else {
+    let allocated = 0
+    others.forEach((m, i) => {
+      if (i === others.length - 1) {
+        next[m] = Math.max(0, remaining - allocated)
+      } else {
+        const val = Math.max(0, Math.round(((current[m] ?? 0) / sumOthers) * remaining))
+        next[m] = val
+        allocated += val
+      }
+    })
+  }
+  return next as Record<MealType, number>
+}
+
+function scaleMealKcals(current: Record<MealType, number>, meals: MealType[], newTotal: number): Record<MealType, number> {
+  const oldTotal = meals.reduce((s, m) => s + (current[m] ?? 0), 0)
+  if (oldTotal === 0) return equalMealKcals(meals, newTotal)
+  const next: Record<string, number> = {}
+  let allocated = 0
+  meals.forEach((m, i) => {
+    if (i === meals.length - 1) {
+      next[m] = Math.max(0, newTotal - allocated)
+    } else {
+      const val = Math.round(((current[m] ?? 0) / oldTotal) * newTotal)
+      next[m] = val
+      allocated += val
+    }
+  })
+  return next as Record<MealType, number>
+}
 
 type WeightKey = keyof ConstraintWeights
 
@@ -113,16 +181,75 @@ export function MealPlan() {
     }
   }, [savedPlan, plan, setPlan])
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormValues>({
-    resolver: zodResolver(schema) as Resolver<FormValues>,
-    defaultValues: { days: 7, mealsPerDay: 3, kcalTarget: 2000, proteinMin: 150, maxRecipeRepetitions: 2 },
+  const { data: userSettings } = useQuery({
+    queryKey: ['user-settings'],
+    queryFn: usersService.getMe,
+    staleTime: 5 * 60 * 1000,
   })
 
+  const prefsApplied = useRef(false)
+  useEffect(() => {
+    if (prefsApplied.current || !userSettings?.mealPlanPreferences) return
+    const p = userSettings.mealPlanPreferences
+    prefsApplied.current = true
+    if (p.selectedMealTypes && p.selectedMealTypes.length > 0) {
+      const meals = (p.selectedMealTypes as MealType[]).filter(m => MEAL_ORDER.includes(m))
+        .sort((a, b) => MEAL_ORDER.indexOf(a) - MEAL_ORDER.indexOf(b))
+      if (meals.length > 0) {
+        setSelectedMeals(meals)
+        if (p.mealCalorieTargets) {
+          const kcals: Record<string, number> = {}
+          meals.forEach(m => { kcals[m] = p.mealCalorieTargets?.[m] ?? 0 })
+          setMealKcals(kcals as Record<MealType, number>)
+        } else {
+          setMealKcals(equalMealKcals(meals, p.kcalTarget ?? 2000))
+        }
+      }
+    }
+  }, [userSettings])
+
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormValues>({
+    resolver: zodResolver(schema) as Resolver<FormValues>,
+    defaultValues: { days: 7, kcalTarget: 2000, proteinMin: 150, maxRecipeRepetitions: 2 },
+  })
+
+  const kcalTarget = Number(watch('kcalTarget') ?? 2000)
   const budgetMaxRaw = watch('budgetMax')
   const prepTimeMaxRaw = watch('prepTimeMax')
   const budgetEnabled = !!budgetMaxRaw
   const prepTimeEnabled = !!prepTimeMaxRaw
 
+  // ── Selected meals & calorie knobs ────────────────────────────────────────
+  const [selectedMeals, setSelectedMeals] = useState<MealType[]>(DEFAULT_SELECTED)
+  const [mealKcals, setMealKcals] = useState<Record<MealType, number>>(
+    () => equalMealKcals(DEFAULT_SELECTED, 2000)
+  )
+
+  function toggleMeal(meal: MealType) {
+    setSelectedMeals(prev => {
+      const next = prev.includes(meal) ? prev.filter(m => m !== meal) : [...prev, meal].sort(
+        (a, b) => MEAL_ORDER.indexOf(a) - MEAL_ORDER.indexOf(b)
+      )
+      if (next.length === 0) return prev  // keep at least one
+      setMealKcals(equalMealKcals(next, kcalTarget || 2000))
+      return next
+    })
+  }
+
+  function handleMealKcalChange(meal: MealType, value: number) {
+    setMealKcals(prev => distributeMealKcal(meal, value, prev, selectedMeals, kcalTarget || 2000))
+  }
+
+  // When kcalTarget changes, scale all knobs proportionally
+  const prevKcal = useRef(kcalTarget)
+  useEffect(() => {
+    if (kcalTarget > 0 && kcalTarget !== prevKcal.current) {
+      setMealKcals(prev => scaleMealKcals(prev, selectedMeals, kcalTarget))
+      prevKcal.current = kcalTarget
+    }
+  }, [kcalTarget, selectedMeals])
+
+  // ── Constraint weights ────────────────────────────────────────────────────
   const activeKeys = (['waste', 'budget', 'prepTime', 'recipeRepeat'] as WeightKey[]).filter(k => {
     if (k === 'budget') return budgetEnabled
     if (k === 'prepTime') return prepTimeEnabled
@@ -149,15 +276,35 @@ export function MealPlan() {
 
   const mutation = useMutation({
     mutationFn: (body: GenerateMealPlanRequest) => mealPlansService.generate(body, forceRef.current),
-    onSuccess: result => { forceRef.current = false; setPlan(result); setExpandedDays(new Set([0])) },
+    onSuccess: (result, body) => {
+      forceRef.current = false
+      setPlan(result)
+      setExpandedDays(new Set([0]))
+      usersService.updateSettings({
+        mealPlanPreferences: {
+          days: body.days,
+          selectedMealTypes: body.selectedMeals,
+          kcalTarget: body.constraints.kcalTarget,
+          proteinMin: body.constraints.proteinMin ?? undefined,
+          budgetMax: body.constraints.budgetMax ?? undefined,
+          prepTimeMax: body.constraints.prepTimeMax ?? undefined,
+          maxRecipeRepetitions: body.constraints.maxRecipeRepetitions ?? undefined,
+          constraintWeights: body.constraints.constraintWeights ?? undefined,
+          mealCalorieTargets: body.constraints.mealCalorieTargets ?? undefined,
+        },
+      }).catch(() => {/* non-critical */})
+    },
   })
 
   const is409 = mutation.isError && axios.isAxiosError(mutation.error) && mutation.error.response?.status === 409
 
   function buildBody(v: FormValues): GenerateMealPlanRequest {
+    const mealCalorieTargets = Object.fromEntries(
+      selectedMeals.map(m => [m, mealKcals[m] ?? 0])
+    )
     return {
       days: v.days,
-      mealsPerDay: v.mealsPerDay,
+      selectedMeals,
       constraints: {
         kcalTarget: v.kcalTarget,
         proteinMin: v.proteinMin ?? null,
@@ -165,6 +312,7 @@ export function MealPlan() {
         prepTimeMax: v.prepTimeMax ?? null,
         maxRecipeRepetitions: v.maxRecipeRepetitions ?? null,
         constraintWeights: weights,
+        mealCalorieTargets,
       },
     }
   }
@@ -222,14 +370,58 @@ export function MealPlan() {
               {errors.days && <p className="text-xs text-red-500">{errors.days.message}</p>}
             </div>
             <div className="space-y-1">
-              <Label>{t('mealPlan.form.mealsPerDay')} <span className="text-gray-400 text-xs">{t('mealPlan.form.mealsPerDayHint')}</span></Label>
-              <Input type="number" min="1" max="6" {...register('mealsPerDay')} />
-            </div>
-            <div className="space-y-1">
               <Label>{t('mealPlan.form.kcalTarget')}</Label>
               <Input type="number" min="500" {...register('kcalTarget')} />
               {errors.kcalTarget && <p className="text-xs text-red-500">{errors.kcalTarget.message}</p>}
             </div>
+
+            {/* Meal selection checkboxes */}
+            <div className="col-span-2 md:col-span-3 pt-1">
+              <p className="text-sm font-medium text-[#1A1A1A] mb-2">{t('mealPlan.form.selectMeals')}</p>
+              <div className="flex flex-wrap gap-2">
+                {MEAL_ORDER.map(meal => {
+                  const active = selectedMeals.includes(meal)
+                  return (
+                    <button
+                      key={meal}
+                      type="button"
+                      onClick={() => toggleMeal(meal)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                        active
+                          ? 'text-white border-transparent'
+                          : 'bg-white border-gray-200 text-gray-500 hover:border-gray-400'
+                      }`}
+                      style={active ? { background: MEAL_COLOR[meal] } : undefined}
+                    >
+                      {t(`mealPlan.meals.${meal}`)}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Per-meal calorie knobs */}
+            {selectedMeals.length > 0 && (
+              <div className="col-span-2 md:col-span-3">
+                <p className="text-sm font-medium text-[#1A1A1A] mb-0.5">{t('mealPlan.form.mealCalories')}</p>
+                <p className="text-xs text-gray-400 mb-4">{t('mealPlan.form.mealCaloriesHint')}</p>
+                <div className="flex flex-wrap gap-6 justify-start">
+                  {selectedMeals.map(meal => (
+                    <Knob
+                      key={meal}
+                      value={mealKcals[meal] ?? 0}
+                      min={0}
+                      max={kcalTarget || 2000}
+                      onChange={v => handleMealKcalChange(meal, v)}
+                      label={t(`mealPlan.meals.${meal}`)}
+                      color={MEAL_COLOR[meal]}
+                      size={88}
+                      formatValue={v => `${v}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="space-y-1">
               <Label>{t('mealPlan.form.proteinMin')}</Label>
               <Input type="number" min="0" placeholder={t('mealPlan.form.optional')} {...register('proteinMin')} />

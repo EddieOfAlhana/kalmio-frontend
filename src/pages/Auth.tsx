@@ -117,7 +117,12 @@ export function Auth() {
         <div className="w-full max-w-md">
 
           <div className="mb-8">
-            <span className="font-headline text-2xl font-bold text-midnight-black">Kalmio</span>
+            <img
+              src="/assets/images/logo-dark.png"
+              alt="Kalmio"
+              className="h-9 object-contain object-left"
+            />
+            <p className="mt-1.5 text-xs text-gray-400 tracking-wide">{t('auth.tagline')}</p>
           </div>
 
           <AnimatePresence mode="wait">

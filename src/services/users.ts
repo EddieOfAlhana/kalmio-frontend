@@ -2,7 +2,7 @@ import { api } from '@/lib/api'
 
 export interface UserMealPreferences {
   days?: number
-  mealsPerDay?: number
+  selectedMealTypes?: string[]
   kcalTarget?: number
   proteinMin?: number
   budgetMax?: number
@@ -11,6 +11,7 @@ export interface UserMealPreferences {
   maxRecipeRepetitions?: number
   constraintWeights?: { waste: number; budget: number; prepTime: number; recipeRepeat: number }
   servingConfig?: { minMultiplier: number; maxMultiplier: number; step: number }
+  mealCalorieTargets?: Record<string, number>
 }
 
 export interface UserSettings {
