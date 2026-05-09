@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -9,12 +10,28 @@ import { MacroRing } from '@/components/ui/macro-ring'
 import { formatCurrency } from '@/lib/utils'
 import { recipesService } from '@/services/recipes'
 import { ingredientsService } from '@/services/ingredients'
+import { mealPlansService, savedPlanToMealPlan } from '@/services/mealPlans'
 import { useMealPlanStore } from '@/store/mealPlan'
 
 export function Dashboard() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const activePlan = useMealPlanStore(s => s.plan)
+  const setPlan = useMealPlanStore(s => s.setPlan)
+
+  const { data: savedPlan } = useQuery({
+    queryKey: ['saved-meal-plans'],
+    queryFn: mealPlansService.listSaved,
+    enabled: activePlan === null,
+    select: plans => plans.length > 0 ? savedPlanToMealPlan(plans[0]) : null,
+    staleTime: Infinity,
+  })
+
+  useEffect(() => {
+    if (savedPlan && !activePlan) {
+      setPlan(savedPlan)
+    }
+  }, [savedPlan, activePlan, setPlan])
 
   const { data: recipes = [] } = useQuery({ queryKey: ['recipes'], queryFn: recipesService.list, staleTime: 30_000 })
   const { data: ingredients = [] } = useQuery({ queryKey: ['ingredients'], queryFn: ingredientsService.list, staleTime: 30_000 })

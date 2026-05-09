@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import axios from 'axios'
-import { Zap, Clock, ChevronDown, ChevronUp, ShoppingCart, CheckCircle } from 'lucide-react'
+import { Zap, Clock, ChevronDown, ChevronUp, ShoppingCart, CheckCircle, Pencil, Check, Minus, Plus, RefreshCw } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,10 +16,12 @@ import { Badge } from '@/components/ui/badge'
 import { Slider } from '@/components/ui/slider'
 import { Spinner } from '@/components/ui/spinner'
 import { MacroRing } from '@/components/ui/macro-ring'
-import { mealPlansService, savedPlanToMealPlan } from '@/services/mealPlans'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { mealPlansService, savedPlanToMealPlan, savedSlotToMeal } from '@/services/mealPlans'
+import { recipesService } from '@/services/recipes'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { formatCurrency, formatMacro } from '@/lib/utils'
-import type { GeneratedMeal, GenerateMealPlanRequest, MealType, Macros, ConstraintWeights } from '@/types'
+import type { GeneratedMeal, GenerateMealPlanRequest, MealType, Macros, ConstraintWeights, Recipe } from '@/types'
 
 const MEAL_COLOR: Record<MealType, string> = {
   BREAKFAST: '#F28C28', LUNCH: '#4F7942', DINNER: '#1A1A1A', SNACK: '#6b7280',
@@ -94,7 +96,7 @@ function sumMacros(meals: GeneratedMeal[]): Macros {
 export function MealPlan() {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { plan, setPlan } = useMealPlanStore()
+  const { plan, setPlan, updateMeal } = useMealPlanStore()
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set([0]))
 
   const { data: savedPlan } = useQuery({
@@ -388,7 +390,12 @@ export function MealPlan() {
                   {expanded && (
                     <div className="border-t border-[#e5e4e7] px-5 pb-4 pt-3 space-y-3">
                       {dayMeals.map(meal => (
-                        <MealSlotCard key={meal.id} meal={meal} />
+                        <MealSlotCard
+                          key={meal.id}
+                          meal={meal}
+                          savedPlanId={plan.savedPlanId}
+                          onUpdate={updateMeal}
+                        />
                       ))}
                     </div>
                   )}
@@ -402,37 +409,279 @@ export function MealPlan() {
   )
 }
 
-function MealSlotCard({ meal }: { meal: GeneratedMeal }) {
+// ── RecipePickerDialog ────────────────────────────────────────────────────────
+
+function RecipePickerDialog({
+  open,
+  currentRecipeId,
+  onSelect,
+  onClose,
+}: {
+  open: boolean
+  currentRecipeId: string
+  onSelect: (recipe: Recipe) => void
+  onClose: () => void
+}) {
   const { t } = useTranslation()
+  const [search, setSearch] = useState('')
+
+  const { data: recipes = [], isLoading } = useQuery({
+    queryKey: ['recipes'],
+    queryFn: recipesService.list,
+    staleTime: 5 * 60 * 1000,
+    enabled: open,
+  })
+
+  const filtered = recipes.filter(r =>
+    r.name.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
-    <div className="flex gap-3 bg-[#F9F7F2] rounded-[12px] p-3">
-      <div className="shrink-0">
-        <span
-          className="inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold text-white"
-          style={{ background: MEAL_COLOR[meal.mealType], fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-        >
-          {meal.mealType}
-        </span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-sm text-[#1A1A1A] leading-snug truncate">{meal.recipe.name}</p>
-        <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-gray-500 mt-0.5">
-          <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" /> {meal.recipe.prepTimeMinutes + meal.recipe.cookTimeMinutes}m
+    <Dialog open={open} onOpenChange={open => !open && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{t('mealPlan.recipePicker.title')}</DialogTitle>
+        </DialogHeader>
+
+        <Input
+          placeholder={t('mealPlan.recipePicker.search')}
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="mb-3"
+          autoFocus
+        />
+
+        <div className="space-y-2 max-h-[55dvh] overflow-y-auto pr-1">
+          {isLoading && (
+            <div className="flex justify-center py-8"><Spinner className="h-5 w-5" /></div>
+          )}
+          {!isLoading && filtered.length === 0 && (
+            <p className="text-sm text-gray-400 text-center py-8">{t('mealPlan.recipePicker.noResults')}</p>
+          )}
+          {filtered.map(recipe => {
+            const isCurrent = recipe.id === currentRecipeId
+            return (
+              <button
+                key={recipe.id}
+                type="button"
+                onClick={() => { onSelect(recipe); onClose() }}
+                className={`w-full text-left rounded-[10px] px-3 py-2.5 transition-colors border ${
+                  isCurrent
+                    ? 'border-[#4F7942] bg-[#4F7942]/5'
+                    : 'border-transparent bg-[#F9F7F2] hover:bg-[#f0ede6]'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{recipe.name}</p>
+                    <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-xs text-gray-500 mt-0.5">
+                      <span className="flex items-center gap-0.5">
+                        <Clock className="h-3 w-3" />
+                        {t('mealPlan.recipePicker.prepTime', { min: recipe.prepTimeMinutes + recipe.cookTimeMinutes })}
+                      </span>
+                      {recipe.macros && (
+                        <>
+                          <span>{t('mealPlan.recipePicker.kcal', { kcal: recipe.macros.kcal.toFixed(0) })}</span>
+                          <span>{t('mealPlan.recipePicker.protein', { protein: recipe.macros.protein.toFixed(0) })}</span>
+                        </>
+                      )}
+                    </div>
+                    {recipe.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        {recipe.tags.map(tag => <Badge key={tag} variant="gray">{tag}</Badge>)}
+                      </div>
+                    )}
+                  </div>
+                  {isCurrent && <Check className="h-4 w-4 text-[#4F7942] shrink-0 mt-0.5" />}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// ── MealSlotCard ──────────────────────────────────────────────────────────────
+
+const MULTIPLIER_STEP = 0.1
+const MULTIPLIER_MIN = 0.5
+const MULTIPLIER_MAX = 3.0
+
+function MealSlotCard({
+  meal,
+  savedPlanId,
+  onUpdate,
+}: {
+  meal: GeneratedMeal
+  savedPlanId: string | null
+  onUpdate: (updated: GeneratedMeal) => void
+}) {
+  const { t } = useTranslation()
+  const [editing, setEditing] = useState(false)
+  const [multiplier, setMultiplier] = useState(meal.servingMultiplier)
+  const [pendingRecipe, setPendingRecipe] = useState<Recipe | null>(null)
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+
+  const displayRecipe = pendingRecipe ?? meal.recipe
+
+  function handleEdit() {
+    setMultiplier(meal.servingMultiplier)
+    setPendingRecipe(null)
+    setSaveError(null)
+    setEditing(true)
+  }
+
+  function handleCancel() {
+    setEditing(false)
+    setPendingRecipe(null)
+    setSaveError(null)
+  }
+
+  async function handleSave() {
+    if (!savedPlanId) return
+    setSaving(true)
+    setSaveError(null)
+    try {
+      const body: { recipeId?: string; servingMultiplier?: number } = {}
+      const multRounded = Math.round(multiplier * 10) / 10
+      if (Math.abs(multRounded - meal.servingMultiplier) > 0.001) body.servingMultiplier = multRounded
+      if (pendingRecipe && pendingRecipe.id !== meal.recipe.id) body.recipeId = pendingRecipe.id
+
+      const updated = await mealPlansService.updateSlot(savedPlanId, meal.id, body)
+      onUpdate(savedSlotToMeal(updated))
+      setEditing(false)
+      setPendingRecipe(null)
+    } catch {
+      setSaveError(t('mealPlan.editSlot.saveError'))
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  function stepMultiplier(delta: number) {
+    setMultiplier(prev => {
+      const next = Math.round((prev + delta) * 10) / 10
+      return Math.min(MULTIPLIER_MAX, Math.max(MULTIPLIER_MIN, next))
+    })
+  }
+
+  return (
+    <div className="bg-[#F9F7F2] rounded-[12px] overflow-hidden">
+      {/* View row */}
+      <div className="flex gap-3 p-3">
+        <div className="shrink-0">
+          <span
+            className="inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold text-white"
+            style={{ background: MEAL_COLOR[meal.mealType], fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          >
+            {meal.mealType}
           </span>
-          <span>×{meal.servingMultiplier?.toFixed(1)} {t('mealPlan.serving')}</span>
-          {meal.macros && <span>{meal.macros.kcal.toFixed(0)} kcal</span>}
-          {meal.estimatedCost != null && (
-            <span className="text-[#4F7942] font-medium">
-              {formatCurrency(meal.estimatedCost)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-sm text-[#1A1A1A] leading-snug truncate">{meal.recipe.name}</p>
+          <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-gray-500 mt-0.5">
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" /> {meal.recipe.prepTimeMinutes + meal.recipe.cookTimeMinutes}m
             </span>
+            <span>×{meal.servingMultiplier?.toFixed(1)} {t('mealPlan.serving')}</span>
+            {meal.macros && <span>{meal.macros.kcal.toFixed(0)} kcal</span>}
+            {meal.estimatedCost != null && (
+              <span className="text-[#4F7942] font-medium">
+                {formatCurrency(meal.estimatedCost)}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-start gap-2 shrink-0">
+          <div className="flex gap-1 flex-wrap justify-end items-start">
+            {(meal.recipe.tags ?? []).map(tag => <Badge key={tag} variant="gray">{tag}</Badge>)}
+          </div>
+          {savedPlanId && !editing && (
+            <button
+              type="button"
+              onClick={handleEdit}
+              className="p-1 rounded-md text-gray-400 hover:text-[#1A1A1A] hover:bg-gray-200/60 transition-colors"
+              aria-label={t('mealPlan.editSlot.edit')}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
           )}
         </div>
       </div>
-      <div className="flex gap-1 shrink-0 flex-wrap justify-end items-start">
-        {(meal.recipe.tags ?? []).map(tag => <Badge key={tag} variant="gray">{tag}</Badge>)}
-      </div>
+
+      {/* Edit panel */}
+      {editing && (
+        <div className="border-t border-[#e5e4e7] px-3 pb-3 pt-2.5 space-y-3">
+          {/* Serving multiplier stepper */}
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-gray-600">{t('mealPlan.editSlot.servingMultiplier')}</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => stepMultiplier(-MULTIPLIER_STEP)}
+                disabled={multiplier <= MULTIPLIER_MIN}
+                className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <Minus className="h-3 w-3" />
+              </button>
+              <span className="w-10 text-center text-sm font-semibold tabular-nums text-[#1A1A1A]">
+                ×{multiplier.toFixed(1)}
+              </span>
+              <button
+                type="button"
+                onClick={() => stepMultiplier(MULTIPLIER_STEP)}
+                disabled={multiplier >= MULTIPLIER_MAX}
+                className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <Plus className="h-3 w-3" />
+              </button>
+            </div>
+          </div>
+
+          {/* Recipe substitution */}
+          <div className="flex items-center justify-between">
+            <div className="min-w-0 flex-1 mr-2">
+              <span className="text-xs text-gray-500 block truncate">
+                {pendingRecipe ? pendingRecipe.name : displayRecipe.name}
+              </span>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setPickerOpen(true)}
+              className="shrink-0 text-xs h-7 px-2 gap-1"
+            >
+              <RefreshCw className="h-3 w-3" />
+              {t('mealPlan.editSlot.swapRecipe')}
+            </Button>
+          </div>
+
+          {/* Error */}
+          {saveError && <p className="text-xs text-red-500">{saveError}</p>}
+
+          {/* Actions */}
+          <div className="flex gap-2 justify-end">
+            <Button type="button" variant="outline" size="sm" onClick={handleCancel} disabled={saving}>
+              {t('mealPlan.editSlot.cancel')}
+            </Button>
+            <Button type="button" size="sm" onClick={handleSave} disabled={saving} className="min-w-16">
+              {saving ? <><Spinner className="h-3 w-3" /> {t('mealPlan.editSlot.saving')}</> : t('mealPlan.editSlot.save')}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <RecipePickerDialog
+        open={pickerOpen}
+        currentRecipeId={displayRecipe.id}
+        onSelect={setPendingRecipe}
+        onClose={() => setPickerOpen(false)}
+      />
     </div>
   )
 }

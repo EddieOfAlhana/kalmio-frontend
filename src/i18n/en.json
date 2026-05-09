@@ -98,7 +98,26 @@
     "protein": "protein",
     "fat": "fat",
     "carbs": "carbs",
-    "serving": "serving"
+    "serving": "serving",
+    "editSlot": {
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "servingMultiplier": "Servings",
+      "swapRecipe": "Swap Recipe",
+      "saving": "Saving…",
+      "saveError": "Failed to save changes"
+    },
+    "recipePicker": {
+      "title": "Choose a Recipe",
+      "search": "Search recipes…",
+      "noResults": "No recipes found",
+      "select": "Select",
+      "selected": "Selected",
+      "kcal": "{{kcal}} kcal",
+      "protein": "{{protein}}g protein",
+      "prepTime": "{{min}} min"
+    }
   },
   "recipes": {
     "title": "Recipes",

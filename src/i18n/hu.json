@@ -98,7 +98,26 @@
     "protein": "fehérje",
     "fat": "zsír",
     "carbs": "szénhidrát",
-    "serving": "adag"
+    "serving": "adag",
+    "editSlot": {
+      "edit": "Szerkesztés",
+      "save": "Mentés",
+      "cancel": "Mégse",
+      "servingMultiplier": "Adag",
+      "swapRecipe": "Recept cseréje",
+      "saving": "Mentés…",
+      "saveError": "Nem sikerült menteni a módosításokat"
+    },
+    "recipePicker": {
+      "title": "Válassz receptet",
+      "search": "Receptek keresése…",
+      "noResults": "Nem találtunk receptet",
+      "select": "Kiválaszt",
+      "selected": "Kiválasztva",
+      "kcal": "{{kcal}} kcal",
+      "protein": "{{protein}}g fehérje",
+      "prepTime": "{{min}} perc"
+    }
   },
   "recipes": {
     "title": "Receptek",

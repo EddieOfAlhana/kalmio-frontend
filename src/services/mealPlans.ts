@@ -1,5 +1,30 @@
 import { api } from '@/lib/api'
-import type { MealPlan, GenerateMealPlanRequest, ShoppingList, ShoppingListRequest, SavedMealPlan } from '@/types'
+import type { MealPlan, GeneratedMeal, GenerateMealPlanRequest, ShoppingList, ShoppingListRequest, SavedMealPlan, SavedMealSlot } from '@/types'
+
+export function savedSlotToMeal(s: SavedMealSlot): GeneratedMeal {
+  return {
+    id: s.id,
+    day: s.dayNumber,
+    mealType: s.mealType,
+    recipe: {
+      id: s.recipeId,
+      name: s.recipeName,
+      steps: [],
+      prepTimeMinutes: s.recipePrepTimeMinutes,
+      cookTimeMinutes: s.recipeCookTimeMinutes,
+      servings: 1,
+      macros: null,
+      estimatedCostPerServing: null,
+      ingredients: [],
+      tags: s.recipeTags,
+      translations: null,
+      machineTranslated: false,
+    },
+    servingMultiplier: Number(s.servingMultiplier),
+    estimatedCost: s.estimatedCost,
+    macros: s.macros,
+  }
+}
 
 export function savedPlanToMealPlan(saved: SavedMealPlan): MealPlan {
   return {
@@ -11,28 +36,7 @@ export function savedPlanToMealPlan(saved: SavedMealPlan): MealPlan {
       ? saved.slots.reduce((sum, s) => sum + (s.estimatedCost ?? 0), 0)
       : null,
     savedPlanId: saved.id,
-    meals: saved.slots.map(s => ({
-      id: s.id,
-      day: s.dayNumber,
-      mealType: s.mealType,
-      recipe: {
-        id: s.recipeId,
-        name: s.recipeName,
-        steps: [],
-        prepTimeMinutes: s.recipePrepTimeMinutes,
-        cookTimeMinutes: s.recipeCookTimeMinutes,
-        servings: 1,
-        macros: null,
-        estimatedCostPerServing: null,
-        ingredients: [],
-        tags: s.recipeTags,
-        translations: null,
-        machineTranslated: false,
-      },
-      servingMultiplier: s.servingMultiplier,
-      estimatedCost: s.estimatedCost,
-      macros: s.macros,
-    })),
+    meals: saved.slots.map(savedSlotToMeal),
   }
 }
 
@@ -43,4 +47,6 @@ export const mealPlansService = {
     api.post<ShoppingList>('/api/meal-plans/shopping-list', body).then(r => r.data),
   listSaved: () =>
     api.get<SavedMealPlan[]>('/api/meal-plans/saved').then(r => r.data),
+  updateSlot: (planId: string, slotId: string, body: { recipeId?: string; servingMultiplier?: number }) =>
+    api.patch<SavedMealSlot>(`/api/meal-plans/saved/${planId}/slots/${slotId}`, body).then(r => r.data),
 }
