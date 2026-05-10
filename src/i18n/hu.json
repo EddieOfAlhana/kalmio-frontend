@@ -529,7 +529,7 @@
       "cost": "~{{cost}}",
       "summaryTitle": "Maradékok",
       "summaryDesc": "Megvásárolt, de nem szükséges mennyiség a kiszerelések miatt",
-      "pantryExcluded": "Kamrai alapanyagok kizárva.",
+      "pantrySection": "Kamrai alapanyagok",
       "none": "Nincs maradék — pontos kiszerelési illeszkedés",
       "addToFridge": "Maradékok a hűtőbe",
       "addingToFridge": "Hozzáadás…",

@@ -566,7 +566,7 @@
       "cost": "~{{cost}}",
       "summaryTitle": "Leftovers",
       "summaryDesc": "Portions bought but not needed due to package sizes",
-      "pantryExcluded": "Pantry items excluded.",
+      "pantrySection": "Pantry staples",
       "none": "No leftovers — exact package fits",
       "addToFridge": "Add leftovers to fridge",
       "addingToFridge": "Adding to fridge…",

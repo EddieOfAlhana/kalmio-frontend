@@ -100,11 +100,15 @@ export function ShoppingList() {
     : {}
 
   const missingCount = shoppingList?.items.filter(i => !i.retailProduct).length ?? 0
-  const leftoverItems = shoppingList?.items.filter(
-    i => i.retailProduct?.leftoverAmount != null && i.retailProduct.leftoverAmount > 0
+  const nonPantryLeftovers = shoppingList?.items.filter(
+    i => !i.pantryItem && i.retailProduct?.leftoverAmount != null && i.retailProduct.leftoverAmount > 0
   ) ?? []
+  const pantryLeftovers = shoppingList?.items.filter(
+    i => i.pantryItem && i.retailProduct?.leftoverAmount != null && i.retailProduct.leftoverAmount > 0
+  ) ?? []
+  const leftoverItems = [...nonPantryLeftovers, ...pantryLeftovers]
 
-  const totalLeftoverGrams = leftoverItems
+  const totalLeftoverGrams = nonPantryLeftovers
     .filter(i => i.retailProduct!.unit === 'G')
     .reduce((sum, i) => sum + (i.retailProduct!.leftoverAmount ?? 0), 0)
 
@@ -231,22 +235,41 @@ export function ShoppingList() {
                 <>
                   <p className="text-xs text-gray-500 mb-3">
                     {t('shoppingList.leftovers.summaryDesc')}
-                    {shoppingList.items.some(i => i.pantryItem) && (
-                      <span className="ml-1 text-green-600">{t('shoppingList.leftovers.pantryExcluded')}</span>
-                    )}
                   </p>
-                  <div className="space-y-2">
-                    {leftoverItems.map(item => (
-                      <div key={item.ingredientId + item.unit} className="flex items-center justify-between text-sm">
-                        <span className="text-[#1A1A1A] font-medium">{item.ingredientName}</span>
-                        <span className="text-orange-600 text-xs">
-                          {item.retailProduct!.leftoverAmount!.toFixed(item.retailProduct!.unit === 'PIECE' ? 0 : 0)} {item.retailProduct!.unit}
-                          {' · '}
-                          {t('shoppingList.leftovers.cost', { cost: formatCurrency(item.retailProduct!.leftoverCost, shoppingList.currency) })}
-                        </span>
+                  {nonPantryLeftovers.length > 0 && (
+                    <div className="space-y-2 mb-3">
+                      {nonPantryLeftovers.map(item => (
+                        <div key={item.ingredientId + item.unit} className="flex items-center justify-between text-sm">
+                          <span className="text-[#1A1A1A] font-medium">{item.ingredientName}</span>
+                          <span className="text-orange-600 text-xs">
+                            {item.retailProduct!.leftoverAmount!.toFixed(0)} {item.retailProduct!.unit}
+                            {' · '}
+                            {t('shoppingList.leftovers.cost', { cost: formatCurrency(item.retailProduct!.leftoverCost, shoppingList.currency) })}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {pantryLeftovers.length > 0 && (
+                    <>
+                      <div className="flex items-center gap-1.5 mb-2 mt-1">
+                        <Archive className="h-3 w-3 text-green-600" />
+                        <span className="text-xs font-semibold text-green-700">{t('shoppingList.leftovers.pantrySection')}</span>
                       </div>
-                    ))}
-                  </div>
+                      <div className="space-y-2">
+                        {pantryLeftovers.map(item => (
+                          <div key={item.ingredientId + item.unit} className="flex items-center justify-between text-sm">
+                            <span className="text-[#1A1A1A] font-medium">{item.ingredientName}</span>
+                            <span className="text-green-600 text-xs">
+                              {item.retailProduct!.leftoverAmount!.toFixed(0)} {item.retailProduct!.unit}
+                              {' · '}
+                              {t('shoppingList.leftovers.cost', { cost: formatCurrency(item.retailProduct!.leftoverCost, shoppingList.currency) })}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                   {(totalLeftoverCost > 0 || totalLeftoverGrams > 0) && (
                     <div className="flex items-center justify-between mt-3 pt-3 border-t border-orange-100">
                       <span className="text-sm font-semibold text-[#1A1A1A]">{t('shoppingList.summary.totalLeftovers')}</span>
