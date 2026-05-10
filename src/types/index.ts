@@ -424,6 +424,7 @@ export interface PrepTaskCard {
   window: PrepWindow
   scheduledDate: string
   durationMin: number | null
+  status?: string
 }
 
 export interface PlanGlanceDto {

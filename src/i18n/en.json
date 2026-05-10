@@ -59,6 +59,7 @@
       "todayTitle": "Prep today",
       "tomorrowTitle": "Tomorrow's prep",
       "markDone": "Done",
+      "done": "Done",
       "durationMin": "~{{count}} min",
       "windowLabels": {
         "MORNING": "morning",
@@ -447,6 +448,29 @@
       "confirmDeleteTitle": "Remove passkey?",
       "confirmDeleteDesc": "Remove \"{{name}}\"? You won't be able to use it to sign in.",
       "namePlaceholder": "Name this device (optional)"
+    },
+    "apiKeys": {
+      "title": "API & Connections",
+      "hint": "Use your API key in Claude Desktop settings or in a ChatGPT Custom GPT configuration.",
+      "noKeys": "No API keys yet — generate one to connect external tools.",
+      "createdOn": "Created {{date}}",
+      "lastUsed": "Last used {{date}}",
+      "neverUsed": "Never used",
+      "revoke": "Revoke",
+      "revokeError": "Failed to revoke the key.",
+      "generateButton": "Generate API key",
+      "form": {
+        "label": "Key name",
+        "placeholder": "e.g. ChatGPT, iPhone Claude",
+        "submit": "Generate",
+        "submitting": "Generating…"
+      },
+      "reveal": {
+        "warning": "This is the only time you will see this key. Save it now!",
+        "copy": "Copy",
+        "copied": "Copied!",
+        "dismiss": "Got it"
+      }
     }
   },
   "admin": {

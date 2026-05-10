@@ -59,6 +59,7 @@
       "todayTitle": "Előkészítendő ma",
       "tomorrowTitle": "Holnapi előkészítés",
       "markDone": "Megcsináltam",
+      "done": "Kész",
       "durationMin": "~{{count}} perc",
       "windowLabels": {
         "MORNING": "reggel",
@@ -447,6 +448,29 @@
       "confirmDeleteTitle": "Jelszókulcs eltávolítása?",
       "confirmDeleteDesc": "Eltávolítja a(z) \"{{name}}\" jelszókulcsot? Ezután nem használhatja bejelentkezéshez.",
       "namePlaceholder": "Eszköz neve (nem kötelező)"
+    },
+    "apiKeys": {
+      "title": "API és kapcsolatok",
+      "hint": "Az API kulcsot a Claude Desktop beállításaiban vagy egy ChatGPT Custom GPT konfigurációjában használhatod.",
+      "noKeys": "Nincs még API kulcs — generálj egyet az integrációkhoz.",
+      "createdOn": "Létrehozva: {{date}}",
+      "lastUsed": "Utoljára használva: {{date}}",
+      "neverUsed": "Soha nem használták",
+      "revoke": "Visszavon",
+      "revokeError": "Nem sikerült visszavonni a kulcsot.",
+      "generateButton": "Új API kulcs generálása",
+      "form": {
+        "label": "Kulcs neve",
+        "placeholder": "pl. ChatGPT, iPhone Claude",
+        "submit": "Generálás",
+        "submitting": "Generálás…"
+      },
+      "reveal": {
+        "warning": "Ez az egyetlen alkalom, amikor láthatod ezt a kulcsot. Mentsd el most!",
+        "copy": "Másolás",
+        "copied": "Másolva!",
+        "dismiss": "Értettem"
+      }
     }
   },
   "admin": {

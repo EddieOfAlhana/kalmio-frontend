@@ -47,14 +47,20 @@ function PrepTaskRow({ task, dashboardDate }: PrepTaskRowProps) {
   })
 
   const hasId = !!task.id
+  const isDone = task.status === 'DONE'
   const typeLabel = prepTypeLabel(task.prepType, t)
   const wLabel = windowLabel(task.window, t)
 
   return (
-    <div className="flex items-start gap-3 p-3 rounded-[12px] bg-[#F9F7F2]">
+    <div className={[
+      'flex items-start gap-3 p-3 rounded-[12px]',
+      isDone ? 'bg-[#F0F0EC] opacity-60' : 'bg-[#F9F7F2]',
+    ].join(' ')}>
       <div className="flex-1 min-w-0">
         <p className="text-xs text-gray-500 font-medium capitalize">{wLabel}</p>
-        <p className="text-sm font-semibold text-[#1A1A1A] leading-tight">{task.recipeName}</p>
+        <p className={['text-sm font-semibold leading-tight', isDone ? 'line-through text-gray-400' : 'text-[#1A1A1A]'].join(' ')}>
+          {task.recipeName}
+        </p>
         <p className="text-xs text-gray-400">{typeLabel}</p>
         {task.durationMin != null && (
           <p className="text-xs text-gray-400 mt-0.5">
@@ -63,7 +69,11 @@ function PrepTaskRow({ task, dashboardDate }: PrepTaskRowProps) {
         )}
       </div>
       <div className="shrink-0">
-        {hasId ? (
+        {isDone ? (
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-green-100" aria-label={t('dashboard.prep.done')}>
+            <Check className="h-4 w-4 text-green-600" aria-hidden />
+          </div>
+        ) : hasId ? (
           <Button
             size="sm"
             variant="secondary"

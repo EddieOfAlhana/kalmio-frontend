@@ -1,8 +1,8 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { Fingerprint, Trash2, LogOut, ChevronRight } from 'lucide-react'
+import { Fingerprint, Trash2, LogOut, ChevronRight, Key, Copy, Check } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Card, CardContent } from '@/components/ui/card'
@@ -16,6 +16,7 @@ import { toast } from '@/components/ui/toast'
 import { UserAvatar } from '@/components/ui/UserAvatar'
 import { usersService, type UpdateSettingsRequest } from '@/services/users'
 import { listPasskeys, registerPasskey, deletePasskey, type PasskeyInfo } from '@/services/passkey'
+import { apiKeysService, type ApiKey, type ApiKeyCreated } from '@/services/apiKeys'
 import { useAuthStore } from '@/store/auth'
 
 interface FormValues {
@@ -52,6 +53,13 @@ export function Settings() {
   const [deleteTarget, setDeleteTarget] = useState<PasskeyInfo | null>(null)
   const [customName, setCustomName] = useState('')
 
+  // ── API Keys state ─────────────────────────────────────────────────────────
+  const [showKeyForm, setShowKeyForm] = useState(false)
+  const [newKeyName, setNewKeyName] = useState('')
+  const [revealedKey, setRevealedKey] = useState<ApiKeyCreated | null>(null)
+  const [copiedKey, setCopiedKey] = useState(false)
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const loadPasskeys = useCallback(async () => {
     setPasskeysLoading(true)
     try {
@@ -65,6 +73,54 @@ export function Settings() {
   }, [])
 
   useEffect(() => { loadPasskeys() }, [loadPasskeys])
+
+  // ── API Keys queries & mutations ───────────────────────────────────────────
+  const { data: apiKeys = [], isLoading: apiKeysLoading } = useQuery<ApiKey[]>({
+    queryKey: ['api-keys'],
+    queryFn: apiKeysService.list,
+  })
+
+  const createKeyMutation = useMutation({
+    mutationFn: (name: string) => apiKeysService.create(name),
+    onSuccess: (created) => {
+      qc.invalidateQueries({ queryKey: ['api-keys'] })
+      setShowKeyForm(false)
+      setNewKeyName('')
+      setRevealedKey(created)
+      setCopiedKey(false)
+    },
+    onError: () => {
+      toast({ title: t('common.errorGeneric'), variant: 'destructive' })
+    },
+  })
+
+  const revokeKeyMutation = useMutation({
+    mutationFn: (id: number) => apiKeysService.revoke(id),
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: ['api-keys'] })
+      const previous = qc.getQueryData<ApiKey[]>(['api-keys'])
+      qc.setQueryData<ApiKey[]>(['api-keys'], (old) => (old ?? []).filter((k) => k.id !== id))
+      return { previous }
+    },
+    onError: (_err, _id, context) => {
+      if (context?.previous) {
+        qc.setQueryData(['api-keys'], context.previous)
+      }
+      toast({ title: t('settings.apiKeys.revokeError'), variant: 'destructive' })
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ['api-keys'] })
+    },
+  })
+
+  const handleCopyKey = () => {
+    if (!revealedKey) return
+    navigator.clipboard.writeText(revealedKey.plaintext).then(() => {
+      setCopiedKey(true)
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
+      copyTimeoutRef.current = setTimeout(() => setCopiedKey(false), 2000)
+    })
+  }
 
   const addPasskey = async () => {
     setPasskeyAdding(true)
@@ -318,6 +374,154 @@ export function Settings() {
       {mutation.isSuccess && (
         <p className="text-sm text-green-600 mt-2">{t('settings.saveSuccess')}</p>
       )}
+
+      {/* ── API & Connections ── */}
+      <div className="space-y-4 max-w-lg mt-6">
+        <Card>
+          <CardContent className="pt-5 space-y-4">
+            <div>
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">{t('settings.apiKeys.title')}</h2>
+            </div>
+
+            {apiKeysLoading ? (
+              <div className="flex justify-center py-2"><Spinner /></div>
+            ) : apiKeys.length === 0 && !revealedKey ? (
+              <p className="text-xs text-gray-400">{t('settings.apiKeys.noKeys')}</p>
+            ) : (
+              <ul className="space-y-2">
+                {apiKeys.map((key) => (
+                  <li key={key.id} className="flex items-center justify-between rounded-xl border border-gray-100 px-3 py-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Key size={15} className="text-gray-400 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{key.name}</p>
+                        <p className="text-xs text-gray-400 font-mono">{key.keyPrefix}…</p>
+                        <p className="text-xs text-gray-400">
+                          {t('settings.apiKeys.createdOn', {
+                            date: new Date(key.createdAt).toLocaleDateString(),
+                          })}
+                          {' · '}
+                          {key.lastUsedAt
+                            ? t('settings.apiKeys.lastUsed', {
+                                date: new Date(key.lastUsedAt).toLocaleDateString(),
+                              })
+                            : t('settings.apiKeys.neverUsed')}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={revokeKeyMutation.isPending}
+                      onClick={() => revokeKeyMutation.mutate(key.id)}
+                      className="text-red-500 hover:text-red-600 hover:bg-red-50 shrink-0 text-xs"
+                    >
+                      {t('settings.apiKeys.revoke')}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* Revealed key after creation */}
+            {revealedKey && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 space-y-2">
+                <p className="text-xs font-medium text-amber-800">{t('settings.apiKeys.reveal.warning')}</p>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 text-xs font-mono bg-white border border-amber-200 rounded-lg px-3 py-2 break-all text-[#1A1A1A]">
+                    {revealedKey.plaintext}
+                  </code>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopyKey}
+                    className="shrink-0 text-amber-700 hover:text-amber-800 hover:bg-amber-100"
+                    aria-label={t('settings.apiKeys.reveal.copy')}
+                  >
+                    {copiedKey ? <Check size={14} /> : <Copy size={14} />}
+                    <span className="ml-1 text-xs">
+                      {copiedKey ? t('settings.apiKeys.reveal.copied') : t('settings.apiKeys.reveal.copy')}
+                    </span>
+                  </Button>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setRevealedKey(null)}
+                  className="text-amber-700 hover:text-amber-800 hover:bg-amber-100 text-xs w-full"
+                >
+                  {t('settings.apiKeys.reveal.dismiss')}
+                </Button>
+              </div>
+            )}
+
+            {/* Inline key creation form */}
+            {showKeyForm ? (
+              <div className="space-y-2">
+                <div>
+                  <Label htmlFor="new-api-key-name">{t('settings.apiKeys.form.label')}</Label>
+                  <Input
+                    id="new-api-key-name"
+                    value={newKeyName}
+                    onChange={(e) => setNewKeyName(e.target.value)}
+                    placeholder={t('settings.apiKeys.form.placeholder')}
+                    className="mt-1 text-sm"
+                    maxLength={80}
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        if (newKeyName.trim()) createKeyMutation.mutate(newKeyName.trim())
+                      }
+                      if (e.key === 'Escape') {
+                        setShowKeyForm(false)
+                        setNewKeyName('')
+                      }
+                    }}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => { setShowKeyForm(false); setNewKeyName('') }}
+                    disabled={createKeyMutation.isPending}
+                  >
+                    {t('common.cancel')}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="flex-1 bg-midnight-black hover:bg-midnight-black/90 text-white rounded-xl"
+                    disabled={!newKeyName.trim() || createKeyMutation.isPending}
+                    onClick={() => createKeyMutation.mutate(newKeyName.trim())}
+                  >
+                    {createKeyMutation.isPending
+                      ? t('settings.apiKeys.form.submitting')
+                      : t('settings.apiKeys.form.submit')}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button
+                type="button"
+                onClick={() => { setShowKeyForm(true); setRevealedKey(null) }}
+                className="w-full gap-2 bg-midnight-black hover:bg-midnight-black/90 text-white rounded-xl"
+              >
+                <Key size={15} />
+                {t('settings.apiKeys.generateButton')}
+              </Button>
+            )}
+
+            <p className="text-xs text-gray-400">{t('settings.apiKeys.hint')}</p>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="max-w-lg mt-6 md:hidden">
         <Button
