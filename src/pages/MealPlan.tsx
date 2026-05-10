@@ -719,7 +719,6 @@ function formatDayHeader(dateStr: string): string {
 function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: () => void }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set())
 
   // Group meals by date
   const mealsByDate = useMemo<Map<string, PlannedMeal[]>>(() => {
@@ -729,7 +728,6 @@ function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: ()
       arr.push(meal)
       map.set(meal.date, arr)
     }
-    // Sort meals within each day by MEAL_ORDER
     for (const [date, arr] of map) {
       map.set(date, arr.sort((a, b) => MEAL_ORDER.indexOf(a.mealType) - MEAL_ORDER.indexOf(b.mealType)))
     }
@@ -738,13 +736,10 @@ function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: ()
 
   const sortedDates = useMemo(() => Array.from(mealsByDate.keys()).sort(), [mealsByDate])
 
-  const updateMealMutation = useMutation({
-    mutationFn: ({ mealId, status }: { mealId: string; status: PlannedMealStatus }) =>
-      planService.updateMeal(plan.id, mealId, { status }),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['plan', 'active'] })
-    },
-  })
+  // First date expanded by default
+  const [expandedDates, setExpandedDates] = useState<Set<string>>(
+    () => new Set(sortedDates.slice(0, 1))
+  )
 
   function toggleDate(date: string) {
     setExpandedDates(prev => {
@@ -753,6 +748,10 @@ function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: ()
       else next.add(date)
       return next
     })
+  }
+
+  function onMealUpdated() {
+    void queryClient.invalidateQueries({ queryKey: ['plan', 'active'] })
   }
 
   const dateRange = formatDateRange(plan.startDate, plan.endDate)
@@ -773,6 +772,19 @@ function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: ()
         {sortedDates.map(date => {
           const meals = mealsByDate.get(date) ?? []
           const expanded = expandedDates.has(date)
+          const dayMacros = meals.reduce(
+            (acc, m) => ({
+              kcal: acc.kcal + (m.macros?.kcal ?? 0),
+              protein: acc.protein + (m.macros?.protein ?? 0),
+              fat: acc.fat + (m.macros?.fat ?? 0),
+              carbs: acc.carbs + (m.macros?.carbs ?? 0),
+            }),
+            { kcal: 0, protein: 0, fat: 0, carbs: 0 }
+          )
+          const dayCost = meals.every(m => m.estimatedCostPerServing != null)
+            ? meals.reduce((s, m) => s + (m.estimatedCostPerServing ?? 0), 0)
+            : null
+
           return (
             <Card key={date}>
               <button
@@ -782,14 +794,21 @@ function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: ()
                 aria-expanded={expanded}
               >
                 <CardContent className="pt-4 pb-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
+                  <div className="flex items-center gap-4">
+                    <MacroRing macros={dayMacros} size={52} />
+                    <div className="flex-1 min-w-0">
                       <p className="font-headline font-bold text-sm text-[#1A1A1A]">
                         {formatDayHeader(date)}
                       </p>
-                      <p className="text-xs text-gray-400 mt-0.5">
-                        {t('plan.mealCount', { count: meals.length })}
-                      </p>
+                      <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-gray-500 mt-0.5">
+                        <span>{dayMacros.kcal.toFixed(0)} kcal</span>
+                        <span>{dayMacros.protein.toFixed(0)}g P</span>
+                        <span>{dayMacros.fat.toFixed(0)}g F</span>
+                        <span>{dayMacros.carbs.toFixed(0)}g C</span>
+                        {dayCost != null && (
+                          <span className="text-[#4F7942] font-semibold">{formatCurrency(dayCost)}</span>
+                        )}
+                      </div>
                     </div>
                     {expanded
                       ? <ChevronUp className="h-4 w-4 text-gray-400 shrink-0" />
@@ -805,9 +824,8 @@ function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: ()
                     <PlannedMealCard
                       key={meal.id}
                       meal={meal}
-                      onMarkEaten={() => updateMealMutation.mutate({ mealId: meal.id, status: 'EATEN' })}
-                      onMarkSkipped={() => updateMealMutation.mutate({ mealId: meal.id, status: 'SKIPPED' })}
-                      isPending={updateMealMutation.isPending}
+                      planId={plan.id}
+                      onUpdate={onMealUpdated}
                     />
                   ))}
                 </div>
@@ -820,35 +838,85 @@ function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: ()
   )
 }
 
+const PLAN_MULTIPLIER_MIN = 0.5
+const PLAN_MULTIPLIER_MAX = 3.0
+const PLAN_MULTIPLIER_STEP = 0.1
+
 function PlannedMealCard({
   meal,
-  onMarkEaten,
-  onMarkSkipped,
-  isPending,
+  planId,
+  onUpdate,
 }: {
   meal: PlannedMeal
-  onMarkEaten: () => void
-  onMarkSkipped: () => void
-  isPending: boolean
+  planId: string
+  onUpdate: () => void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
+
   const [menuOpen, setMenuOpen] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [multiplier, setMultiplier] = useState(meal.servingMultiplier)
+
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const latestMultiplier = useRef(meal.servingMultiplier)
+
+  useEffect(() => {
+    return () => { if (debounceTimer.current) clearTimeout(debounceTimer.current) }
+  }, [])
+
+  const mutation = useMutation({
+    mutationFn: (req: import('@/types').UpdatePlannedMealRequest) =>
+      planService.updateMeal(planId, meal.id, req),
+    onSuccess: onUpdate,
+  })
+
+  function handleMultiplierStep(delta: number) {
+    const next = Math.round((latestMultiplier.current + delta) * 10) / 10
+    const clamped = Math.min(PLAN_MULTIPLIER_MAX, Math.max(PLAN_MULTIPLIER_MIN, next))
+    setMultiplier(clamped)
+    latestMultiplier.current = clamped
+    if (debounceTimer.current) clearTimeout(debounceTimer.current)
+    debounceTimer.current = setTimeout(() => {
+      mutation.mutate({ servingMultiplier: latestMultiplier.current })
+    }, 800)
+  }
+
+  function handleRecipeSwap(recipe: Recipe) {
+    mutation.mutate({ replacedWithRecipeId: recipe.id })
+  }
+
   const statusVariant = statusToVariant(meal.status)
 
+  const { data: fullRecipe } = useQuery({
+    queryKey: ['recipe', meal.recipeId],
+    queryFn: () => recipesService.get(meal.recipeId),
+    enabled: detailOpen,
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const steps = fullRecipe?.translations?.[lang]?.steps ?? fullRecipe?.steps ?? []
+  const displayName = fullRecipe?.translations?.[lang]?.name ?? meal.recipeName
+
   return (
-    <div className="bg-[#F9F7F2] rounded-[12px] p-3">
-      <div className="flex items-start gap-3">
+    <div className="bg-[#F9F7F2] rounded-[12px] overflow-hidden">
+      {/* Main row */}
+      <div className="flex items-start gap-3 p-3">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 mb-0.5">
+          <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
             <span
               className="inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold text-white"
               style={{ background: MEAL_COLOR[meal.mealType], fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
               {t(`mealPlan.meals.${meal.mealType}`)}
             </span>
-            <Badge variant={statusVariant}>
-              {t(`plan.mealStatus.${meal.status}`)}
-            </Badge>
+            {meal.status !== 'PLANNED' && (
+              <Badge variant={statusVariant}>
+                {t(`plan.mealStatus.${meal.status}`)}
+              </Badge>
+            )}
           </div>
           <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{meal.recipeName}</p>
           {meal.macros && (
@@ -859,40 +927,179 @@ function PlannedMealCard({
               <span>{meal.macros.carbs.toFixed(0)}g C</span>
             </div>
           )}
-          <p className="text-xs text-gray-400 mt-0.5">×{meal.servingMultiplier.toFixed(1)} {t('mealPlan.serving')}</p>
+          <p className="text-xs text-gray-400 mt-0.5">×{multiplier.toFixed(1)} {t('mealPlan.serving')}</p>
         </div>
 
-        {/* Overflow menu */}
-        <div className="relative shrink-0">
+        {/* Action buttons */}
+        <div className="flex items-center gap-0.5 shrink-0">
           <button
             type="button"
-            onClick={() => setMenuOpen(prev => !prev)}
-            disabled={isPending}
+            onClick={() => setDetailOpen(true)}
             className="p-1.5 rounded-md text-gray-400 hover:text-[#1A1A1A] hover:bg-gray-200/60 transition-colors"
-            aria-label={t('plan.mealActions')}
+            aria-label={t('mealPlan.viewRecipe')}
           >
-            <MoreHorizontal className="h-4 w-4" />
+            <Eye className="h-4 w-4" />
           </button>
-          {menuOpen && (
-            <div className="absolute right-0 top-full mt-1 z-10 bg-white border border-gray-200 rounded-[10px] shadow-md py-1 min-w-[160px]">
+          <button
+            type="button"
+            onClick={() => setEditing(prev => !prev)}
+            className={`p-1.5 rounded-md transition-colors ${editing ? 'text-[#4F7942] bg-[#4F7942]/10' : 'text-gray-400 hover:text-[#1A1A1A] hover:bg-gray-200/60'}`}
+            aria-label={t('mealPlan.editSlot.edit')}
+          >
+            <Pencil className="h-4 w-4" />
+          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setMenuOpen(prev => !prev)}
+              disabled={mutation.isPending}
+              className="p-1.5 rounded-md text-gray-400 hover:text-[#1A1A1A] hover:bg-gray-200/60 transition-colors"
+              aria-label={t('plan.mealActions')}
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 top-full mt-1 z-10 bg-white border border-gray-200 rounded-[10px] shadow-md py-1 min-w-[160px]">
+                <button
+                  type="button"
+                  onClick={() => { setMenuOpen(false); mutation.mutate({ status: 'EATEN' }) }}
+                  className="w-full text-left px-3 py-2 text-sm text-[#1A1A1A] hover:bg-[#F9F7F2] transition-colors"
+                >
+                  {t('plan.actions.markEaten')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setMenuOpen(false); mutation.mutate({ status: 'SKIPPED' }) }}
+                  className="w-full text-left px-3 py-2 text-sm text-[#1A1A1A] hover:bg-[#F9F7F2] transition-colors"
+                >
+                  {t('plan.actions.markSkipped')}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Edit panel */}
+      {editing && (
+        <div className="border-t border-[#e5e4e7] px-3 pb-3 pt-2.5 space-y-3">
+          {/* Serving multiplier stepper */}
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-gray-600">{t('mealPlan.editSlot.servingMultiplier')}</span>
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => { setMenuOpen(false); onMarkEaten() }}
-                className="w-full text-left px-3 py-2 text-sm text-[#1A1A1A] hover:bg-[#F9F7F2] transition-colors"
+                onClick={() => handleMultiplierStep(-PLAN_MULTIPLIER_STEP)}
+                disabled={multiplier <= PLAN_MULTIPLIER_MIN}
+                className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                {t('plan.actions.markEaten')}
+                <Minus className="h-3 w-3" />
               </button>
+              <span className="w-10 text-center text-sm font-semibold tabular-nums text-[#1A1A1A]">
+                ×{multiplier.toFixed(1)}
+              </span>
               <button
                 type="button"
-                onClick={() => { setMenuOpen(false); onMarkSkipped() }}
-                className="w-full text-left px-3 py-2 text-sm text-[#1A1A1A] hover:bg-[#F9F7F2] transition-colors"
+                onClick={() => handleMultiplierStep(PLAN_MULTIPLIER_STEP)}
+                disabled={multiplier >= PLAN_MULTIPLIER_MAX}
+                className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                {t('plan.actions.markSkipped')}
+                <Plus className="h-3 w-3" />
               </button>
+            </div>
+          </div>
+
+          {/* Recipe swap */}
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-500 truncate flex-1 mr-2">{meal.recipeName}</span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setPickerOpen(true)}
+              disabled={mutation.isPending}
+              className="shrink-0 text-xs h-7 px-2 gap-1"
+            >
+              <RefreshCw className="h-3 w-3" />
+              {t('mealPlan.editSlot.swapRecipe')}
+            </Button>
+          </div>
+
+          {mutation.isError && (
+            <p className="text-xs text-red-500">{t('mealPlan.editSlot.saveError')}</p>
+          )}
+          {mutation.isPending && (
+            <div className="flex items-center gap-1.5 text-xs text-gray-400">
+              <Spinner className="h-3 w-3" />{t('mealPlan.editSlot.saving')}
             </div>
           )}
         </div>
-      </div>
+      )}
+
+      {/* Recipe detail dialog */}
+      <Dialog open={detailOpen} onOpenChange={o => !o && setDetailOpen(false)}>
+        <DialogContent className="max-w-lg max-h-[85dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="leading-snug pr-6">{displayName}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {meal.macros && (
+              <div className="grid grid-cols-4 gap-1.5 text-center">
+                {([
+                  { label: 'kcal', value: meal.macros.kcal },
+                  { label: 'P', value: meal.macros.protein },
+                  { label: 'F', value: meal.macros.fat },
+                  { label: 'C', value: meal.macros.carbs },
+                ] as const).map(({ label, value }) => (
+                  <div key={label} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
+                    <p className="text-xs font-bold text-[#1A1A1A]">{Number(value).toFixed(0)}</p>
+                    <p className="text-[10px] text-gray-400">{label}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {fullRecipe && (
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-[#F9F7F2] rounded-[10px] p-2.5 text-center">
+                  <p className="text-[10px] text-gray-400 mb-0.5">{t('recipes.detail.prep')}</p>
+                  <p className="text-sm font-bold text-[#1A1A1A]">{fullRecipe.prepTimeMinutes}m</p>
+                </div>
+                <div className="bg-[#F9F7F2] rounded-[10px] p-2.5 text-center">
+                  <p className="text-[10px] text-gray-400 mb-0.5">{t('recipes.detail.cook')}</p>
+                  <p className="text-sm font-bold text-[#1A1A1A]">{fullRecipe.cookTimeMinutes}m</p>
+                </div>
+              </div>
+            )}
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                {t('recipes.detail.steps')}
+              </p>
+              {steps.length === 0 ? (
+                <p className="text-sm text-gray-400">{t('recipes.detail.noSteps')}</p>
+              ) : (
+                <ol className="space-y-2">
+                  {steps.map((step, i) => (
+                    <li key={i} className="flex gap-2.5 text-sm">
+                      <span className="shrink-0 w-5 h-5 rounded-full bg-[#F28C28] text-white text-[10px] font-bold flex items-center justify-center mt-0.5">
+                        {i + 1}
+                      </span>
+                      <span className="text-[#1A1A1A] leading-relaxed">{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Recipe picker */}
+      <RecipePickerDialog
+        open={pickerOpen}
+        currentRecipeId={meal.recipeId}
+        onSelect={recipe => { setPickerOpen(false); handleRecipeSwap(recipe) }}
+        onClose={() => setPickerOpen(false)}
+      />
     </div>
   )
 }

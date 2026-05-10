@@ -330,9 +330,10 @@ export interface CreatePlanRequest {
 }
 
 export interface UpdatePlannedMealRequest {
-  status: PlannedMealStatus
+  status?: PlannedMealStatus
   replacedWithRecipeId?: string
   notes?: string
+  servingMultiplier?: number
 }
 
 // ── Feedback ──────────────────────────────────────────────────────────────
