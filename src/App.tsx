@@ -12,6 +12,7 @@ import { MealPlan } from '@/pages/MealPlan'
 import { Recipes } from '@/pages/Recipes'
 import { Ingredients } from '@/pages/Ingredients'
 import { ShoppingList } from '@/pages/ShoppingList'
+import { Fridge } from '@/pages/Fridge'
 import { RetailProducts } from '@/pages/RetailProducts'
 import { Settings } from '@/pages/Settings'
 import { Profile } from '@/pages/Profile'
@@ -82,6 +83,7 @@ export default function App() {
                 <Route path="recipes" element={<Recipes />} />
                 <Route path="ingredients" element={<Ingredients />} />
                 <Route path="shopping-list" element={<ShoppingList />} />
+                <Route path="fridge" element={<Fridge />} />
                 <Route path="retail-products" element={<RetailProducts />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="profile" element={<Profile />} />

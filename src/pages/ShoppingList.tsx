@@ -1,14 +1,15 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ShoppingCart, ExternalLink, AlertCircle, Package, Trash2, Archive } from 'lucide-react'
+import { ShoppingCart, ExternalLink, AlertCircle, Package, Archive, Refrigerator, Check } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { mealPlansService } from '@/services/mealPlans'
+import { fridgeService } from '@/services/fridge'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { formatCurrency } from '@/lib/utils'
 import type { ShoppingListItem, IngredientCategory } from '@/types'
@@ -20,19 +21,36 @@ const CATEGORY_COLOR: Record<IngredientCategory, 'green' | 'orange' | 'gray' | '
 export function ShoppingList() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const plan = useMealPlanStore(s => s.plan)
+  const [leftoversAdded, setLeftoversAdded] = useState(false)
+
+  const { data: fridgeItems = [] } = useQuery({
+    queryKey: ['fridge'],
+    queryFn: fridgeService.list,
+  })
 
   const mutation = useMutation({
     mutationFn: mealPlansService.shoppingList,
+  })
+
+  const addLeftoversMutation = useMutation({
+    mutationFn: fridgeService.addBatch,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fridge'] })
+      setLeftoversAdded(true)
+    },
   })
 
   useEffect(() => {
     if (!plan) return
     mutation.mutate({
       meals: plan.meals.map(m => ({ recipeId: m.recipe.id, servingMultiplier: m.servingMultiplier })),
+      fridgeItems: fridgeItems.map(fi => ({ ingredientId: fi.ingredientId, amount: fi.amount, unit: fi.unit })),
     })
+    setLeftoversAdded(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plan?.id])
+  }, [plan?.id, fridgeItems.length])
 
   if (!plan) {
     return (
@@ -62,16 +80,29 @@ export function ShoppingList() {
     : {}
 
   const missingCount = shoppingList?.items.filter(i => !i.retailProduct).length ?? 0
-  const wasteItems = shoppingList?.items.filter(
-    i => i.retailProduct?.wasteAmount != null && i.retailProduct.wasteAmount > 0
+  const leftoverItems = shoppingList?.items.filter(
+    i => i.retailProduct?.leftoverAmount != null && i.retailProduct.leftoverAmount > 0
   ) ?? []
 
-  const totalWasteGrams = wasteItems
+  const totalLeftoverGrams = leftoverItems
     .filter(i => i.retailProduct!.unit === 'G')
-    .reduce((sum, i) => sum + (i.retailProduct!.wasteAmount ?? 0), 0)
+    .reduce((sum, i) => sum + (i.retailProduct!.leftoverAmount ?? 0), 0)
 
-  const totalWasteCost = shoppingList?.totalWasteCost
-    ?? wasteItems.reduce((sum, i) => sum + (i.retailProduct!.wasteCost ?? 0), 0)
+  const totalLeftoverCost = shoppingList?.totalLeftoverCost
+    ?? leftoverItems.reduce((sum, i) => sum + (i.retailProduct!.leftoverCost ?? 0), 0)
+
+  function handleAddLeftoversToFridge() {
+    const toAdd = leftoverItems
+      .filter(i => i.retailProduct?.leftoverAmount != null && i.retailProduct.leftoverAmount > 0)
+      .map(i => ({
+        ingredientId: i.ingredientId,
+        amount: i.retailProduct!.leftoverAmount!,
+        unit: i.retailProduct!.unit,
+      }))
+    if (toAdd.length > 0) {
+      addLeftoversMutation.mutate(toAdd)
+    }
+  }
 
   return (
     <div>
@@ -119,14 +150,14 @@ export function ShoppingList() {
                 </p>
               </CardContent>
             </Card>
-            {shoppingList.totalWasteCost != null && (
-              <Card className={shoppingList.totalWasteCost > 0 ? 'border-orange-200 bg-orange-50' : ''}>
+            {shoppingList.totalLeftoverCost != null && (
+              <Card className={shoppingList.totalLeftoverCost > 0 ? 'border-orange-200 bg-orange-50' : ''}>
                 <CardContent className="pt-4">
-                  <p className={`text-xs mb-1 ${shoppingList.totalWasteCost > 0 ? 'text-orange-600' : 'text-gray-500'}`}>
-                    {t('shoppingList.summary.totalWaste')}
+                  <p className={`text-xs mb-1 ${shoppingList.totalLeftoverCost > 0 ? 'text-orange-600' : 'text-gray-500'}`}>
+                    {t('shoppingList.summary.totalLeftovers')}
                   </p>
-                  <p className={`text-xl font-headline font-bold ${shoppingList.totalWasteCost > 0 ? 'text-orange-700' : 'text-[#4F7942]'}`}>
-                    {formatCurrency(shoppingList.totalWasteCost, shoppingList.currency)}
+                  <p className={`text-xl font-headline font-bold ${shoppingList.totalLeftoverCost > 0 ? 'text-orange-700' : 'text-[#4F7942]'}`}>
+                    {formatCurrency(shoppingList.totalLeftoverCost, shoppingList.currency)}
                   </p>
                 </CardContent>
               </Card>
@@ -165,47 +196,68 @@ export function ShoppingList() {
             </Card>
           ))}
 
-          {/* Waste summary */}
-          <Card className={wasteItems.length > 0 ? 'border-orange-200' : ''}>
+          {/* Leftovers summary */}
+          <Card className={leftoverItems.length > 0 ? 'border-orange-200' : ''}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Trash2 className="h-4 w-4 text-orange-500" />
-                {t('shoppingList.waste.summaryTitle')}
+                <Refrigerator className="h-4 w-4 text-orange-500" />
+                {t('shoppingList.leftovers.summaryTitle')}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              {wasteItems.length === 0 ? (
-                <p className="text-sm text-[#4F7942]">{t('shoppingList.waste.none')}</p>
+              {leftoverItems.length === 0 ? (
+                <p className="text-sm text-[#4F7942]">{t('shoppingList.leftovers.none')}</p>
               ) : (
                 <>
                   <p className="text-xs text-gray-500 mb-3">
-                    {t('shoppingList.waste.summaryDesc')}
+                    {t('shoppingList.leftovers.summaryDesc')}
                     {shoppingList.items.some(i => i.pantryItem) && (
-                      <span className="ml-1 text-green-600">{t('shoppingList.waste.pantryExcluded')}</span>
+                      <span className="ml-1 text-green-600">{t('shoppingList.leftovers.pantryExcluded')}</span>
                     )}
                   </p>
                   <div className="space-y-2">
-                    {wasteItems.map(item => (
+                    {leftoverItems.map(item => (
                       <div key={item.ingredientId + item.unit} className="flex items-center justify-between text-sm">
                         <span className="text-[#1A1A1A] font-medium">{item.ingredientName}</span>
                         <span className="text-orange-600 text-xs">
-                          {item.retailProduct!.wasteAmount!.toFixed(item.retailProduct!.unit === 'PIECE' ? 0 : 0)} {item.retailProduct!.unit}
+                          {item.retailProduct!.leftoverAmount!.toFixed(item.retailProduct!.unit === 'PIECE' ? 0 : 0)} {item.retailProduct!.unit}
                           {' · '}
-                          {t('shoppingList.waste.cost', { cost: formatCurrency(item.retailProduct!.wasteCost, shoppingList.currency) })}
+                          {t('shoppingList.leftovers.cost', { cost: formatCurrency(item.retailProduct!.leftoverCost, shoppingList.currency) })}
                         </span>
                       </div>
                     ))}
                   </div>
-                  {(totalWasteCost > 0 || totalWasteGrams > 0) && (
+                  {(totalLeftoverCost > 0 || totalLeftoverGrams > 0) && (
                     <div className="flex items-center justify-between mt-3 pt-3 border-t border-orange-100">
-                      <span className="text-sm font-semibold text-[#1A1A1A]">{t('shoppingList.summary.totalWaste')}</span>
+                      <span className="text-sm font-semibold text-[#1A1A1A]">{t('shoppingList.summary.totalLeftovers')}</span>
                       <span className="text-sm font-bold text-orange-700">
-                        {totalWasteGrams > 0 && <>{Math.round(totalWasteGrams)} g</>}
-                        {totalWasteGrams > 0 && totalWasteCost > 0 && ' · '}
-                        {totalWasteCost > 0 && formatCurrency(totalWasteCost, shoppingList.currency)}
+                        {totalLeftoverGrams > 0 && <>{Math.round(totalLeftoverGrams)} g</>}
+                        {totalLeftoverGrams > 0 && totalLeftoverCost > 0 && ' · '}
+                        {totalLeftoverCost > 0 && formatCurrency(totalLeftoverCost, shoppingList.currency)}
                       </span>
                     </div>
                   )}
+                  <div className="mt-4 pt-3 border-t border-orange-100">
+                    {leftoversAdded ? (
+                      <div className="flex items-center gap-2 text-sm text-[#4F7942]">
+                        <Check className="h-4 w-4" />
+                        {t('shoppingList.leftovers.addedToFridge')}
+                      </div>
+                    ) : (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={handleAddLeftoversToFridge}
+                        disabled={addLeftoversMutation.isPending}
+                        className="w-full"
+                      >
+                        <Refrigerator className="h-4 w-4 mr-1.5" />
+                        {addLeftoversMutation.isPending
+                          ? t('shoppingList.leftovers.addingToFridge')
+                          : t('shoppingList.leftovers.addToFridge')}
+                      </Button>
+                    )}
+                  </div>
                 </>
               )}
             </CardContent>
@@ -219,6 +271,7 @@ export function ShoppingList() {
 function ShoppingItem({ item, currency }: { item: ShoppingListItem; currency: string }) {
   const { t } = useTranslation()
   const hasProduct = !!item.retailProduct
+  const coveredByFridge = item.fridgeAmount != null && item.fridgeAmount > 0
 
   return (
     <div className={`flex items-start gap-3 p-3 rounded-[12px] ${hasProduct ? 'bg-[#F9F7F2]' : 'bg-amber-50 border border-amber-200'}`}>
@@ -238,6 +291,12 @@ function ShoppingItem({ item, currency }: { item: ShoppingListItem; currency: st
               {t('shoppingList.pantryLabel')}
             </span>
           )}
+          {coveredByFridge && (
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700">
+              <Refrigerator className="h-2.5 w-2.5" />
+              {t('shoppingList.fridgeLabel', { amount: Number(item.fridgeAmount).toFixed(1), unit: item.unit })}
+            </span>
+          )}
         </div>
         <p className="text-xs text-gray-500">
           {t('shoppingList.totalNeeded')} <span className="font-medium">{item.totalAmount.toFixed(1)} {item.unit}</span>
@@ -254,14 +313,14 @@ function ShoppingItem({ item, currency }: { item: ShoppingListItem; currency: st
                 {item.retailProduct!.packageSize}{item.retailProduct!.unit} · {formatCurrency(item.retailProduct!.price, currency)}
               </p>
             </div>
-            {item.retailProduct!.wasteAmount != null && item.retailProduct!.wasteAmount > 0 && (
+            {item.retailProduct!.leftoverAmount != null && item.retailProduct!.leftoverAmount > 0 && (
               <p className="text-xs text-orange-500">
-                {t('shoppingList.waste.amount', {
-                  amount: item.retailProduct!.wasteAmount.toFixed(item.retailProduct!.unit === 'PIECE' ? 0 : 0),
+                {t('shoppingList.leftovers.amount', {
+                  amount: item.retailProduct!.leftoverAmount.toFixed(item.retailProduct!.unit === 'PIECE' ? 0 : 0),
                   unit: item.retailProduct!.unit,
                 })}
-                {item.retailProduct!.wasteCost != null && (
-                  <> · {t('shoppingList.waste.cost', { cost: formatCurrency(item.retailProduct!.wasteCost, currency) })}</>
+                {item.retailProduct!.leftoverCost != null && (
+                  <> · {t('shoppingList.leftovers.cost', { cost: formatCurrency(item.retailProduct!.leftoverCost, currency) })}</>
                 )}
               </p>
             )}
