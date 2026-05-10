@@ -27,35 +27,65 @@
     "search": "Keresés",
     "signOut": "Kijelentkezés",
     "offline": "Nincs internetkapcsolat",
-    "back": "Vissza"
+    "back": "Vissza",
+    "comingSoon": "Hamarosan",
+    "errorGeneric": "Valami hiba történt. Próbáld újra."
   },
   "language": {
     "en": "EN",
     "hu": "HU"
   },
   "dashboard": {
-    "title": "Irányítópult",
-    "subtitle": "Táplálkozási áttekintőd",
-    "newPlan": "Új terv",
-    "stats": {
-      "recipes": "Receptek",
-      "ingredients": "Hozzávalók",
-      "activePlan": "Aktív terv",
-      "totalCost": "Teljes költség"
+    "title": "Ma",
+    "subtitle": "A mai napod egy pillantásra",
+    "meals": {
+      "title": "Mai étkezések",
+      "markEaten": "Megettem",
+      "markSkipped": "Kihagytam",
+      "logOther": "Mást ettem",
+      "replaceRecipe": "Lecseréltem",
+      "noMealsToday": "Ma nincs tervezett étkezés.",
+      "errorUpdating": "Nem sikerült frissíteni az étkezés állapotát.",
+      "mealTypes": {
+        "BREAKFAST": "Reggeli",
+        "LUNCH": "Ebéd",
+        "DINNER": "Vacsora",
+        "SNACK": "Snack",
+        "MORNING_SNACK": "Tízórai",
+        "AFTERNOON_SNACK": "Uzsonna"
+      }
     },
-    "activePlan": {
-      "title": "Aktív terv · {{days}} nap",
-      "view": "Megtekintés",
-      "day": "{{day}}. nap",
-      "protein": "Fehérje",
-      "fat": "Zsír",
-      "carbs": "Szénhidrát",
-      "moreDays": "+{{count}} további nap"
+    "prep": {
+      "todayTitle": "Előkészítendő ma",
+      "tomorrowTitle": "Holnapi előkészítés",
+      "markDone": "Megcsináltam",
+      "durationMin": "~{{count}} perc",
+      "windowLabels": {
+        "MORNING": "reggel",
+        "EVENING": "este",
+        "AFTERNOON": "délután",
+        "NIGHT": "éjjel"
+      },
+      "prepTypeLabels": {
+        "OVERNIGHT_PREP": "Éjszakai előkészítés",
+        "BATCH_FRIENDLY": "Előre elkészíthető",
+        "MAKE_AHEAD": "Előre elkészíthető",
+        "FRESH_ONLY": "Frissen készítendő"
+      }
     },
-    "noActivePlan": {
-      "title": "Nincs aktív terv",
-      "description": "Generálj étrendet a napi táplálkozási összesítőd megtekintéséhez.",
-      "button": "Étrend generálása"
+    "planGlance": {
+      "title": "Heti terv",
+      "daysRemaining_one": "{{count}} nap van hátra",
+      "daysRemaining_other": "{{count}} nap van hátra",
+      "viewFull": "Teljes terv"
+    },
+    "points": {
+      "total": "{{count}} pont"
+    },
+    "activation": {
+      "title": "Még nincs heti terved",
+      "description": "Tervezd meg az első hetedet — 50 pont vár.",
+      "cta": "Terv összeállítása"
     }
   },
   "mealPlan": {

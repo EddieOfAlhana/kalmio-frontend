@@ -27,35 +27,65 @@
     "search": "Search",
     "signOut": "Sign out",
     "offline": "No internet connection",
-    "back": "Back"
+    "back": "Back",
+    "comingSoon": "Coming soon",
+    "errorGeneric": "Something went wrong. Please try again."
   },
   "language": {
     "en": "EN",
     "hu": "HU"
   },
   "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Your nutrition overview",
-    "newPlan": "New Plan",
-    "stats": {
-      "recipes": "Recipes",
-      "ingredients": "Ingredients",
-      "activePlan": "Active Plan",
-      "totalCost": "Total Cost"
+    "title": "Today",
+    "subtitle": "Your day at a glance",
+    "meals": {
+      "title": "Today's meals",
+      "markEaten": "Ate this",
+      "markSkipped": "Skipped",
+      "logOther": "Ate something else",
+      "replaceRecipe": "Replaced",
+      "noMealsToday": "No meals planned for today.",
+      "errorUpdating": "Failed to update meal status.",
+      "mealTypes": {
+        "BREAKFAST": "Breakfast",
+        "LUNCH": "Lunch",
+        "DINNER": "Dinner",
+        "SNACK": "Snack",
+        "MORNING_SNACK": "Morning snack",
+        "AFTERNOON_SNACK": "Afternoon snack"
+      }
     },
-    "activePlan": {
-      "title": "Active Plan · {{days}} days",
-      "view": "View",
-      "day": "Day {{day}}",
-      "protein": "Protein",
-      "fat": "Fat",
-      "carbs": "Carbs",
-      "moreDays": "+{{count}} more days"
+    "prep": {
+      "todayTitle": "Prep today",
+      "tomorrowTitle": "Tomorrow's prep",
+      "markDone": "Done",
+      "durationMin": "~{{count}} min",
+      "windowLabels": {
+        "MORNING": "morning",
+        "EVENING": "evening",
+        "AFTERNOON": "afternoon",
+        "NIGHT": "night"
+      },
+      "prepTypeLabels": {
+        "OVERNIGHT_PREP": "Overnight prep",
+        "BATCH_FRIENDLY": "Can make ahead",
+        "MAKE_AHEAD": "Make ahead",
+        "FRESH_ONLY": "Cook fresh"
+      }
     },
-    "noActivePlan": {
-      "title": "No active plan",
-      "description": "Generate a meal plan to see your daily nutrition breakdown.",
-      "button": "Generate Meal Plan"
+    "planGlance": {
+      "title": "Weekly plan",
+      "daysRemaining_one": "{{count}} day remaining",
+      "daysRemaining_other": "{{count}} days remaining",
+      "viewFull": "Full plan"
+    },
+    "points": {
+      "total": "{{count}} points"
+    },
+    "activation": {
+      "title": "No weekly plan yet",
+      "description": "Plan your first week — 50 points waiting.",
+      "cta": "Build a plan"
     }
   },
   "mealPlan": {

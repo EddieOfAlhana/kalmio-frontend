@@ -400,6 +400,53 @@ export interface GroomingSession {
   itemsExpired: number
 }
 
+// ── Dashboard ─────────────────────────────────────────────────────────────
+
+export type PlannedMealStatusExtended = 'PLANNED' | 'EATEN' | 'SKIPPED' | 'REPLACED'
+export type PrepType = 'OVERNIGHT_PREP' | 'BATCH_FRIENDLY' | 'MAKE_AHEAD' | 'FRESH_ONLY'
+export type PrepWindow = 'MORNING' | 'AFTERNOON' | 'EVENING' | 'NIGHT'
+
+export interface TodaysMealCard {
+  mealId: string
+  recipeId: string
+  recipeName: string
+  mealType: string
+  macros: { kcal: number; protein: number; fat: number; carbs: number } | null
+  status: PlannedMealStatusExtended
+}
+
+export interface PrepTaskCard {
+  id?: string
+  planId: string
+  recipeId: string
+  recipeName: string
+  prepType: PrepType
+  window: PrepWindow
+  scheduledDate: string
+  durationMin: number | null
+}
+
+export interface PlanGlanceDto {
+  planId: string
+  startDate: string
+  endDate: string
+  daysRemaining: number
+  totalDays: number
+}
+
+export interface DashboardDto {
+  todaysMeals: TodaysMealCard[]
+  todaysPrepTasks: PrepTaskCard[]
+  tomorrowsPrepTasks: PrepTaskCard[]
+  planGlance: PlanGlanceDto | null
+  pointsTotal: number
+  activeFlags: {
+    hasActivePlan: boolean
+    needsGrooming: boolean
+    hasReplanDiff: boolean
+  }
+}
+
 // ── Shopping List ─────────────────────────────────────────────────────────
 
 export interface ShoppingListRequest {
