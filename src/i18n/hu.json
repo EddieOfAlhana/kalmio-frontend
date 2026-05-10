@@ -697,6 +697,22 @@
     "lastUsed": "Utoljára használva",
     "neverUsed": "Még nem használták"
   },
+  "grooming": {
+    "title": "Hűtőellenőrzés",
+    "emptyFridge": "Nincs semmi a hűtőben — kezdjük frissen.",
+    "skipCta": "Tovább a tervezéshez",
+    "planCta": "Tervezzük a hetet",
+    "keep": "Megtartom",
+    "discard": "Eldobom",
+    "adjustQty": "Mennyiség",
+    "loading": "Egy pillanat — megnézem, mi van a hűtőben.",
+    "summary": "{{kept}} megtartva · {{discarded}} eldobva",
+    "alreadyCompleted": "Ez a munkamenet már le van zárva.",
+    "error": "Hiba történt. Próbáld újra.",
+    "expiresIn": "{{days}} nap múlva jár le",
+    "expiresToday": "ma jár le",
+    "expiredDaysAgo": "{{days}} napja lejárt"
+  },
   "blog": {
     "nav": "Blog",
     "indexTitle": "A konyhából",
