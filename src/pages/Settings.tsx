@@ -131,7 +131,8 @@ export function Settings() {
       setCustomName('')
       await loadPasskeys()
       toast({ title: t('settings.security.addSuccess'), variant: 'success' })
-    } catch {
+    } catch (err) {
+      console.error('[passkey] registration failed:', err)
       setPasskeyError(t('settings.security.addError'))
       toast({ title: t('settings.security.addError'), variant: 'destructive' })
     } finally {

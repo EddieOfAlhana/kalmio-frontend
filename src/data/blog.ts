@@ -1,3 +1,5 @@
+import mcpEn from './posts/talk-to-kalmio-from-claude-or-chatgpt.en.md?raw'
+import mcpHu from './posts/talk-to-kalmio-from-claude-or-chatgpt.hu.md?raw'
 import eatHealthyEn from './posts/eating-healthy-shouldnt-require-a-spreadsheet.en.md?raw'
 import eatHealthyHu from './posts/eating-healthy-shouldnt-require-a-spreadsheet.hu.md?raw'
 import whatsComingEn from './posts/whats-coming-to-kalmio-2026.en.md?raw'
@@ -29,6 +31,20 @@ export interface BlogPost {
 }
 
 export const posts: BlogPost[] = [
+  {
+    slug: 'talk-to-kalmio-from-claude-or-chatgpt',
+    date: '2026-05-17',
+    category: 'Feature',
+    titleEn: 'Talk to Kalmio from Claude or ChatGPT',
+    titleHu: 'Kalmio Claude-ból és ChatGPT-ből',
+    excerptEn:
+      "Kalmio now has an MCP server (for Claude Desktop and other MCP clients) and a ChatGPT Custom GPT Actions spec. Eight tools, OAuth 2.0 / PKCE, free for everyone. The kitchen comes with you to wherever you already think out loud.",
+    excerptHu:
+      'A Kalmiónak mostantól MCP szervere (Claude Desktophoz és más MCP kliensekhez) és ChatGPT Custom GPT Actions speckje van. Nyolc tool, OAuth 2.0 / PKCE, mindenkinek ingyenesen. A konyha veled jön oda, ahol már most is hangosan gondolkozol.',
+    readingTimeMin: 4,
+    contentEn: mcpEn,
+    contentHu: mcpHu,
+  },
   {
     slug: 'whats-coming-to-kalmio-2026',
     date: '2026-05-15',
