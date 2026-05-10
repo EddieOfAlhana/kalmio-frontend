@@ -1,44 +1,35 @@
-## The most underrated meal in Hungarian cuisine
+## A Wednesday, sometime in the nineties
 
-Quick word association: someone says *Hungarian healthy food.* What comes to mind?
+You get home from school and you can already smell what's for lunch from the stairwell. Főzelék doesn't joke around. You walk in, your mum is plating up — yellow split pea főzelék, a slice of bread underneath, a fried sausage on top, and so much paprika sprinkled over it that you briefly mistake it for a painting. You eat it. Then you go play football, or watch TV, or do whatever a nine-year-old does, and you say absolutely nothing about how you've just eaten something that the wellness industry will, thirty years later, call "a nutrient-dense, pulse-rich, low-glycemic complete meal."
 
-Most people draw a blank or land on something polite like "grilled chicken with rice." We've forgotten that Hungary already has a uniquely good answer to this question, sitting quietly at the back of the cookbook: **főzelék.**
+You just had lunch.
 
-Vegetable-thickened, pulse-rich, batch-cookable, cheap, deeply familiar to anyone over fifty, and — by accident of how it's made — genuinely nutritionally dense. Tökfőzelék. Lencsefőzelék. Sárgaborsófőzelék. Spenótfőzelék. The list goes on.
+## What the fashionable diets all miss
 
-Főzelék is the comeback story Hungarian cuisine doesn't know it's about to have.
+Főzelék isn't trendy. It doesn't photograph well enough to drive likes. It doesn't have an English name baristas can pronounce. It isn't plated, there's no avocado, and sometimes it looks like it walked to the table without combing its hair.
 
-## Why we're investing in főzelék specifically
+And yet. If you sat down and tried to design *the ideal food for feeding a working adult cheaply, fast, with low waste and a lot of vegetables, day after day for a week* — you'd arrive exactly at főzelék. One pot. Freezer-friendly. Better the next day. Keeps three days in the fridge. The ingredients cost a few hundred forints at the market. Doesn't need meat, but tolerates it. Healthy without the smugness.
 
-Most modern wellness apps push their users toward an internationalized "healthy food" that signals more than it nourishes — Buddha bowls, kale smoothies, açaí. There's nothing wrong with that food. There's something wrong with offering only that food in a country that already has a tradition of vegetable-forward eating older than most of the wellness industry.
+This country's food culture spent centuries arriving at an almost-perfect meal-planning unit. Then it forgot how exceptional that was.
 
-For a Kalmio user whose mum cooked sárgaborsófőzelék on Wednesdays, suggesting quinoa is patronizing. Suggesting a lighter, more protein-balanced version of the főzelék she remembers is the opposite of patronizing. It's recognition.
+## Why most wellness apps don't offer it
 
-So we're seeding the recipe library with eight főzelék recipes for launch, with realistic prep times, sensible macros, and the kind of clear instructions that make sense whether it's your first time or your hundredth.
+Simple. They weren't built here. Most of these apps come from American or Western European teams for whom "healthy plant-forward eating" mostly means quinoa, kale smoothies, and Buddha bowls. Those are fine foods. But suggesting quinoa to a Hungarian middle-aged mum who has been cooking főzelék her whole life — when she already has one of the most uniquely vegetable-forward cuisines in Europe — isn't help. It's condescension.
 
-## What's coming to the library
+Kalmio is a Hungarian product. From day one our recipe library has tried to fit Hungarian eating — from a lighter csirkepaprikás to sütőtök krémleves. But honestly: főzelék was underrepresented. We're fixing that now.
 
-Eight recipes, all `BATCH_FRIENDLY` and `MAKE_AHEAD` (most főzelék keep three days in the fridge):
+## Eight főzelék recipes coming in the next update
 
-- **Tökfőzelék** — squash, with a properly worked-out roux ratio
-- **Lencsefőzelék** — lentil, naturally protein-rich
-- **Sárgaborsófőzelék** — yellow split pea, with a side of smoked paprika
-- **Spenótfőzelék** — spinach, lighter on the cream than the traditional version
-- **Krumplifőzelék** — potato, with options to keep it vegan
-- **Zöldborsófőzelék** — green pea, summer-friendly
-- **Kelfőzelék** — savoy cabbage, much underrated
-- **Karfiolfőzelék** — cauliflower, low-carb without trying
+Eight főzelék recipes are joining the library — with precise quantities, realistic prep times, and instructions that mean something to a beginner and to someone who's done it a hundred times. All of them tagged `BATCH_FRIENDLY` and `MAKE_AHEAD`, because most főzelék keep three days, which to the planner means cook once, eat several times.
 
-Each will be tagged for cultural fit so the planner pulls them in for users who set Hungarian-classic preferences — and ranks them properly when shopping cadence and batch cooking are part of the plan.
+The list is deliberately classical: squash, lentil, yellow split pea, spinach, potato, green pea, savoy cabbage, cauliflower. No "modern reinterpretations," no "fitness twists," no "vegan remixes." If you want to put your own spin on it later, fine. The foundation needs to be what it is.
 
-## Why this matters strategically
+## The főzelék masters, and a quiet invitation
 
-Food culture is a moat. Every meal-planning app on the planet can serve quinoa bowls. Almost none of them know what főzelék is, or that it's the right answer to Wednesday lunch for a third of Hungarian households.
+We're not the people *reinventing* főzelék. There are people who have spent their lives doing this dish justice — chefs, grandmothers, food writers — who have added more thinking to a single pot of főzelék over the last decade than our recipe library ever will.
 
-We're building Kalmio for a country, not for a category. That means leaning hard into traditions like főzelék rather than apologizing for them — and showing that the healthier eating we're proposing isn't a rejection of Hungarian food, but a reconnection with the parts of it that were always good for you.
+If any of them are reading this: respect. And if you'd ever like to sit down over coffee and talk about how to bring the főzelék tradition into the daily planning of a modern Hungarian household with the dignity it deserves — get in touch. Kalmio's pitch is short: Hungarian-built, free for users, and we think főzelék is one of the country's best-kept secrets that absolutely shouldn't still be a secret.
 
-## What's next
+## And you, reading this
 
-The főzelék recipes ship in the next library update. Beyond that, we're planning to widen Hungarian breakfasts (which are currently underrepresented in the library) and to invite a Hungarian dietitian to validate the next thirty highest-frequency recipes.
-
-If you have a household főzelék recipe you want included — particularly an unusual one — send it through the feedback panel. We mean it.
+If you have a household főzelék recipe you'd like included — especially if it's unusual, or if your family has been cooking it the same way for generations — send it through the in-app feedback panel. We mean it. The recipe library is only as good as the recipes in it.

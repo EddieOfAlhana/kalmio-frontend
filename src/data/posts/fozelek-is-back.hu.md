@@ -1,44 +1,35 @@
-## A magyar konyha legalulértékeltebb étele
+## Egy szerda, valamikor a kilencvenes években
 
-Gyors szóasszociáció: valaki azt mondja, *magyar egészséges étel.* Mi jut eszedbe?
+Hazaérsz iskolából, és már a lépcsőházban tudod, hogy mi lesz ebéd. A főzelékillat nem viccel. Bemész, anyu épp tálal — sárgaborsófőzelék, alatta egy karéj kenyér, fönt sült virsli, és annyi paprika a tetején, hogy azt hiszed, festmény. Megeszed. Aztán elmész fociz­ni, vagy leülsz a tévé elé, vagy bármit, amit egy kilencéves csinál, és egy szót sem szólsz arról, hogy az imént ettél valami olyat, amit a wellness-ipar harminc évvel később "tápanyag-sűrű, hüvelyesekben gazdag, alacsony-glikémiás indexű komplett étkezésnek" fog hívni.
 
-A legtöbb embernek kiüresedik a feje, vagy valami óvatosra téved, mint a "grillezett csirke rizzsel". Elfelejtettük, hogy Magyarországnak már van egy egyedülállóan jó válasza erre a kérdésre, ami csendben üldögél a szakácskönyv hátulján: **a főzelék.**
+Te csak ebédet ettél.
 
-Zöldséggel sűrített, hüvelyesekben gazdag, batch-főzhető, olcsó, mélyen ismerős mindenkinek ötven felett, és — nem tervezetten — valóban tápláló. Tökfőzelék. Lencsefőzelék. Sárgaborsófőzelék. Spenótfőzelék. A lista hosszú.
+## Amiről szó sincs a divatos étrendekben
 
-A főzelék az a comeback story, amelyet a magyar konyha még nem is sejt magáról.
+A főzelék nem trendi. Nem fotózható úgy, hogy lájkokat hozzon. Nincs angol neve, amit a baristák szépen ki tudnának ejteni. Nem rendezett, nincs mellette avokádó, és néha egy kicsit ránézésre is olyan, mintha pucolatlanul érkezett volna a tányérra.
 
-## Miért fektetünk épp a főzelékbe
+És mégis. Ha leülsz, és megpróbálsz végiggondolni, *miféle ételt találnál ki, ha a célod az lenne, hogy egy egész héten át dolgozó embert táplálj olcsón, gyorsan, kis hulladékkal és sok zöldséggel* — pontosan a főzelékhez érkezel meg. Egy étel, ami egy fazékban készül. Lefagyasztható. Másnap jobb. Hűtőben három napig elálla. A hozzávalói piaci áron pár száz forintosak. Húst nem kíván, de elbír sokfélét. Egészséges anélkül, hogy ezzel henceg­ne.
 
-A legtöbb modern wellness app egy nemzetközisített "egészséges ételt" tol a felhasználói felé, ami inkább jelez, mint táplál — Buddha bowl-ok, kelkáposzta-smoothie-k, açaí. Nincs ezzel az étellel baj. Azzal van baj, hogy *csak ezt* ajánljuk egy olyan országban, aminek a zöldségközpontú étkezési hagyománya régebbi a legtöbb wellness ipari trendnél.
+Az ország konyhakultúrája évszázadok alatt rátalált egy ételre, ami szinte tökéletes étrend-tervezési egység. Aztán elfelejtette, hogy ez milyen kivételes.
 
-Egy Kalmio-felhasználónak, akinek anyukája szerdánként sárgaborsófőzeléket főzött, quinoát ajánlani lenéző. Egy könnyebb, fehérjében jobban kiegyensúlyozott változatot ajánlani abból a főzelékből, amire emlékszik — annak az ellenkezője. Az elismerés.
+## Miért nem kínálja a legtöbb wellness-app
 
-Ezért indítjuk a receptkönyvtárat nyolc főzelékkel, valós előkészítési idővel, értelmes makrókkal, és olyan világos instrukciókkal, amik akkor is értelmesek, ha először látsz főzeléket, és akkor is, ha századszor.
+Egyszerű. Mert nem ott készültek. Ezeket az alkalmazásokat nagyrészt amerikai vagy nyugat-európai csapatok építik, akik számára a "healthy plant-forward eating" elsősorban quinoát, kelkáposzta-smoothie-t, és Buddha-tálat jelent. Mindezek tisztességes ételek. De ha egy magyar középkorú anyukának, aki egész életében főzeléket főzött, quinoát ajánlasz, miközben pont van egy hagyománya egy uniku­mu­san növényközpontú konyhának — az nem segítség, hanem leereszkedés.
 
-## Mi érkezik a könyvtárba
+A Kalmio magyar termék. A receptkönyvtárunk az első naptól igyekszik a magyar konyhához igazodni — könnyített csirkepaprikástól a sült­tök krémle­vesig. De őszintén: a főzelékek alulreprezen­tál­tak voltak. Most pótoljuk.
 
-Nyolc recept, mind `BATCH_FRIENDLY` és `MAKE_AHEAD` (a legtöbb főzelék három napig elálla hűtőben):
+## Nyolc főzelék, amik a következő frissí­tésben érkeznek
 
-- **Tökfőzelék** — pontosan kidolgozott rántás-aránnyal
-- **Lencsefőzelék** — természetesen fehérjében gazdag
-- **Sárgaborsófőzelék** — egy kis füstölt paprikával
-- **Spenótfőzelék** — könnyítve a hagyományos tejszín-arányból
-- **Krumplifőzelék** — vegán változattal együtt
-- **Zöldborsófőzelék** — nyári-barát
-- **Kelfőzelék** — méltatlanul alulértékelt
-- **Karfiolfőzelék** — alacsony szénhidrát, anélkül hogy próbálkozna
+A receptkönyvtárba nyolc főzelék kerül be — pontos mennyiségek­kel, valós előkészítési idővel, és olyan instrukciókkal, amik egy kezdőnek és egy gyakorlott­nak is ugyanúgy mondanak valamit. Mind­egyik `BATCH_FRIENDLY` és `MAKE_AHEAD` címkét kap, mert a legtöbb főzelék három napig is elálla, ami a tervezőnek azt jelenti, hogy egyszer főzöl, többször eszel.
 
-Mindegyik kulturális illeszkedés szerint címkézett, hogy a tervező behúzza őket a magyar-klasszikus preferenciát beállító felhasználóknak — és helyesen rangsorolja, amikor a bevásárlási ütem és a batch főzés is része a tervnek.
+A lista szándékosan klasszikus: tök, lencse, sárgaborsó, spenót, krumpli, zöldborsó, kel, karfiol. Nincs köztük "modern értelme­zés", "fitness-csavar", "vegán remix". Aki bele akar nyúlni, az később bele­nyúl­hat. Az alapnak olyan­nak kell lennie, mint amilyennek lennie kell.
 
-## Miért stratégiai
+## A főzelékes mesterek, és egy halk meghívó
 
-Az ételkultúra védőárok. A világ minden étrendtervezője képes quinoa-tálat kínálni. Szinte egyik sem tudja, mi az a főzelék, vagy hogy ez a helyes válasz a magyar háztartások harmadának szerdai ebédjére.
+Nem mi vagyunk azok, akik *megreformálják* a főzeléket. Vannak emberek, akik az életüket arra tették föl, hogy ezt az ételt méltó módon csinálják, és írják, és tanítsák — szakácsok, nagy­mamák, ételblogger­ek, akik egy-egy fazékhoz több gondolatot adtak hozzá az elmúlt évtized­ben, mint amit mi a recept­könyvtárunk­ban valaha is fogunk.
 
-A Kalmiót egy országnak építjük, nem egy kategóriának. Ez azt jelenti, hogy keményen rátámaszkodunk az olyan hagyományokra, mint a főzelék — és nem mentegetjük őket. És megmutatjuk, hogy az egészségesebb étkezés, amit javasolunk, nem a magyar étel elutasítása, hanem újrakapcsolódás azokkal a részeivel, amelyek mindig is jók voltak neked.
+Ha vala­melyikük olvassa ezt: tisz­telet. És ha bármikor kedved van össze­ülni egy kávéra arról beszélgetni, hogy lehetne-e a főzelékes hagyo­mányt egy mai magyar háztartás napi tervezésébe szépen, mél­tóság­gal beépíteni — szólj. A Kalmio aján­lólevele rövid: magyar termék, ingyenes a felhasználóknak, és a főzeléket pontosan annak gondoljuk, ami: az ország egyik leg­jobban őrzött titka, ami már rég nem kéne, hogy titok legyen.
 
-## Mi következik
+## És neked, aki olvasod
 
-A főzelékek a következő könyvtár-frissítéssel érkeznek. Azon túl tervezzük a magyar reggelik bővítését (jelenleg alulreprezentáltak a könyvtárban), és egy magyar dietetikus meghívását, hogy validálja a következő harminc leggyakrabban használt receptet.
-
-Ha van egy házi főzelék-recepted, amit szeretnél benne látni — különösen egy szokatlan — küldd a visszajelzési panelen. Komolyan kérjük.
+Ha van egy házi főzelék-recepted, amit szeretnél, hogy bekerüljön — különösen, ha szokatlan, vagy ha a családodban nemzedékek óta így csinálják — küldd az appon belüli vissza­jelzési panelen. Komo­lyan kérjük. A receptkönyvtár annyit ér, amennyit a recep­tek érnek.

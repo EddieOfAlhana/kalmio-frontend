@@ -106,9 +106,9 @@ export const posts: BlogPost[] = [
     titleEn: 'Főzelék is back',
     titleHu: 'A főzelék visszatér',
     excerptEn:
-      'The most underrated meal in Hungarian cuisine — vegetable-thickened, pulse-rich, batch-cookable, deeply familiar — is the comeback story Hungarian wellness doesn\'t know it\'s about to have. Eight főzelék recipes coming to the library.',
+      'A wellness industry that forgot to look in its own pantry, an ideal one-pot meal hiding in plain sight, and eight recipes joining the library — with respect for the people who do this dish justice for a living.',
     excerptHu:
-      'A magyar konyha legalulértékeltebb étele — zöldséggel sűrített, hüvelyesekben gazdag, batch-főzhető, mélyen ismerős — az a comeback story, amit a magyar wellness még nem is sejt magáról. Nyolc főzelék érkezik a könyvtárba.',
+      'Egy wellness-ipar, ami elfelejtett a saját kamrájába nézni, egy szinte tökéletes egyfazékos étel, ami nyíltan rejtőzik, és nyolc recept, ami érkezik a könyvtárba — tisztelettel azok felé, akik ezt az ételt kenyérkeresetből csinálják méltó módon.',
     readingTimeMin: 4,
     contentEn: fozelekEn,
     contentHu: fozelekHu,
