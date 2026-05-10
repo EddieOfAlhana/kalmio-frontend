@@ -600,7 +600,8 @@
       "useSoon": "Use soon",
       "expired": "Expired",
       "dateLabel": "Expiry date (optional)",
-      "defaultHint": "If left blank, we'll estimate based on category."
+      "defaultHint": "If left blank, we'll estimate based on category.",
+      "setDate": "Set expiry date"
     }
   },
   "plan": {

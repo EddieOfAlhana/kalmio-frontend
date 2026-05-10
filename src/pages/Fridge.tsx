@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Refrigerator, Plus, Trash2, Search, Archive } from 'lucide-react'
+import { Refrigerator, Plus, Trash2, Search, Archive, Calendar } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -93,6 +93,16 @@ export function Fridge() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['fridge'] }),
   })
 
+  const updateMutation = useMutation({
+    mutationFn: ({ id, expiryDate }: { id: string; expiryDate?: string }) =>
+      fridgeService.updateItem(id, { expiryDate }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['fridge'] }),
+  })
+
+  function handleUpdateExpiry(id: string, expiryDate: string | undefined) {
+    updateMutation.mutate({ id, expiryDate })
+  }
+
   const filtered = useMemo(() => {
     if (!search.trim()) return items
     const q = search.toLowerCase()
@@ -169,6 +179,7 @@ export function Fridge() {
           items={nonPantry}
           today={today}
           onDelete={id => deleteMutation.mutate(id)}
+          onUpdateExpiry={handleUpdateExpiry}
         />
       )}
 
@@ -179,6 +190,7 @@ export function Fridge() {
           items={pantry}
           today={today}
           onDelete={id => deleteMutation.mutate(id)}
+          onUpdateExpiry={handleUpdateExpiry}
         />
       )}
 
@@ -261,6 +273,68 @@ export function Fridge() {
   )
 }
 
+function InlineExpiryEditor({
+  item,
+  today,
+  onSave,
+}: {
+  item: FridgeItem
+  today: Date
+  onSave: (id: string, expiryDate: string | undefined) => void
+}) {
+  const { t, i18n } = useTranslation()
+  const [editing, setEditing] = useState(false)
+  const [value, setValue] = useState(item.expiryDate ?? '')
+
+  const todayIso = today.toISOString().split('T')[0]
+  const status = getExpiryStatus(item.expiryDate, today)
+  const statusColor =
+    status === 'expired' ? 'text-red-500' : status === 'useSoon' ? 'text-amber-500' : 'text-gray-400'
+
+  const formatted = item.expiryDate
+    ? new Date(item.expiryDate + 'T00:00:00').toLocaleDateString(
+        i18n.language === 'hu' ? 'hu-HU' : 'en-GB',
+        { year: 'numeric', month: 'short', day: 'numeric' }
+      )
+    : null
+
+  function commit() {
+    setEditing(false)
+    const next = value || undefined
+    if (next !== (item.expiryDate ?? undefined)) {
+      onSave(item.id, next)
+    }
+  }
+
+  if (editing) {
+    return (
+      <input
+        type="date"
+        autoFocus
+        value={value}
+        min={todayIso}
+        className="text-xs h-6 w-36 px-1.5 border border-[#4F7942] rounded-[8px] focus:outline-none bg-white"
+        onChange={e => setValue(e.target.value)}
+        onBlur={commit}
+        onKeyDown={e => {
+          if (e.key === 'Enter') commit()
+          if (e.key === 'Escape') { setEditing(false); setValue(item.expiryDate ?? '') }
+        }}
+      />
+    )
+  }
+
+  return (
+    <button
+      onClick={() => setEditing(true)}
+      className={`flex items-center gap-1 text-xs ${statusColor} hover:text-[#4F7942] transition-colors w-fit`}
+    >
+      <Calendar className="h-3 w-3 shrink-0" />
+      <span>{formatted ?? t('fridge.expiry.setDate')}</span>
+    </button>
+  )
+}
+
 function ExpiryBadge({ expiryDate, today }: { expiryDate: string | null; today: Date }) {
   const { t } = useTranslation()
   const status = getExpiryStatus(expiryDate, today)
@@ -276,12 +350,14 @@ function FridgeGroup({
   items,
   today,
   onDelete,
+  onUpdateExpiry,
 }: {
   title: string
   titleHint: string
   items: FridgeItem[]
   today: Date
   onDelete: (id: string) => void
+  onUpdateExpiry: (id: string, expiryDate: string | undefined) => void
 }) {
   const { t } = useTranslation()
   return (
@@ -297,32 +373,39 @@ function FridgeGroup({
         {items.map(item => (
           <div
             key={item.id}
-            className="flex items-center justify-between p-3 rounded-[12px] bg-[#F9F7F2]"
+            className="flex flex-col gap-1.5 p-3 rounded-[12px] bg-[#F9F7F2]"
           >
-            <div className="flex items-center gap-2 min-w-0 flex-wrap">
-              {item.pantryItem && (
-                <Archive className="h-3.5 w-3.5 text-green-600 shrink-0" />
-              )}
-              {item.ingredientCategory && (
-                <Badge variant={CATEGORY_COLOR[item.ingredientCategory] ?? 'gray'} className="shrink-0">
-                  {item.ingredientCategory}
-                </Badge>
-              )}
-              <span className="font-medium text-sm text-[#1A1A1A] truncate">{item.ingredientName}</span>
-              <ExpiryBadge expiryDate={item.expiryDate} today={today} />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                {item.pantryItem && (
+                  <Archive className="h-3.5 w-3.5 text-green-600 shrink-0" />
+                )}
+                {item.ingredientCategory && (
+                  <Badge variant={CATEGORY_COLOR[item.ingredientCategory] ?? 'gray'} className="shrink-0">
+                    {item.ingredientCategory}
+                  </Badge>
+                )}
+                <span className="font-medium text-sm text-[#1A1A1A] truncate">{item.ingredientName}</span>
+                <ExpiryBadge expiryDate={item.expiryDate} today={today} />
+              </div>
+              <div className="flex items-center gap-3 shrink-0 ml-2">
+                <span className="text-sm font-semibold text-[#4F7942]">
+                  {Number(item.amount).toFixed(item.unit === 'PIECE' ? 0 : 1)} {item.unit}
+                </span>
+                <button
+                  onClick={() => onDelete(item.id)}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  title={t('common.delete')}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-3 shrink-0 ml-2">
-              <span className="text-sm font-semibold text-[#4F7942]">
-                {Number(item.amount).toFixed(item.unit === 'PIECE' ? 0 : 1)} {item.unit}
-              </span>
-              <button
-                onClick={() => onDelete(item.id)}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                title={t('common.delete')}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
-            </div>
+            <InlineExpiryEditor
+              item={item}
+              today={today}
+              onSave={onUpdateExpiry}
+            />
           </div>
         ))}
       </CardContent>

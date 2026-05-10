@@ -600,7 +600,8 @@
       "useSoon": "Hamarosan lejár",
       "expired": "Lejárt",
       "dateLabel": "Lejárati dátum (opcionális)",
-      "defaultHint": "Ha nem adod meg, a kategória alapján számítjuk ki."
+      "defaultHint": "Ha nem adod meg, a kategória alapján számítjuk ki.",
+      "setDate": "Lejárat megadása"
     }
   },
   "plan": {
