@@ -708,7 +708,10 @@
     "loading": "One moment — checking your fridge.",
     "summary": "{{kept}} kept · {{discarded}} discarded",
     "alreadyCompleted": "This session is already closed.",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "expiresIn": "in {{days}} days",
+    "expiresToday": "expires today",
+    "expiredDaysAgo": "{{days}} days ago"
   },
   "blog": {
     "nav": "Blog",

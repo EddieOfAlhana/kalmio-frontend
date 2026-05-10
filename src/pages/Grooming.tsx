@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react' // useRef: StrictMode guard
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -50,12 +50,34 @@ function defaultActionForItem(item: FridgeItem, today: Date): GroomingAction {
 // ── Expiry badge ──────────────────────────────────────────────────────────
 
 function ExpiryBadge({ expiryDate, today }: { expiryDate: string | null; today: Date }) {
-  const { t } = useTranslation()
-  const status = getExpiryStatus(expiryDate, today)
-  if (status === 'fresh') return null
-  const variant = status === 'expired' ? 'red' : 'amber'
-  const label = status === 'expired' ? t('fridge.expiry.expired') : t('fridge.expiry.useSoon')
-  return <Badge variant={variant}>{label}</Badge>
+  const { t, i18n } = useTranslation()
+  if (!expiryDate) return null
+
+  const exp = new Date(expiryDate)
+  const diffDays = Math.floor((exp.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+  const variant: 'green' | 'amber' | 'red' =
+    diffDays < 0 ? 'red' : diffDays <= 2 ? 'amber' : 'green'
+
+  let label: string
+  if (diffDays === 0) {
+    label = t('grooming.expiresToday')
+  } else if (diffDays > 0) {
+    label = t('grooming.expiresIn', { days: diffDays })
+  } else {
+    label = t('grooming.expiredDaysAgo', { days: Math.abs(diffDays) })
+  }
+
+  const dateStr = exp.toLocaleDateString(i18n.language === 'hu' ? 'hu-HU' : 'en-GB', {
+    month: 'short',
+    day: 'numeric',
+  })
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      <Badge variant={variant}>{label}</Badge>
+      <span className="text-xs text-gray-400">{dateStr}</span>
+    </span>
+  )
 }
 
 // ── Item row ──────────────────────────────────────────────────────────────
@@ -146,17 +168,17 @@ export function Grooming() {
   const [decisions, setDecisions] = useState<Record<string, GroomingDecision>>({})
   const [startError, setStartError] = useState(false)
   const [starting, setStarting] = useState(true)
-  // Guard against StrictMode double-invocation — only one session should be started per mount.
+  // Guard against StrictMode double-invocation — startedRef prevents a second
+  // POST /api/grooming/start. No AbortController: aborting the first request
+  // in cleanup would leave the component stuck in the loading state on remount.
   const startedRef = useRef(false)
 
   useEffect(() => {
     if (startedRef.current) return
     startedRef.current = true
-    const controller = new AbortController()
     setStarting(true)
     groomingService.start()
       .then(res => {
-        if (controller.signal.aborted) return
         const sorted = sortByExpiry(res.fridgeItems, today)
         setSessionId(res.sessionId)
         setFridgeItems(sorted)
@@ -169,13 +191,8 @@ export function Grooming() {
         }
         setDecisions(initial)
       })
-      .catch(() => {
-        if (!controller.signal.aborted) setStartError(true)
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setStarting(false)
-      })
-    return () => { controller.abort() }
+      .catch(() => setStartError(true))
+      .finally(() => setStarting(false))
   }, [today])
 
   const completeMutation = useMutation({
