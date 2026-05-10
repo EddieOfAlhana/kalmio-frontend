@@ -374,6 +374,32 @@ export interface CreateFeedbackRequest {
   page?: string
 }
 
+// ── Grooming ──────────────────────────────────────────────────────────────
+
+export type GroomingAction = 'KEEP' | 'DISCARD' | 'ADJUST_QUANTITY'
+
+export interface GroomingDecision {
+  itemId: string
+  action: GroomingAction
+  newAmount?: number
+}
+
+export interface StartGroomingResponse {
+  sessionId: string
+  fridgeItems: FridgeItem[]
+}
+
+export interface GroomingSession {
+  id: string
+  userId: string
+  startedAt: string
+  completedAt: string | null
+  planId: string | null
+  itemsKept: number
+  itemsDiscarded: number
+  itemsExpired: number
+}
+
 // ── Shopping List ─────────────────────────────────────────────────────────
 
 export interface ShoppingListRequest {

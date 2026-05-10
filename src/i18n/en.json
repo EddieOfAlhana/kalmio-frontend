@@ -697,6 +697,19 @@
     "lastUsed": "Last used",
     "neverUsed": "Never used"
   },
+  "grooming": {
+    "title": "Fridge Check",
+    "emptyFridge": "Nothing in the fridge — we'll start fresh.",
+    "skipCta": "Skip to planning",
+    "planCta": "Plan my week",
+    "keep": "Keep",
+    "discard": "Throw out",
+    "adjustQty": "Adjust qty",
+    "loading": "One moment — checking your fridge.",
+    "summary": "{{kept}} kept · {{discarded}} discarded",
+    "alreadyCompleted": "This session is already closed.",
+    "error": "Something went wrong. Please try again."
+  },
   "blog": {
     "nav": "Blog",
     "indexTitle": "From the kitchen",
