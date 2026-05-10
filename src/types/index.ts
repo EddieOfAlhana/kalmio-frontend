@@ -415,6 +415,13 @@ export interface TodaysMealCard {
   status: PlannedMealStatusExtended
 }
 
+export interface OffPlanMealCard {
+  id: string
+  mealType?: string
+  displayName: string
+  macros: { kcal: number; protein: number; fat: number; carbs: number } | null
+}
+
 export interface PrepTaskCard {
   id?: string
   planId: string
@@ -437,6 +444,7 @@ export interface PlanGlanceDto {
 
 export interface DashboardDto {
   todaysMeals: TodaysMealCard[]
+  offPlanMeals: OffPlanMealCard[]
   todaysPrepTasks: PrepTaskCard[]
   tomorrowsPrepTasks: PrepTaskCard[]
   planGlance: PlanGlanceDto | null

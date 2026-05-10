@@ -39,6 +39,7 @@ export function Dashboard() {
       <div className="space-y-6">
         <TodaysMealsModule
           meals={dashboard?.todaysMeals ?? []}
+          offPlanMeals={dashboard?.offPlanMeals ?? []}
           activePlan={activePlan}
           isLoading={isLoading}
         />

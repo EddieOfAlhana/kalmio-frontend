@@ -54,6 +54,8 @@
         "MORNING_SNACK": "Morning snack",
         "AFTERNOON_SNACK": "Afternoon snack"
       },
+      "addOffPlan": "+ Add something I ate",
+      "offPlanBadge": "Off-plan",
       "logOtherModal": {
         "title": "Log something else",
         "name": "What did you eat?",

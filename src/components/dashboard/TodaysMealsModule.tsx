@@ -7,10 +7,11 @@ import { Spinner } from '@/components/ui/spinner'
 import { toast } from '@/components/ui/toast'
 import { planService } from '@/services/plans'
 import { LogOffPlanMealModal } from './LogOffPlanMealModal'
-import type { TodaysMealCard, Plan } from '@/types'
+import type { TodaysMealCard, OffPlanMealCard, Plan } from '@/types'
 
 interface TodaysMealsModuleProps {
   meals: TodaysMealCard[]
+  offPlanMeals: OffPlanMealCard[]
   activePlan: Plan | null | undefined
   isLoading: boolean
 }
@@ -149,7 +150,7 @@ function MealCard({ meal, planId, today }: MealCardProps) {
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <StatusPill status={meal.status} />
-            {/* Three-dot overflow menu */}
+            {/* Three-dot overflow menu — only for non-final meals */}
             {!isFinal && (
               <div className="relative" ref={menuRef}>
                 <button
@@ -218,9 +219,35 @@ function MealCard({ meal, planId, today }: MealCardProps) {
   )
 }
 
-export function TodaysMealsModule({ meals, activePlan, isLoading }: TodaysMealsModuleProps) {
+function OffPlanMealCardItem({ meal }: { meal: OffPlanMealCard }) {
+  const { t } = useTranslation()
+  return (
+    <div className="flex items-start gap-3 p-3 rounded-[12px] bg-[#F9F7F2]">
+      {/* Left spacer — aligns content with MealCard body (no checkbox) */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            {meal.mealType && <MealTypeLabel mealType={meal.mealType} />}
+            <p className="text-sm font-semibold text-[#1A1A1A] leading-tight">
+              {meal.displayName}
+            </p>
+            {meal.macros && (
+              <MacroPill kcal={meal.macros.kcal} protein={meal.macros.protein} />
+            )}
+          </div>
+          <span className="shrink-0 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-400">
+            {t('dashboard.meals.offPlanBadge')}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function TodaysMealsModule({ meals, offPlanMeals, activePlan, isLoading }: TodaysMealsModuleProps) {
   const { t } = useTranslation()
   const today = new Date().toISOString().split('T')[0]
+  const [addModalOpen, setAddModalOpen] = useState(false)
 
   if (isLoading) {
     return (
@@ -237,13 +264,16 @@ export function TodaysMealsModule({ meals, activePlan, isLoading }: TodaysMealsM
 
   if (!activePlan) return null
 
+  const hasPlanned = meals.length > 0
+  const hasOffPlan = offPlanMeals.length > 0
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>{t('dashboard.meals.title')}</CardTitle>
       </CardHeader>
       <CardContent className="pt-3 space-y-2">
-        {meals.length === 0 ? (
+        {!hasPlanned ? (
           <p className="text-sm text-gray-500 py-4 text-center">
             {t('dashboard.meals.noMealsToday')}
           </p>
@@ -257,7 +287,36 @@ export function TodaysMealsModule({ meals, activePlan, isLoading }: TodaysMealsM
             />
           ))
         )}
+
+        {/* Off-plan meals section */}
+        {hasOffPlan && (
+          <>
+            {hasPlanned && (
+              <hr className="border-dashed border-[#e5e4e7] my-1" />
+            )}
+            {offPlanMeals.map(meal => (
+              <OffPlanMealCardItem key={meal.id} meal={meal} />
+            ))}
+          </>
+        )}
+
+        {/* Standalone add button */}
+        <div className={hasPlanned || hasOffPlan ? 'pt-1' : ''}>
+          <button
+            type="button"
+            onClick={() => setAddModalOpen(true)}
+            className="text-sm text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28] focus-visible:ring-offset-1 rounded"
+          >
+            {t('dashboard.meals.addOffPlan')}
+          </button>
+        </div>
       </CardContent>
+
+      <LogOffPlanMealModal
+        open={addModalOpen}
+        onOpenChange={setAddModalOpen}
+        date={today}
+      />
     </Card>
   )
 }

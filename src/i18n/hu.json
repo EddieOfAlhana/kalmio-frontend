@@ -54,6 +54,8 @@
         "MORNING_SNACK": "Tízórai",
         "AFTERNOON_SNACK": "Uzsonna"
       },
+      "addOffPlan": "+ Hozzáadok valamit",
+      "offPlanBadge": "Saját bejegyzés",
       "logOtherModal": {
         "title": "Mást ettem",
         "name": "Mit ettél?",
