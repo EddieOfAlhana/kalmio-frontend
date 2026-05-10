@@ -19,11 +19,27 @@ export interface Macros {
 export interface DietaryConstraints {
   vegetarian: boolean
   vegan: boolean
+  pescatarian: boolean
+  glutenFree: boolean
+  dairyFree: boolean
   lactoseFree: boolean
   milkProteinFree: boolean
-  glutenFree: boolean
+  eggFree: boolean
+  nutFree: boolean
+  peanutFree: boolean
+  soyFree: boolean
+  fishFree: boolean
+  shellfishFree: boolean
+  sesameFree: boolean
+  halal: boolean
+  kosher: boolean
+  keto: boolean
+  lowGi: boolean
+  lowFodmap: boolean
   paleo: boolean
 }
+
+export type DietaryRestrictionKey = keyof DietaryConstraints
 
 export interface IngredientLocaleTranslation {
   name: string
@@ -47,7 +63,7 @@ export interface Ingredient {
   gramsPerPiece: number | null
   translations: IngredientTranslations | null
   machineTranslated: boolean
-  /** Shelf-stable pantry staple — excluded from waste calculations. */
+  /** Shelf-stable pantry staple — excluded from leftover calculations. */
   pantryItem: boolean
 }
 
@@ -166,10 +182,29 @@ export interface UpdateRetailProductRequest {
 // ── Meal Plans ────────────────────────────────────────────────────────────
 
 export interface ConstraintWeights {
-  waste: number
+  leftovers: number
   budget: number
   prepTime: number
   recipeRepeat: number
+}
+
+// ── Fridge ────────────────────────────────────────────────────────────────
+
+export interface FridgeItem {
+  id: string
+  ingredientId: string
+  ingredientName: string
+  ingredientCategory: IngredientCategory | null
+  pantryItem: boolean
+  amount: number
+  unit: Unit
+  addedAt: string
+}
+
+export interface AddFridgeItemRequest {
+  ingredientId: string
+  amount: number
+  unit: Unit
 }
 
 export interface GenerateMealPlanRequest {
@@ -184,6 +219,8 @@ export interface GenerateMealPlanRequest {
     maxRecipeRepetitions?: number | null
     constraintWeights?: ConstraintWeights | null
     mealCalorieTargets?: Record<string, number> | null
+    fridgeIngredientIds?: string[] | null
+    dietaryRestrictions?: string[] | null
   }
   servingConfig?: {
     minMultiplier: number
@@ -288,6 +325,7 @@ export interface CreateFeedbackRequest {
 
 export interface ShoppingListRequest {
   meals: { recipeId: string; servingMultiplier: number }[]
+  fridgeItems?: { ingredientId: string; amount: number; unit: Unit }[]
 }
 
 export interface RetailProductInfo {
@@ -299,8 +337,8 @@ export interface RetailProductInfo {
   unit: Unit
   remoteUrl: string | null
   estimatedCost: number | null
-  wasteAmount: number | null
-  wasteCost: number | null
+  leftoverAmount: number | null
+  leftoverCost: number | null
 }
 
 export interface ShoppingListItem {
@@ -310,12 +348,13 @@ export interface ShoppingListItem {
   totalAmount: number
   unit: Unit
   pantryItem: boolean
+  fridgeAmount: number | null
   retailProduct: RetailProductInfo | null
 }
 
 export interface ShoppingList {
   items: ShoppingListItem[]
   totalEstimatedCost: number | null
-  totalWasteCost: number | null
+  totalLeftoverCost: number | null
   currency: string
 }

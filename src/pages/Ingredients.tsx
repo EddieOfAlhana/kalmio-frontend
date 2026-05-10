@@ -36,9 +36,23 @@ const schema = z.object({
   pantryItem: z.boolean(),
   vegetarian: z.boolean(),
   vegan: z.boolean(),
+  pescatarian: z.boolean(),
+  glutenFree: z.boolean(),
+  dairyFree: z.boolean(),
   lactoseFree: z.boolean(),
   milkProteinFree: z.boolean(),
-  glutenFree: z.boolean(),
+  eggFree: z.boolean(),
+  nutFree: z.boolean(),
+  peanutFree: z.boolean(),
+  soyFree: z.boolean(),
+  fishFree: z.boolean(),
+  shellfishFree: z.boolean(),
+  sesameFree: z.boolean(),
+  halal: z.boolean(),
+  kosher: z.boolean(),
+  keto: z.boolean(),
+  lowGi: z.boolean(),
+  lowFodmap: z.boolean(),
   paleo: z.boolean(),
 })
 type FormValues = z.infer<typeof schema>
@@ -50,8 +64,12 @@ function toRequest(v: FormValues) {
     category: v.category,
     macros: { kcal: v.kcal, protein: v.protein, fat: v.fat, carbs: v.carbs },
     constraints: {
-      vegetarian: v.vegetarian, vegan: v.vegan, lactoseFree: v.lactoseFree,
-      milkProteinFree: v.milkProteinFree, glutenFree: v.glutenFree, paleo: v.paleo,
+      vegetarian: v.vegetarian, vegan: v.vegan, pescatarian: v.pescatarian,
+      glutenFree: v.glutenFree, dairyFree: v.dairyFree, lactoseFree: v.lactoseFree,
+      milkProteinFree: v.milkProteinFree, eggFree: v.eggFree, nutFree: v.nutFree,
+      peanutFree: v.peanutFree, soyFree: v.soyFree, fishFree: v.fishFree,
+      shellfishFree: v.shellfishFree, sesameFree: v.sesameFree, halal: v.halal,
+      kosher: v.kosher, keto: v.keto, lowGi: v.lowGi, lowFodmap: v.lowFodmap, paleo: v.paleo,
     },
     density: v.density ?? null,
     gramsPerPiece: v.gramsPerPiece ?? null,
@@ -73,9 +91,23 @@ function defaultValues(ing?: Ingredient): FormValues {
     pantryItem: ing?.pantryItem ?? false,
     vegetarian: ing?.constraints.vegetarian ?? false,
     vegan: ing?.constraints.vegan ?? false,
+    pescatarian: ing?.constraints.pescatarian ?? false,
+    glutenFree: ing?.constraints.glutenFree ?? false,
+    dairyFree: ing?.constraints.dairyFree ?? false,
     lactoseFree: ing?.constraints.lactoseFree ?? false,
     milkProteinFree: ing?.constraints.milkProteinFree ?? false,
-    glutenFree: ing?.constraints.glutenFree ?? false,
+    eggFree: ing?.constraints.eggFree ?? false,
+    nutFree: ing?.constraints.nutFree ?? false,
+    peanutFree: ing?.constraints.peanutFree ?? false,
+    soyFree: ing?.constraints.soyFree ?? false,
+    fishFree: ing?.constraints.fishFree ?? false,
+    shellfishFree: ing?.constraints.shellfishFree ?? false,
+    sesameFree: ing?.constraints.sesameFree ?? false,
+    halal: ing?.constraints.halal ?? false,
+    kosher: ing?.constraints.kosher ?? false,
+    keto: ing?.constraints.keto ?? false,
+    lowGi: ing?.constraints.lowGi ?? false,
+    lowFodmap: ing?.constraints.lowFodmap ?? false,
     paleo: ing?.constraints.paleo ?? false,
   }
 }
@@ -403,13 +435,47 @@ function IngredientFormDialog({
     values: defaultValues(ingredient),
   })
 
-  const DIETARY = [
-    { name: 'vegetarian' as const, label: t('ingredients.dietary.vegetarian') },
-    { name: 'vegan' as const, label: t('ingredients.dietary.vegan') },
-    { name: 'lactoseFree' as const, label: t('ingredients.dietary.lactoseFree') },
-    { name: 'milkProteinFree' as const, label: t('ingredients.dietary.milkProteinFree') },
-    { name: 'glutenFree' as const, label: t('ingredients.dietary.glutenFree') },
-    { name: 'paleo' as const, label: t('ingredients.dietary.paleo') },
+  const DIETARY_GROUPS = [
+    {
+      label: t('dietary.groups.lifestyle'),
+      items: [
+        { name: 'vegetarian' as const, label: t('ingredients.dietary.vegetarian') },
+        { name: 'vegan' as const, label: t('ingredients.dietary.vegan') },
+        { name: 'pescatarian' as const, label: t('ingredients.dietary.pescatarian') },
+      ],
+    },
+    {
+      label: t('dietary.groups.allergens'),
+      items: [
+        { name: 'glutenFree' as const, label: t('ingredients.dietary.glutenFree') },
+        { name: 'dairyFree' as const, label: t('ingredients.dietary.dairyFree') },
+        { name: 'lactoseFree' as const, label: t('ingredients.dietary.lactoseFree') },
+        { name: 'milkProteinFree' as const, label: t('ingredients.dietary.milkProteinFree') },
+        { name: 'eggFree' as const, label: t('ingredients.dietary.eggFree') },
+        { name: 'nutFree' as const, label: t('ingredients.dietary.nutFree') },
+        { name: 'peanutFree' as const, label: t('ingredients.dietary.peanutFree') },
+        { name: 'soyFree' as const, label: t('ingredients.dietary.soyFree') },
+        { name: 'fishFree' as const, label: t('ingredients.dietary.fishFree') },
+        { name: 'shellfishFree' as const, label: t('ingredients.dietary.shellfishFree') },
+        { name: 'sesameFree' as const, label: t('ingredients.dietary.sesameFree') },
+      ],
+    },
+    {
+      label: t('dietary.groups.religious'),
+      items: [
+        { name: 'halal' as const, label: t('ingredients.dietary.halal') },
+        { name: 'kosher' as const, label: t('ingredients.dietary.kosher') },
+      ],
+    },
+    {
+      label: t('dietary.groups.metabolic'),
+      items: [
+        { name: 'keto' as const, label: t('ingredients.dietary.keto') },
+        { name: 'lowGi' as const, label: t('ingredients.dietary.lowGi') },
+        { name: 'lowFodmap' as const, label: t('ingredients.dietary.lowFodmap') },
+        { name: 'paleo' as const, label: t('ingredients.dietary.paleo') },
+      ],
+    },
   ]
 
   return (
@@ -466,12 +532,19 @@ function IngredientFormDialog({
 
           <div>
             <p className="text-sm font-medium text-[#1A1A1A] mb-2">{t('ingredients.form.dietaryFlags')}</p>
-            <div className="grid grid-cols-2 gap-y-1.5 gap-x-4">
-              {DIETARY.map(({ name, label }) => (
-                <label key={name} className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input type="checkbox" {...register(name)} className="accent-[#F28C28] h-4 w-4 rounded" />
-                  {label}
-                </label>
+            <div className="space-y-3">
+              {DIETARY_GROUPS.map(group => (
+                <div key={group.label}>
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">{group.label}</p>
+                  <div className="grid grid-cols-2 gap-y-1.5 gap-x-4">
+                    {group.items.map(({ name, label }) => (
+                      <label key={name} className="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" {...register(name)} className="accent-[#F28C28] h-4 w-4 rounded" />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </div>

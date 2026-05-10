@@ -19,7 +19,8 @@ import { Spinner } from '@/components/ui/spinner'
 import { MacroRing } from '@/components/ui/macro-ring'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { mealPlansService, savedPlanToMealPlan, savedSlotToMeal } from '@/services/mealPlans'
-import { usersService } from '@/services/users'
+import { fridgeService } from '@/services/fridge'
+import { usersService, type DietaryPreferences } from '@/services/users'
 import { recipesService } from '@/services/recipes'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { formatCurrency, formatMacro } from '@/lib/utils'
@@ -143,7 +144,7 @@ function distributeWeights(
 }
 
 function equalWeights(activeKeys: WeightKey[]): ConstraintWeights {
-  const base: ConstraintWeights = { waste: 0, budget: 0, prepTime: 0, recipeRepeat: 0 }
+  const base: ConstraintWeights = { leftovers: 0, budget: 0, prepTime: 0, recipeRepeat: 0 }
   if (activeKeys.length === 0) return base
   const share = Math.floor(100 / activeKeys.length)
   activeKeys.forEach((k, i) => { base[k] = i === 0 ? 100 - share * (activeKeys.length - 1) : share })
@@ -185,6 +186,12 @@ export function MealPlan() {
     queryKey: ['user-settings'],
     queryFn: usersService.getMe,
     staleTime: 5 * 60 * 1000,
+  })
+
+  const { data: fridgeItems = [] } = useQuery({
+    queryKey: ['fridge'],
+    queryFn: fridgeService.list,
+    staleTime: 60_000,
   })
 
   const prefsApplied = useRef(false)
@@ -250,13 +257,13 @@ export function MealPlan() {
   }, [kcalTarget, selectedMeals])
 
   // ── Constraint weights ────────────────────────────────────────────────────
-  const activeKeys = (['waste', 'budget', 'prepTime', 'recipeRepeat'] as WeightKey[]).filter(k => {
+  const activeKeys = (['leftovers', 'budget', 'prepTime', 'recipeRepeat'] as WeightKey[]).filter(k => {
     if (k === 'budget') return budgetEnabled
     if (k === 'prepTime') return prepTimeEnabled
     return true
   })
 
-  const [weights, setWeights] = useState<ConstraintWeights>(() => equalWeights(['waste', 'recipeRepeat']))
+  const [weights, setWeights] = useState<ConstraintWeights>(() => equalWeights(['leftovers', 'recipeRepeat']))
 
   const prevActiveRef = useRef(activeKeys.join(','))
   useEffect(() => {
@@ -297,6 +304,13 @@ export function MealPlan() {
   })
 
   const is409 = mutation.isError && axios.isAxiosError(mutation.error) && mutation.error.response?.status === 409
+  const is422 = mutation.isError && axios.isAxiosError(mutation.error) && mutation.error.response?.status === 422
+
+  const activeDietaryRestrictions: string[] = (() => {
+    const dp = userSettings?.dietaryPreferences as DietaryPreferences | null | undefined
+    if (!dp) return []
+    return (Object.keys(dp) as (keyof DietaryPreferences)[]).filter(k => dp[k])
+  })()
 
   function buildBody(v: FormValues): GenerateMealPlanRequest {
     const mealCalorieTargets = Object.fromEntries(
@@ -313,6 +327,8 @@ export function MealPlan() {
         maxRecipeRepetitions: v.maxRecipeRepetitions ?? null,
         constraintWeights: weights,
         mealCalorieTargets,
+        fridgeIngredientIds: fridgeItems.length > 0 ? [...new Set(fridgeItems.map(fi => fi.ingredientId))] : null,
+        dietaryRestrictions: activeDietaryRestrictions.length > 0 ? activeDietaryRestrictions : null,
       },
     }
   }
@@ -446,7 +462,7 @@ export function MealPlan() {
               <p className="text-xs text-gray-400 mb-3">{t('mealPlan.form.weightsHint')}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
                 {([
-                  { key: 'waste' as WeightKey, label: t('mealPlan.form.weightWaste'), enabled: true },
+                  { key: 'leftovers' as WeightKey, label: t('mealPlan.form.weightLeftovers'), enabled: true },
                   { key: 'budget' as WeightKey, label: t('mealPlan.form.weightBudget'), enabled: budgetEnabled },
                   { key: 'prepTime' as WeightKey, label: t('mealPlan.form.weightPrepTime'), enabled: prepTimeEnabled },
                   { key: 'recipeRepeat' as WeightKey, label: t('mealPlan.form.weightRecipeRepeat'), enabled: true },
@@ -471,6 +487,20 @@ export function MealPlan() {
               </div>
             </div>
 
+            {/* Active dietary restrictions badge */}
+            {activeDietaryRestrictions.length > 0 && (
+              <div className="col-span-2 md:col-span-3">
+                <p className="text-xs text-gray-500 mb-1.5">{t('mealPlan.form.dietaryActive')}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {activeDietaryRestrictions.map(key => (
+                    <span key={key} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FFF5F0] border border-[#E8956D]/40 text-xs font-medium text-[#E8956D]">
+                      {t(`dietary.${key}`)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="col-span-2 md:col-span-3 flex items-center gap-3 pt-1">
               <Button type="submit" size="lg" disabled={mutation.isPending} className="min-w-40">
                 {mutation.isPending ? (
@@ -482,12 +512,19 @@ export function MealPlan() {
               {mutation.isPending && (
                 <p className="text-sm text-gray-500">{t('mealPlan.form.solverNote')}</p>
               )}
-              {mutation.isError && !is409 && (
+              {mutation.isError && !is409 && !is422 && (
                 <p className="text-sm text-red-500">
                   {(mutation.error as Error).message ?? t('mealPlan.form.error')}
                 </p>
               )}
             </div>
+
+            {is422 && (
+              <div className="col-span-2 md:col-span-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+                <p className="text-sm font-medium text-red-800">{t('mealPlan.form.infeasibleTitle')}</p>
+                <p className="text-sm text-red-700 mt-1">{t('mealPlan.form.infeasibleDesc')}</p>
+              </div>
+            )}
 
             {is409 && (
               <div className="col-span-2 md:col-span-3 flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">

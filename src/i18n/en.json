@@ -5,6 +5,7 @@
     "recipes": "Recipes",
     "ingredients": "Ingredients",
     "shoppingList": "Shopping List",
+    "fridge": "My Fridge",
     "home": "Home",
     "plans": "Plans",
     "shop": "Shop",
@@ -84,7 +85,7 @@
       "optional": "optional",
       "weightsTitle": "Constraint priorities",
       "weightsHint": "Drag to set relative importance — sliders sum to 100%",
-      "weightWaste": "No waste",
+      "weightLeftovers": "No leftovers",
       "weightBudget": "Budget",
       "weightPrepTime": "Prep time",
       "weightRecipeRepeat": "Recipe variety",
@@ -94,7 +95,10 @@
       "solverNote": "The solver may take up to 15 seconds…",
       "error": "Generation failed. Make sure you have recipes.",
       "existingPlanWarning": "You already have a saved meal plan. Generate and save a new one anyway?",
-      "generateAnyway": "Generate anyway"
+      "generateAnyway": "Generate anyway",
+      "dietaryActive": "Active dietary restrictions",
+      "infeasibleTitle": "No valid meal plan found",
+      "infeasibleDesc": "No valid meal plan could be created with these settings. Try relaxing your dietary restrictions, calorie target, or budget — or add more recipes to the catalog."
     },
     "savedConfirmation": "Plan saved to your account",
     "summary": {
@@ -223,7 +227,7 @@
       "gramsPerPiece": "Grams / piece",
       "gramsPerPieceHint": "(needed when used as PIECE in recipes)",
       "pantryItem": "Pantry item",
-      "pantryItemHint": "(shelf-stable — excluded from waste)",
+      "pantryItemHint": "(shelf-stable — excluded from leftovers)",
       "dietaryFlags": "Dietary flags",
       "cancel": "Cancel",
       "create": "Create",
@@ -232,14 +236,28 @@
     "dietary": {
       "vegetarian": "Vegetarian",
       "vegan": "Vegan",
+      "pescatarian": "Pescatarian",
+      "glutenFree": "Gluten-free",
+      "dairyFree": "Dairy-free",
       "lactoseFree": "Lactose-free",
       "milkProteinFree": "Milk protein-free",
-      "glutenFree": "Gluten-free",
+      "eggFree": "Egg-free",
+      "nutFree": "Nut-free",
+      "peanutFree": "Peanut-free",
+      "soyFree": "Soy-free",
+      "fishFree": "Fish-free",
+      "shellfishFree": "Shellfish-free",
+      "sesameFree": "Sesame-free",
+      "halal": "Halal",
+      "kosher": "Kosher",
+      "keto": "Keto",
+      "lowGi": "Low GI",
+      "lowFodmap": "Low FODMAP",
       "paleo": "Paleo"
     },
     "pantryItem": {
       "badge": "Pantry",
-      "tooltip": "Pantry item — excluded from waste calculations"
+      "tooltip": "Pantry item — excluded from leftover calculations"
     },
     "chooseIngredient": "Choose an Ingredient",
     "searchByName": "Search by name or alias…",
@@ -307,7 +325,61 @@
     "avatarUploadHint": "Click or drop an image to change your photo",
     "avatarUploading": "Uploading…",
     "avatarUploadError": "Failed to upload photo.",
-    "avatarUploadSuccess": "Photo updated."
+    "avatarUploadSuccess": "Photo updated.",
+    "dietaryTitle": "Dietary preferences",
+    "dietaryHint": "Select the restrictions that apply to your meals. The meal planner will enforce all selected rules as hard constraints.",
+    "dietarySave": "Save dietary preferences",
+    "dietarySaveSuccess": "Dietary preferences saved.",
+    "dietarySaveError": "Failed to save dietary preferences.",
+    "allergyDisclaimer": "We do our best to honour your dietary settings and allergy restrictions, but Kalmio makes no legal warranties regarding the accuracy or completeness of dietary information. Always verify ingredient labels when managing severe allergies."
+  },
+  "dietary": {
+    "groups": {
+      "lifestyle": "Lifestyle",
+      "allergens": "Allergens & intolerances",
+      "religious": "Religious",
+      "metabolic": "Metabolic & therapeutic"
+    },
+    "vegetarian": "Vegetarian",
+    "vegetarianDesc": "No meat or fish. Dairy and eggs are fine.",
+    "vegan": "Vegan",
+    "veganDesc": "No animal products at all — no meat, fish, dairy, or eggs.",
+    "pescatarian": "Pescatarian",
+    "pescatarianDesc": "No meat, but fish and seafood are welcome.",
+    "glutenFree": "Gluten-free",
+    "glutenFreeDesc": "No wheat, rye, barley, or regular oats.",
+    "dairyFree": "Dairy-free",
+    "dairyFreeDesc": "No milk or milk-based products, including butter, cheese, and cream.",
+    "lactoseFree": "Lactose-free",
+    "lactoseFreeDesc": "No lactose — the sugar in milk. Hard cheeses and lactose-free dairy are typically fine.",
+    "milkProteinFree": "Milk protein-free",
+    "milkProteinFreeDesc": "No casein or whey proteins found in milk products.",
+    "eggFree": "Egg-free",
+    "eggFreeDesc": "No eggs or egg-containing ingredients.",
+    "nutFree": "Nut-free",
+    "nutFreeDesc": "No tree nuts such as almonds, walnuts, cashews, hazelnuts, or pistachios.",
+    "peanutFree": "Peanut-free",
+    "peanutFreeDesc": "No peanuts or peanut-based products. Note: peanuts are legumes, not tree nuts.",
+    "soyFree": "Soy-free",
+    "soyFreeDesc": "No soy or soy-derived ingredients, including tofu, edamame, and soy sauce.",
+    "fishFree": "Fish-free",
+    "fishFreeDesc": "No fish or fish-derived ingredients.",
+    "shellfishFree": "Shellfish-free",
+    "shellfishFreeDesc": "No crustaceans or molluscs — shrimp, crab, lobster, mussels, squid, and similar.",
+    "sesameFree": "Sesame-free",
+    "sesameFreeDesc": "No sesame seeds or sesame oil, including tahini.",
+    "halal": "Halal",
+    "halalDesc": "Prepared according to Islamic dietary law. No pork, no alcohol, halal-certified meat only.",
+    "kosher": "Kosher",
+    "kosherDesc": "Prepared according to Jewish dietary law. No pork, no shellfish, no mixing of meat and dairy.",
+    "keto": "Keto",
+    "ketoDesc": "Very low in carbohydrates, high in fat. Keeps the body in a state of ketosis.",
+    "lowGi": "Low GI",
+    "lowGiDesc": "Prioritises foods that release energy slowly, avoiding sharp blood sugar spikes.",
+    "lowFodmap": "Low FODMAP",
+    "lowFodmapDesc": "Avoids fermentable carbohydrates that can cause digestive discomfort. Often recommended for IBS.",
+    "paleo": "Paleo",
+    "paleoDesc": "Based on whole, unprocessed foods. No grains, legumes, dairy, or refined sugar."
   },
   "settings": {
     "title": "Settings",
@@ -438,10 +510,13 @@
     "changeStatus": "Change status",
     "admin": "Support",
     "you": "You",
+    "deleteConfirm": "Permanently delete this feedback entry? This cannot be undone.",
+    "deleteSuccess": "Feedback deleted.",
     "types": {
       "BUG": "Bug",
       "SUGGESTION": "Suggestion",
-      "OTHER": "Other"
+      "OTHER": "Other",
+      "INFEASIBLE_PLAN": "Infeasible plan"
     },
     "statuses": {
       "OPEN": "Open",
@@ -465,7 +540,7 @@
       "totalItems": "Total items",
       "estimatedTotal": "Estimated total",
       "noRetailMatch": "No retail match",
-      "totalWaste": "Estimated waste"
+      "totalLeftovers": "Estimated leftovers"
     },
     "missingItems_one": "{{count}} ingredient has no Tesco product match. Buy these separately.",
     "missingItems_other": "{{count}} ingredients have no Tesco product match. Buy these separately.",
@@ -473,13 +548,40 @@
     "noRetailProduct": "No retail product available — buy separately",
     "tesco": "Tesco",
     "pantryLabel": "Pantry",
-    "waste": {
-      "amount": "Waste: {{amount}} {{unit}}",
+    "fridgeLabel": "{{amount}} {{unit}} in fridge",
+    "leftovers": {
+      "amount": "Leftovers: {{amount}} {{unit}}",
       "cost": "~{{cost}}",
-      "summaryTitle": "Estimated waste",
+      "summaryTitle": "Leftovers",
       "summaryDesc": "Portions bought but not needed due to package sizes",
       "pantryExcluded": "Pantry items excluded.",
-      "none": "No waste — exact package fits"
+      "none": "No leftovers — exact package fits",
+      "addToFridge": "Add leftovers to fridge",
+      "addingToFridge": "Adding to fridge…",
+      "addedToFridge": "Leftovers added to your fridge"
+    }
+  },
+  "fridge": {
+    "title": "My Fridge",
+    "subtitle_one": "{{count}} item",
+    "subtitle_other": "{{count}} items",
+    "subtitle": "{{count}} items",
+    "addItem": "Add Item",
+    "search": "Search fridge…",
+    "empty": {
+      "title": "Your fridge is empty",
+      "description": "Add ingredients you already have. The meal planner will prioritise recipes that use them."
+    },
+    "nonPantryGroup": "Perishables",
+    "nonPantryHint": "highest planning priority",
+    "pantryGroup": "Pantry staples",
+    "pantryHint": "also prioritised",
+    "addDialog": {
+      "title": "Add to fridge",
+      "amount": "Amount",
+      "unit": "Unit",
+      "add": "Add",
+      "adding": "Adding…"
     }
   },
   "ipVault": {

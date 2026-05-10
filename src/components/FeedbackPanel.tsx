@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useLocation } from 'react-router-dom'
-import { X, ArrowLeft, Send, MessageSquare, ChevronRight } from 'lucide-react'
+import { X, ArrowLeft, Send, MessageSquare, ChevronRight, Trash2 } from 'lucide-react'
 import { feedbackService } from '@/services/feedback'
 import { useAuthStore } from '@/store/auth'
 import { toast } from '@/components/ui/toast'
@@ -362,6 +362,17 @@ function DetailView({
     onError: () => toast({ title: t('feedback.error'), variant: 'destructive' }),
   })
 
+  const deleteMutation = useMutation({
+    mutationFn: () => feedbackService.deleteFeedback(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['feedback', 'all'] })
+      qc.invalidateQueries({ queryKey: ['feedback', 'unread'] })
+      toast({ title: t('feedback.deleteSuccess'), variant: 'success' })
+      onBack()
+    },
+    onError: () => toast({ title: t('feedback.error'), variant: 'destructive' }),
+  })
+
   if (isLoading || !detail) {
     return (
       <>
@@ -411,12 +422,26 @@ function DetailView({
       {isAdmin && (
         <div className="px-4 py-2 border-b border-white/10">
           {!showStatusChange ? (
-            <button
-              onClick={() => setShowStatusChange(true)}
-              className="text-xs text-white/50 hover:text-white/80 transition-colors"
-            >
-              {t('feedback.changeStatus')} →
-            </button>
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setShowStatusChange(true)}
+                className="text-xs text-white/50 hover:text-white/80 transition-colors"
+              >
+                {t('feedback.changeStatus')} →
+              </button>
+              <button
+                onClick={() => {
+                  if (window.confirm(t('feedback.deleteConfirm'))) {
+                    deleteMutation.mutate()
+                  }
+                }}
+                disabled={deleteMutation.isPending}
+                className="flex items-center gap-1 text-xs text-red-400/60 hover:text-red-400 transition-colors disabled:opacity-40"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                {t('common.delete')}
+              </button>
+            </div>
           ) : (
             <div className="space-y-2">
               <div className="flex gap-2">

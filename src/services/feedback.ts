@@ -39,4 +39,7 @@ export const feedbackService = {
 
   addAdminMessage: (id: string, body: string) =>
     api.post(`/api/admin/feedback/${id}/messages`, { body }).then(r => r.data),
+
+  deleteFeedback: (id: string) =>
+    api.delete(`/api/admin/feedback/${id}`),
 }

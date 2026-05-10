@@ -5,6 +5,7 @@
     "recipes": "Receptek",
     "ingredients": "Hozzávalók",
     "shoppingList": "Bevásárlólista",
+    "fridge": "A hűtőm",
     "home": "Főoldal",
     "plans": "Tervek",
     "shop": "Bolt",
@@ -84,7 +85,7 @@
       "optional": "opcionális",
       "weightsTitle": "Kényszer prioritások",
       "weightsHint": "Húzd a csúszkákat a relatív fontosság beállításához — az összeg 100%",
-      "weightWaste": "Hulladékmentesség",
+      "weightLeftovers": "Maradékmentesség",
       "weightBudget": "Büdzsé",
       "weightPrepTime": "Előkészítési idő",
       "weightRecipeRepeat": "Receptváltozatosság",
@@ -94,7 +95,10 @@
       "solverNote": "A megoldómotor akár 15 másodpercet is igénybe vehet…",
       "error": "A generálás sikertelen. Győződj meg róla, hogy vannak receptjeid.",
       "existingPlanWarning": "Már van elmentett étrendterved. Mégis generálsz és mentesz egy újat?",
-      "generateAnyway": "Mégis generálás"
+      "generateAnyway": "Mégis generálás",
+      "dietaryActive": "Aktív étrendi korlátozások",
+      "infeasibleTitle": "Nem található érvényes étrend",
+      "infeasibleDesc": "A megadott beállításokkal nem sikerült érvényes étrendet létrehozni. Próbáld lazítani az étrendi korlátozásokat, a kalória célt vagy a büdzsét — vagy adj hozzá több receptet a katalógushoz."
     },
     "savedConfirmation": "A terv mentve a fiókodba",
     "summary": {
@@ -223,7 +227,7 @@
       "gramsPerPiece": "Gramm / db",
       "gramsPerPieceHint": "(szükséges, ha receptben DB-ban szerepel)",
       "pantryItem": "Kamrai alapanyag",
-      "pantryItemHint": "(tartós — nem számít hulladékba)",
+      "pantryItemHint": "(tartós — nem számít maradékba)",
       "dietaryFlags": "Diétás jelölők",
       "cancel": "Mégse",
       "create": "Létrehozás",
@@ -232,14 +236,28 @@
     "dietary": {
       "vegetarian": "Vegetáriánus",
       "vegan": "Vegán",
+      "pescatarian": "Pescetáriánus",
+      "glutenFree": "Gluténmentes",
+      "dairyFree": "Tejtermékmentes",
       "lactoseFree": "Laktózmentes",
       "milkProteinFree": "Tejfehérje-mentes",
-      "glutenFree": "Gluténmentes",
+      "eggFree": "Tojásmentes",
+      "nutFree": "Diómentes",
+      "peanutFree": "Mogyorómentes",
+      "soyFree": "Szójamentes",
+      "fishFree": "Halmentes",
+      "shellfishFree": "Kagyló- és rákféle mentes",
+      "sesameFree": "Szézámmentes",
+      "halal": "Halal",
+      "kosher": "Kóser",
+      "keto": "Keto",
+      "lowGi": "Alacsony GI",
+      "lowFodmap": "Alacsony FODMAP",
       "paleo": "Paleo"
     },
     "pantryItem": {
       "badge": "Kamra",
-      "tooltip": "Kamrai alapanyag — nem számít bele a hulladékba"
+      "tooltip": "Kamrai alapanyag — nem számít bele a maradékba"
     },
     "chooseIngredient": "Válassz hozzávalót",
     "searchByName": "Keresés név vagy alternatív név alapján…",
@@ -307,7 +325,61 @@
     "avatarUploadHint": "Kattints vagy húzz ide egy képet a fotód módosításához",
     "avatarUploading": "Feltöltés…",
     "avatarUploadError": "Nem sikerült feltölteni a fotót.",
-    "avatarUploadSuccess": "Fotó frissítve."
+    "avatarUploadSuccess": "Fotó frissítve.",
+    "dietaryTitle": "Étrendi preferenciák",
+    "dietaryHint": "Jelöld meg az étkezésedre vonatkozó korlátozásokat. Az étrendtervező ezeket szigorú feltételként kezeli.",
+    "dietarySave": "Étrendi preferenciák mentése",
+    "dietarySaveSuccess": "Étrendi preferenciák elmentve.",
+    "dietarySaveError": "Nem sikerült menteni az étrendi preferenciákat.",
+    "allergyDisclaimer": "Mindent megteszünk, hogy tiszteletben tartsuk étrendi beállításaidat és allergia-korlátozásaidat, azonban a Kalmio nem vállal jogi felelősséget az étrendi adatok pontosságáért vagy teljességéért. Súlyos allergia esetén mindig ellenőrizd az összetevők feliratatait."
+  },
+  "dietary": {
+    "groups": {
+      "lifestyle": "Életmód",
+      "allergens": "Allergiák és intoleranciák",
+      "religious": "Vallási előírások",
+      "metabolic": "Metabolikus és terápiás"
+    },
+    "vegetarian": "Vegetáriánus",
+    "vegetarianDesc": "Hús és hal nélkül. A tejtermék és tojás megengedett.",
+    "vegan": "Vegán",
+    "veganDesc": "Semmilyen állati termék — hús, hal, tejtermék és tojás sem.",
+    "pescatarian": "Pescetáriánus",
+    "pescatarianDesc": "Hús nélkül, de hal és tenger gyümölcsei megengedettek.",
+    "glutenFree": "Gluténmentes",
+    "glutenFreeDesc": "Búza, rozs, árpa és normál zab nélkül.",
+    "dairyFree": "Tejtermékmentes",
+    "dairyFreeDesc": "Tej és tejalapú termékek nélkül, beleértve a vajat, sajtot és tejszínt.",
+    "lactoseFree": "Laktózmentes",
+    "lactoseFreeDesc": "Laktóz nélkül — a tejben lévő cukor nélkül. Az érlelt sajt és laktózmentes tejtermék általában megfelelő.",
+    "milkProteinFree": "Tejfehérje-mentes",
+    "milkProteinFreeDesc": "Tejben található kazein és tejsavó fehérje nélkül.",
+    "eggFree": "Tojásmentes",
+    "eggFreeDesc": "Tojás és tojástartalmú hozzávalók nélkül.",
+    "nutFree": "Diómentes",
+    "nutFreeDesc": "Héjas gyümölcsök nélkül — mandula, dió, kesudió, mogyoró, pisztácia stb.",
+    "peanutFree": "Mogyorómentes",
+    "peanutFreeDesc": "Földimogyoró és mogyorótartalmú termékek nélkül. Figyelem: a földimogyoró hüvelyes, nem héjas gyümölcs.",
+    "soyFree": "Szójamentes",
+    "soyFreeDesc": "Szója és szójaszármazékok nélkül — tofu, edamame és szójaszósz nélkül is.",
+    "fishFree": "Halmentes",
+    "fishFreeDesc": "Hal és halból készült hozzávalók nélkül.",
+    "shellfishFree": "Kagyló- és rákféle mentes",
+    "shellfishFreeDesc": "Rákok és puhatestűek nélkül — garnéla, rák, homár, kagyló, tintahal stb.",
+    "sesameFree": "Szézámmentes",
+    "sesameFreeDesc": "Szézámmag és szézámolaj nélkül, beleértve a tahint.",
+    "halal": "Halal",
+    "halalDesc": "Iszlám étkezési törvény szerint készítve. Sertés, alkohol és csak halal tanúsítású hús megengedett.",
+    "kosher": "Kóser",
+    "kosherDesc": "Zsidó étkezési törvény szerint készítve. Sertés, kagylók és hús-tejtermék keverés nélkül.",
+    "keto": "Keto",
+    "ketoDesc": "Nagyon alacsony szénhidráttartalmú, magas zsírtartalmú étrend. Ketózist tart fenn.",
+    "lowGi": "Alacsony GI",
+    "lowGiDesc": "Olyan ételeket részesít előnyben, amelyek lassan szabadítják fel az energiát, elkerülve a vércukorszint ugrásokat.",
+    "lowFodmap": "Alacsony FODMAP",
+    "lowFodmapDesc": "Kerüli az erjeszthető szénhidrátokat, amelyek emésztési kellemetlenséget okozhatnak. IBS esetén ajánlott.",
+    "paleo": "Paleo",
+    "paleoDesc": "Teljes, feldolgozatlan ételeken alapul. Gabona, hüvelyesek, tejtermékek és finomított cukor nélkül."
   },
   "settings": {
     "title": "Beállítások",
@@ -431,7 +503,7 @@
       "totalItems": "Összes tétel",
       "estimatedTotal": "Becsült összeg",
       "noRetailMatch": "Nincs kiskereskedelmi egyezés",
-      "totalWaste": "Becsült hulladék"
+      "totalLeftovers": "Becsült maradék"
     },
     "missingItems_one": "{{count}} hozzávalóhoz nincs Tesco termék. Vásárold meg külön.",
     "missingItems_other": "{{count}} hozzávalóhoz nincs Tesco termék. Vásárold meg külön.",
@@ -439,13 +511,17 @@
     "noRetailProduct": "Nincs elérhető kiskereskedelmi termék — vásárold meg külön",
     "tesco": "Tesco",
     "pantryLabel": "Kamra",
-    "waste": {
-      "amount": "Hulladék: {{amount}} {{unit}}",
+    "fridgeLabel": "{{amount}} {{unit}} a hűtőben",
+    "leftovers": {
+      "amount": "Maradék: {{amount}} {{unit}}",
       "cost": "~{{cost}}",
-      "summaryTitle": "Becsült hulladék",
+      "summaryTitle": "Maradékok",
       "summaryDesc": "Megvásárolt, de nem szükséges mennyiség a kiszerelések miatt",
       "pantryExcluded": "Kamrai alapanyagok kizárva.",
-      "none": "Nincs hulladék — pontos kiszerelési illeszkedés"
+      "none": "Nincs maradék — pontos kiszerelési illeszkedés",
+      "addToFridge": "Maradékok a hűtőbe",
+      "addingToFridge": "Hozzáadás…",
+      "addedToFridge": "Maradékok hozzáadva a hűtőhöz"
     }
   },
   "feedback": {
@@ -471,15 +547,41 @@
     "changeStatus": "Státusz módosítása",
     "admin": "Támogatás",
     "you": "Te",
+    "deleteConfirm": "Véglegesen törli ezt a visszajelzést? Ez nem vonható vissza.",
+    "deleteSuccess": "Visszajelzés törölve.",
     "types": {
       "BUG": "Hiba",
       "SUGGESTION": "Javaslat",
-      "OTHER": "Egyéb"
+      "OTHER": "Egyéb",
+      "INFEASIBLE_PLAN": "Megvalósíthatatlan terv"
     },
     "statuses": {
       "OPEN": "Nyitott",
       "FIXED": "Megoldva",
       "REJECTED": "Elutasítva"
+    }
+  },
+  "fridge": {
+    "title": "A hűtőm",
+    "subtitle_one": "{{count}} tétel",
+    "subtitle_other": "{{count}} tétel",
+    "subtitle": "{{count}} tétel",
+    "addItem": "Tétel hozzáadása",
+    "search": "Hűtő keresése…",
+    "empty": {
+      "title": "A hűtőd üres",
+      "description": "Add hozzá a már meglévő hozzávalókat. Az étrendtervező elsősorban ezeket használó recepteket részesíti előnyben."
+    },
+    "nonPantryGroup": "Romlandók",
+    "nonPantryHint": "legmagasabb tervezési prioritás",
+    "pantryGroup": "Kamrai alapanyagok",
+    "pantryHint": "szintén prioritizált",
+    "addDialog": {
+      "title": "Hozzáadás a hűtőhöz",
+      "amount": "Mennyiség",
+      "unit": "Egység",
+      "add": "Hozzáadás",
+      "adding": "Hozzáadás…"
     }
   },
   "ipVault": {

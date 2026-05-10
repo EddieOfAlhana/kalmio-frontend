@@ -10,7 +10,8 @@ import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
 import { UserAvatar } from '@/components/ui/UserAvatar'
 import { toast } from '@/components/ui/toast'
-import { usersService, type UpdateProfileRequest } from '@/services/users'
+import { usersService, type UpdateProfileRequest, type DietaryPreferences } from '@/services/users'
+import type { DietaryRestrictionKey } from '@/types'
 
 interface FormValues {
   firstName: string
@@ -19,6 +20,18 @@ interface FormValues {
 
 const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 const MAX_SIZE = 5 * 1024 * 1024 // 5 MB
+
+// Dietary marker groups shown in profile
+type MarkerGroup = { label: string; key: string; items: { key: DietaryRestrictionKey; label: string; description: string }[] }
+
+const EMPTY_DIETARY: DietaryPreferences = {
+  vegetarian: false, vegan: false, pescatarian: false,
+  glutenFree: false, dairyFree: false, lactoseFree: false, milkProteinFree: false,
+  eggFree: false, nutFree: false, peanutFree: false, soyFree: false,
+  fishFree: false, shellfishFree: false, sesameFree: false,
+  halal: false, kosher: false,
+  keto: false, lowGi: false, lowFodmap: false, paleo: false,
+}
 
 export function Profile() {
   const { t } = useTranslation()
@@ -56,6 +69,33 @@ export function Profile() {
       firstName: values.firstName.trim() || null,
       lastName: values.lastName.trim() || null,
     })
+  }
+
+  // ── Dietary preferences ────────────────────────────────────────────────────
+  const [dietary, setDietary] = useState<DietaryPreferences>(EMPTY_DIETARY)
+  const [dietarySaving, setDietarySaving] = useState(false)
+
+  useEffect(() => {
+    if (user?.dietaryPreferences) {
+      setDietary({ ...EMPTY_DIETARY, ...user.dietaryPreferences })
+    }
+  }, [user])
+
+  function toggleDietary(key: DietaryRestrictionKey) {
+    setDietary(prev => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  async function saveDietary() {
+    setDietarySaving(true)
+    try {
+      const updated = await usersService.updateSettings({ dietaryPreferences: dietary })
+      qc.setQueryData(['me'], updated)
+      toast({ title: t('profile.dietarySaveSuccess'), variant: 'success' })
+    } catch {
+      toast({ title: t('profile.dietarySaveError'), variant: 'destructive' })
+    } finally {
+      setDietarySaving(false)
+    }
   }
 
   // ── Avatar upload ─────────────────────────────────────────────────────────
@@ -108,6 +148,52 @@ export function Profile() {
     ? new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
     : null
 
+  const markerGroups: MarkerGroup[] = [
+    {
+      label: t('dietary.groups.lifestyle'),
+      key: 'lifestyle',
+      items: [
+        { key: 'vegetarian', label: t('dietary.vegetarian'), description: t('dietary.vegetarianDesc') },
+        { key: 'vegan', label: t('dietary.vegan'), description: t('dietary.veganDesc') },
+        { key: 'pescatarian', label: t('dietary.pescatarian'), description: t('dietary.pescatarianDesc') },
+      ],
+    },
+    {
+      label: t('dietary.groups.allergens'),
+      key: 'allergens',
+      items: [
+        { key: 'glutenFree', label: t('dietary.glutenFree'), description: t('dietary.glutenFreeDesc') },
+        { key: 'dairyFree', label: t('dietary.dairyFree'), description: t('dietary.dairyFreeDesc') },
+        { key: 'lactoseFree', label: t('dietary.lactoseFree'), description: t('dietary.lactoseFreeDesc') },
+        { key: 'eggFree', label: t('dietary.eggFree'), description: t('dietary.eggFreeDesc') },
+        { key: 'nutFree', label: t('dietary.nutFree'), description: t('dietary.nutFreeDesc') },
+        { key: 'peanutFree', label: t('dietary.peanutFree'), description: t('dietary.peanutFreeDesc') },
+        { key: 'soyFree', label: t('dietary.soyFree'), description: t('dietary.soyFreeDesc') },
+        { key: 'fishFree', label: t('dietary.fishFree'), description: t('dietary.fishFreeDesc') },
+        { key: 'shellfishFree', label: t('dietary.shellfishFree'), description: t('dietary.shellfishFreeDesc') },
+        { key: 'sesameFree', label: t('dietary.sesameFree'), description: t('dietary.sesameFreeDesc') },
+      ],
+    },
+    {
+      label: t('dietary.groups.religious'),
+      key: 'religious',
+      items: [
+        { key: 'halal', label: t('dietary.halal'), description: t('dietary.halalDesc') },
+        { key: 'kosher', label: t('dietary.kosher'), description: t('dietary.kosherDesc') },
+      ],
+    },
+    {
+      label: t('dietary.groups.metabolic'),
+      key: 'metabolic',
+      items: [
+        { key: 'keto', label: t('dietary.keto'), description: t('dietary.ketoDesc') },
+        { key: 'lowGi', label: t('dietary.lowGi'), description: t('dietary.lowGiDesc') },
+        { key: 'lowFodmap', label: t('dietary.lowFodmap'), description: t('dietary.lowFodmapDesc') },
+        { key: 'paleo', label: t('dietary.paleo'), description: t('dietary.paleoDesc') },
+      ],
+    },
+  ]
+
   return (
     <div>
       <Header
@@ -120,7 +206,6 @@ export function Profile() {
         <Card>
           <CardContent className="pt-6 pb-5">
             <div className="flex items-center gap-4">
-              {/* Clickable / droppable avatar */}
               <div
                 role="button"
                 tabIndex={0}
@@ -143,7 +228,6 @@ export function Profile() {
                   avatarUrl={user?.avatarUrl}
                   size="lg"
                 />
-                {/* Hover overlay */}
                 <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                   {uploading
                     ? <Spinner className="text-white h-5 w-5" />
@@ -219,6 +303,69 @@ export function Profile() {
             {mutation.isPending ? `${t('common.save')}…` : t('common.save')}
           </Button>
         </form>
+
+        {/* Dietary preferences */}
+        <Card>
+          <CardContent className="pt-5 space-y-5">
+            <div>
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">{t('profile.dietaryTitle')}</h2>
+              <p className="text-xs text-gray-500 mt-1">{t('profile.dietaryHint')}</p>
+            </div>
+
+            {markerGroups.map(group => (
+              <div key={group.key}>
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">{group.label}</p>
+                <div className="space-y-2">
+                  {group.items.map(item => {
+                    const active = dietary[item.key]
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => toggleDietary(item.key)}
+                        className={[
+                          'w-full flex items-start gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors',
+                          active
+                            ? 'border-[#E8956D] bg-[#FFF5F0]'
+                            : 'border-gray-200 bg-white hover:border-gray-300',
+                        ].join(' ')}
+                      >
+                        {/* Checkbox */}
+                        <span className={[
+                          'mt-0.5 flex-shrink-0 h-4 w-4 rounded border flex items-center justify-center transition-colors',
+                          active ? 'bg-[#E8956D] border-[#E8956D]' : 'border-gray-300',
+                        ].join(' ')}>
+                          {active && (
+                            <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 12 10" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polyline points="1,5 4,9 11,1" />
+                            </svg>
+                          )}
+                        </span>
+                        <span>
+                          <span className="block text-sm font-medium text-gray-900">{item.label}</span>
+                          <span className="block text-xs text-gray-500 mt-0.5">{item.description}</span>
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+
+            <Button
+              type="button"
+              onClick={saveDietary}
+              disabled={dietarySaving}
+              className="w-full"
+            >
+              {dietarySaving ? `${t('common.save')}…` : t('profile.dietarySave')}
+            </Button>
+
+            <p className="text-[10px] text-gray-400 leading-relaxed">
+              {t('profile.allergyDisclaimer')}
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import { api } from '@/lib/api'
+import type { DietaryConstraints } from '@/types'
 
 export interface UserMealPreferences {
   days?: number
@@ -9,10 +10,12 @@ export interface UserMealPreferences {
   prepTimeMax?: number
   forbiddenIngredientIds?: string[]
   maxRecipeRepetitions?: number
-  constraintWeights?: { waste: number; budget: number; prepTime: number; recipeRepeat: number }
+  constraintWeights?: { leftovers: number; budget: number; prepTime: number; recipeRepeat: number }
   servingConfig?: { minMultiplier: number; maxMultiplier: number; step: number }
   mealCalorieTargets?: Record<string, number>
 }
+
+export type DietaryPreferences = DietaryConstraints
 
 export interface UserSettings {
   id: string
@@ -23,12 +26,14 @@ export interface UserSettings {
   avatarUrl: string | null
   languagePreference: string | null
   mealPlanPreferences: UserMealPreferences | null
+  dietaryPreferences: DietaryPreferences | null
   createdAt: string
 }
 
 export interface UpdateSettingsRequest {
   languagePreference?: string | null
   mealPlanPreferences?: UserMealPreferences | null
+  dietaryPreferences?: DietaryPreferences | null
 }
 
 export interface UpdateProfileRequest {
