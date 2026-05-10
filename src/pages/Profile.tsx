@@ -9,9 +9,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
 import { UserAvatar } from '@/components/ui/UserAvatar'
+import { Knob } from '@/components/ui/knob'
 import { toast } from '@/components/ui/toast'
 import { usersService, type UpdateProfileRequest, type DietaryPreferences } from '@/services/users'
-import type { DietaryRestrictionKey } from '@/types'
+import type { DietaryRestrictionKey, MealType } from '@/types'
 
 interface FormValues {
   firstName: string
@@ -31,6 +32,45 @@ const EMPTY_DIETARY: DietaryPreferences = {
   fishFree: false, shellfishFree: false, sesameFree: false,
   halal: false, kosher: false,
   keto: false, lowGi: false, lowFodmap: false, paleo: false,
+}
+
+const MEAL_ORDER: MealType[] = ['BREAKFAST', 'MORNING_SNACK', 'LUNCH', 'AFTERNOON_SNACK', 'DINNER', 'SNACK']
+const MEAL_COLOR: Record<MealType, string> = {
+  BREAKFAST: '#F28C28', MORNING_SNACK: '#e8a23a',
+  LUNCH: '#4F7942', AFTERNOON_SNACK: '#7a9e5c',
+  DINNER: '#1A1A1A', SNACK: '#6b7280',
+}
+
+function equalMealKcals(meals: string[], total: number): Record<string, number> {
+  if (meals.length === 0) return {}
+  const share = Math.floor(total / meals.length)
+  const result: Record<string, number> = {}
+  meals.forEach((m, i) => { result[m] = i === 0 ? total - share * (meals.length - 1) : share })
+  return result
+}
+
+function distributeMealKcal(
+  key: string, newVal: number,
+  current: Record<string, number>,
+  meals: string[], total: number,
+): Record<string, number> {
+  const others = meals.filter(m => m !== key)
+  if (others.length === 0) return { ...current, [key]: total }
+  const clamped = Math.min(total, Math.max(0, newVal))
+  const remaining = total - clamped
+  const sumOthers = others.reduce((s, m) => s + (current[m] ?? 0), 0)
+  const next: Record<string, number> = { ...current, [key]: clamped }
+  if (sumOthers === 0) {
+    const share = Math.floor(remaining / others.length)
+    others.forEach((m, i) => { next[m] = i === others.length - 1 ? remaining - share * (others.length - 1) : share })
+  } else {
+    let allocated = 0
+    others.forEach((m, i) => {
+      if (i === others.length - 1) { next[m] = Math.max(0, remaining - allocated) }
+      else { const v = Math.max(0, Math.round(((current[m] ?? 0) / sumOthers) * remaining)); next[m] = v; allocated += v }
+    })
+  }
+  return next
 }
 
 export function Profile() {
@@ -95,6 +135,61 @@ export function Profile() {
       toast({ title: t('profile.dietarySaveError'), variant: 'destructive' })
     } finally {
       setDietarySaving(false)
+    }
+  }
+
+  // ── Meal preferences ──────────────────────────────────────────────────────
+  const [mealKcalTarget, setMealKcalTarget] = useState<number>(
+    user?.mealPlanPreferences?.kcalTarget ?? 2000
+  )
+  const [selectedMeals, setSelectedMeals] = useState<MealType[]>(
+    (user?.mealPlanPreferences?.selectedMealTypes as MealType[] | undefined)
+      ?.filter(m => MEAL_ORDER.includes(m))
+      ?? ['BREAKFAST', 'LUNCH', 'DINNER']
+  )
+  const [mealKcals, setMealKcals] = useState<Record<string, number>>(
+    user?.mealPlanPreferences?.mealCalorieTargets
+      ?? equalMealKcals(['BREAKFAST', 'LUNCH', 'DINNER'], 2000)
+  )
+  const [proteinMin, setProteinMin] = useState<string>(
+    user?.mealPlanPreferences?.proteinMin != null
+      ? String(user.mealPlanPreferences.proteinMin) : ''
+  )
+  const [mealPrefSaving, setMealPrefSaving] = useState(false)
+
+  useEffect(() => {
+    if (user) {
+      const prefs = user.mealPlanPreferences
+      const kcal = prefs?.kcalTarget ?? 2000
+      setMealKcalTarget(kcal)
+      const meals = (prefs?.selectedMealTypes as MealType[] | undefined)
+        ?.filter(m => MEAL_ORDER.includes(m))
+        ?? ['BREAKFAST', 'LUNCH', 'DINNER']
+      setSelectedMeals(meals)
+      setMealKcals(prefs?.mealCalorieTargets ?? equalMealKcals(meals, kcal))
+      setProteinMin(prefs?.proteinMin != null ? String(prefs.proteinMin) : '')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id])
+
+  async function saveMealPreferences() {
+    setMealPrefSaving(true)
+    try {
+      const updated = await usersService.updateSettings({
+        mealPlanPreferences: {
+          kcalTarget: mealKcalTarget,
+          selectedMealTypes: selectedMeals,
+          mealCalorieTargets: mealKcals,
+          proteinMin: proteinMin.trim() ? Number(proteinMin) : undefined,
+        },
+      })
+      qc.setQueryData(['me'], updated)
+      qc.setQueryData(['user-settings'], updated)
+      toast({ title: t('profile.mealPrefSaved'), variant: 'success' })
+    } catch {
+      toast({ title: t('profile.mealPrefError'), variant: 'destructive' })
+    } finally {
+      setMealPrefSaving(false)
     }
   }
 
@@ -364,6 +459,131 @@ export function Profile() {
             <p className="text-[10px] text-gray-400 leading-relaxed">
               {t('profile.allergyDisclaimer')}
             </p>
+          </CardContent>
+        </Card>
+
+        {/* Meal preferences */}
+        <Card>
+          <CardContent className="pt-5 space-y-5">
+            <div>
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">{t('profile.mealPrefs.title')}</h2>
+              <p className="text-xs text-gray-500 mt-1">{t('profile.mealPrefs.subtitle')}</p>
+            </div>
+
+            {/* Calorie target */}
+            <div>
+              <Label htmlFor="kcal-target">{t('profile.mealPrefs.kcalTarget')}</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  id="kcal-target"
+                  type="number"
+                  min={500}
+                  max={6000}
+                  value={mealKcalTarget}
+                  onChange={e => setMealKcalTarget(Number(e.target.value))}
+                  onBlur={() => {
+                    const clamped = Math.max(500, Math.min(6000, mealKcalTarget))
+                    setMealKcalTarget(clamped)
+                    const total = selectedMeals.reduce((s, m) => s + (mealKcals[m] ?? 0), 0)
+                    if (total > 0) {
+                      const scaled: Record<string, number> = {}
+                      let alloc = 0
+                      selectedMeals.forEach((m, i) => {
+                        if (i === selectedMeals.length - 1) scaled[m] = Math.max(0, clamped - alloc)
+                        else { const v = Math.round(((mealKcals[m] ?? 0) / total) * clamped); scaled[m] = v; alloc += v }
+                      })
+                      setMealKcals(scaled)
+                    }
+                  }}
+                  className="w-28"
+                />
+                <span className="text-sm text-gray-500">kcal</span>
+              </div>
+            </div>
+
+            {/* Meal type toggles */}
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                {t('profile.mealPrefs.meals')}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {MEAL_ORDER.map(meal => {
+                  const active = selectedMeals.includes(meal)
+                  return (
+                    <button
+                      key={meal}
+                      type="button"
+                      onClick={() => {
+                        setSelectedMeals(prev => {
+                          if (prev.includes(meal)) {
+                            if (prev.length === 1) return prev
+                            const next = prev.filter(m => m !== meal)
+                            setMealKcals(equalMealKcals(next, mealKcalTarget))
+                            return next
+                          } else {
+                            const next = [...prev, meal].sort((a, b) => MEAL_ORDER.indexOf(a) - MEAL_ORDER.indexOf(b))
+                            setMealKcals(equalMealKcals(next, mealKcalTarget))
+                            return next
+                          }
+                        })
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                        active ? 'text-white border-transparent' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-400'
+                      }`}
+                      style={active ? { background: MEAL_COLOR[meal] } : undefined}
+                    >
+                      {t(`mealPlan.meals.${meal}`)}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Per-meal calorie knobs */}
+            {selectedMeals.length > 0 && (
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">
+                  {t('profile.mealPrefs.mealCalories')}
+                </p>
+                <div className="flex flex-wrap gap-5 justify-start">
+                  {selectedMeals.map(meal => (
+                    <Knob
+                      key={meal}
+                      value={mealKcals[meal] ?? 0}
+                      min={0}
+                      max={mealKcalTarget || 2000}
+                      onChange={v => setMealKcals(prev => distributeMealKcal(meal, v, prev, selectedMeals, mealKcalTarget || 2000))}
+                      label={t(`mealPlan.meals.${meal}`)}
+                      color={MEAL_COLOR[meal]}
+                      size={80}
+                      formatValue={v => `${v}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Protein minimum */}
+            <div>
+              <Label htmlFor="protein-min">{t('profile.mealPrefs.proteinMin')}</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  id="protein-min"
+                  type="number"
+                  min={0}
+                  max={500}
+                  value={proteinMin}
+                  onChange={e => setProteinMin(e.target.value)}
+                  placeholder={t('common.optional')}
+                  className="w-28"
+                />
+                <span className="text-sm text-gray-500">g / nap</span>
+              </div>
+            </div>
+
+            <Button type="button" onClick={saveMealPreferences} disabled={mealPrefSaving} className="w-full">
+              {mealPrefSaving ? `${t('common.save')}…` : t('profile.mealPrefs.save')}
+            </Button>
           </CardContent>
         </Card>
       </div>

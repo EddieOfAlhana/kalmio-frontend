@@ -26,7 +26,8 @@
     "delete": "Törlés",
     "search": "Keresés",
     "signOut": "Kijelentkezés",
-    "offline": "Nincs internetkapcsolat"
+    "offline": "Nincs internetkapcsolat",
+    "back": "Vissza"
   },
   "language": {
     "en": "EN",
@@ -331,7 +332,18 @@
     "dietarySave": "Étrendi preferenciák mentése",
     "dietarySaveSuccess": "Étrendi preferenciák elmentve.",
     "dietarySaveError": "Nem sikerült menteni az étrendi preferenciákat.",
-    "allergyDisclaimer": "Mindent megteszünk, hogy tiszteletben tartsuk étrendi beállításaidat és allergia-korlátozásaidat, azonban a Kalmio nem vállal jogi felelősséget az étrendi adatok pontosságáért vagy teljességéért. Súlyos allergia esetén mindig ellenőrizd az összetevők feliratatait."
+    "allergyDisclaimer": "Mindent megteszünk, hogy tiszteletben tartsuk étrendi beállításaidat és allergia-korlátozásaidat, azonban a Kalmio nem vállal jogi felelősséget az étrendi adatok pontosságáért vagy teljességéért. Súlyos allergia esetén mindig ellenőrizd az összetevők feliratatait.",
+    "mealPrefSaved": "Étkezési preferenciák mentve.",
+    "mealPrefError": "Hiba a mentés során.",
+    "mealPrefs": {
+      "title": "Étkezési preferenciák",
+      "subtitle": "Ezek az adatok a tervező alapja — mindenki a sajátját állítja be.",
+      "kcalTarget": "Napi kalória cél",
+      "meals": "Étkezések",
+      "mealCalories": "Kalória elosztás",
+      "proteinMin": "Minimum fehérje",
+      "save": "Mentés"
+    }
   },
   "dietary": {
     "groups": {
@@ -641,7 +653,25 @@
     },
     "generate": "Generálj tervet",
     "generating": "Egy pillanat — összerakom a heteded.",
-    "error": "Hiba történt. Próbáld újra."
+    "error": "Hiba történt. Próbáld újra.",
+    "household": "Kikre tervezzük?",
+    "inviteMember": "Meghívás",
+    "inviteComingSoon": "Meghívó funkció hamarosan elérhető.",
+    "constraints": "Tervező beállítások",
+    "budgetMax": "Max. napi büdzsé",
+    "budgetUnit": "Ft/nap",
+    "prepTimeMax": "Max. elkészítési idő",
+    "prepTimeUnit": "perc/étkezés",
+    "maxRepetitions": "Max. receptismétlés / hét",
+    "weightsTitle": "Prioritások",
+    "weightsHint": "Mire fókuszáljon a tervező? Az összes szám 100-ra összegzik.",
+    "weightLeftovers": "Maradékfelhasználás",
+    "weightBudget": "Büdzsé",
+    "weightPrepTime": "Elkészítési idő",
+    "weightRecipeRepeat": "Változatosság",
+    "weightDisabled": "Nincs megadva feltétel",
+    "infeasibleTitle": "Nem sikerült megoldható tervet összerakni.",
+    "infeasibleDesc": "Lazíts egy kicsit a feltételeken, vagy bővítsd a recept adatbázist."
   },
   "ipVault": {
     "title": "IP Trezor",

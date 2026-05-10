@@ -1,115 +1,135 @@
 import { useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { UserPlus } from 'lucide-react'
+import axios from 'axios'
 import { Spinner } from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Slider } from '@/components/ui/slider'
+import { UserAvatar } from '@/components/ui/UserAvatar'
+import { toast } from '@/components/ui/toast'
 import { planService } from '@/services/plans'
+import { usersService } from '@/services/users'
 import { cn } from '@/lib/utils'
-import type { MealType } from '@/types'
+import type { MealType, ConstraintWeights } from '@/types'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type CaloriePreset = 'low' | 'moderate' | 'high'
 type ShoppingCadence = 7 | 14
+type WeightKey = keyof ConstraintWeights
 
-const CALORIE_MAP: Record<CaloriePreset, number> = {
-  low: 1600,
-  moderate: 2000,
-  high: 2400,
+interface PlanPreferencesFormProps {
+  onSuccess?: () => void
 }
 
-const DIETARY_OPTIONS: { key: string; labelKey: string }[] = [
-  { key: 'vegetarian', labelKey: 'dietary.vegetarian' },
-  { key: 'vegan', labelKey: 'dietary.vegan' },
-  { key: 'glutenFree', labelKey: 'dietary.glutenFree' },
-  { key: 'dairyFree', labelKey: 'dietary.dairyFree' },
-  { key: 'lactoseFree', labelKey: 'dietary.lactoseFree' },
-  { key: 'eggFree', labelKey: 'dietary.eggFree' },
-  { key: 'nutFree', labelKey: 'dietary.nutFree' },
-  { key: 'peanutFree', labelKey: 'dietary.peanutFree' },
-]
+// ── Weight distribution helper ────────────────────────────────────────────────
 
-const DAY_KEYS = [
-  'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
-] as const
-
-const MEAL_ORDER: MealType[] = ['BREAKFAST', 'MORNING_SNACK', 'LUNCH', 'AFTERNOON_SNACK', 'DINNER', 'SNACK']
-
-function buildMealCalorieTargets(total: number): Record<string, number> {
-  const targets: Record<string, number> = {
-    BREAKFAST: Math.round(total * 0.25),
-    LUNCH: Math.round(total * 0.35),
-    DINNER: Math.round(total * 0.30),
-    SNACK: Math.round(total * 0.10),
+function distributeWeights(
+  key: WeightKey,
+  newValue: number,
+  current: ConstraintWeights,
+  activeKeys: WeightKey[],
+): ConstraintWeights {
+  const others = activeKeys.filter(k => k !== key)
+  if (others.length === 0) return current
+  const sumOthers = others.reduce((s, k) => s + current[k], 0)
+  const remaining = 100 - newValue
+  const next = { ...current, [key]: newValue }
+  if (sumOthers === 0) {
+    const share = Math.floor(remaining / others.length)
+    others.forEach((k, i) => {
+      next[k] = i === others.length - 1 ? remaining - share * (others.length - 1) : share
+    })
+  } else {
+    let allocated = 0
+    others.forEach((k, i) => {
+      if (i === others.length - 1) { next[k] = Math.max(0, remaining - allocated) }
+      else { const v = Math.max(0, Math.round((current[k] / sumOthers) * remaining)); next[k] = v; allocated += v }
+    })
   }
-  return targets
-}
-
-function todayIso(): string {
-  return new Date().toISOString().split('T')[0]
+  return next
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function PlanPreferencesForm() {
+export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
 
-  const [householdSize, setHouseholdSize] = useState(1)
-  const [caloriePreset, setCaloriePreset] = useState<CaloriePreset>('moderate')
-  const [restrictions, setRestrictions] = useState<Set<string>>(new Set())
-  const [cadence, setCadence] = useState<ShoppingCadence>(7)
-  const [shoppingDay, setShoppingDay] = useState<string>('sunday')
+  // ── User settings (for personal meal preferences) ─────────────────────────
+  const { data: user } = useQuery({
+    queryKey: ['user-settings'],
+    queryFn: usersService.getMe,
+    staleTime: 5 * 60 * 1000,
+  })
 
+  // ── Plan-level state ──────────────────────────────────────────────────────
+  const [budgetMax, setBudgetMax] = useState('')
+  const [prepTimeMax, setPrepTimeMax] = useState('')
+  const [maxRepetitions, setMaxRepetitions] = useState(2)
+  const [cadence, setCadence] = useState<ShoppingCadence>(7)
+  const [weights, setWeights] = useState<ConstraintWeights>({
+    leftovers: 25, budget: 25, prepTime: 25, recipeRepeat: 25,
+  })
+
+  // ── Active weight keys (inactive when their constraint is empty) ──────────
+  const activeWeightKeys: WeightKey[] = (
+    ['leftovers', 'budget', 'prepTime', 'recipeRepeat'] as WeightKey[]
+  ).filter(k => {
+    if (k === 'budget') return budgetMax.trim() !== ''
+    if (k === 'prepTime') return prepTimeMax.trim() !== ''
+    return true
+  })
+
+  const hasAnyConstraint = budgetMax.trim() !== '' || prepTimeMax.trim() !== ''
+
+  // ── Mutation ──────────────────────────────────────────────────────────────
   const mutation = useMutation({
     mutationFn: planService.create,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['plan', 'active'] })
-      navigate('/app/meal-plans')
+      onSuccess?.()
     },
   })
 
-  function toggleRestriction(key: string) {
-    setRestrictions(prev => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key)
-      else next.add(key)
-      return next
-    })
-  }
-
+  // ── Submit ────────────────────────────────────────────────────────────────
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const kcal = CALORIE_MAP[caloriePreset]
-    const mealCalorieTargets = buildMealCalorieTargets(kcal)
-    const dietaryRestrictions = restrictions.size > 0 ? Array.from(restrictions) : null
+    const prefs = user?.mealPlanPreferences
+    const kcal = prefs?.kcalTarget ?? 2000
+    const selectedMeals = (prefs?.selectedMealTypes ?? ['BREAKFAST', 'LUNCH', 'DINNER']) as MealType[]
+    const mealCalorieTargets = prefs?.mealCalorieTargets ?? null
+    const proteinMin = prefs?.proteinMin ?? null
 
     mutation.mutate({
-      startDate: todayIso(),
+      startDate: new Date().toISOString().split('T')[0],
       cycleDays: cadence,
       constraints: {
         days: cadence,
-        selectedMeals: MEAL_ORDER.filter(m =>
-          m === 'BREAKFAST' || m === 'LUNCH' || m === 'DINNER' || m === 'SNACK'
-        ),
+        selectedMeals,
         constraints: {
           kcalTarget: kcal,
-          proteinMin: 0,
+          proteinMin,
+          budgetMax: budgetMax.trim() ? Number(budgetMax) : null,
+          prepTimeMax: prepTimeMax.trim() ? Number(prepTimeMax) : null,
+          maxRecipeRepetitions: maxRepetitions,
+          constraintWeights: weights,
           mealCalorieTargets,
-          dietaryRestrictions,
+          dietaryRestrictions: null,
         },
       },
     })
   }
 
-  const caloriePresets: { key: CaloriePreset; labelKey: string; subKey: string }[] = [
-    { key: 'low', labelKey: 'preferences.caloriePresets.low', subKey: 'preferences.caloriePresets.lowSub' },
-    { key: 'moderate', labelKey: 'preferences.caloriePresets.moderate', subKey: 'preferences.caloriePresets.moderateSub' },
-    { key: 'high', labelKey: 'preferences.caloriePresets.high', subKey: 'preferences.caloriePresets.highSub' },
-  ]
+  // ── 422 detection ─────────────────────────────────────────────────────────
+  const is422 =
+    mutation.isError &&
+    axios.isAxiosError(mutation.error) &&
+    mutation.error.response?.status === 422
 
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-lg mx-auto">
       {/* Title */}
@@ -118,77 +138,148 @@ export function PlanPreferencesForm() {
         <p className="text-sm text-gray-500 mt-1">{t('preferences.subtitle')}</p>
       </div>
 
-      {/* 1. Household size */}
+      {/* Section 1 — Household */}
       <section>
-        <p className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('preferences.householdSize')}</p>
-        <div className="flex gap-2">
-          {[1, 2, 3, 4, 5, 6].map(n => (
-            <button
-              key={n}
-              type="button"
-              onClick={() => setHouseholdSize(n)}
-              className={cn(
-                'w-10 h-10 rounded-[10px] border text-sm font-semibold transition-colors',
-                householdSize === n
-                  ? 'border-[#1A1A1A] bg-[#1A1A1A] text-white'
-                  : 'border-gray-200 bg-white text-[#1A1A1A] hover:border-gray-400'
-              )}
-            >
-              {n}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* 2. Calorie preset */}
-      <section>
-        <p className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('preferences.calorieTarget')}</p>
-        <div className="grid grid-cols-3 gap-2">
-          {caloriePresets.map(({ key, labelKey, subKey }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setCaloriePreset(key)}
-              className={cn(
-                'rounded-[12px] border p-3 text-left transition-colors',
-                caloriePreset === key
-                  ? 'border-[#4F7942] bg-[#4F7942]/8'
-                  : 'border-gray-200 bg-white hover:border-gray-400'
-              )}
-            >
-              <p className="font-semibold text-sm text-[#1A1A1A]">{t(labelKey)}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{t(subKey)}</p>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* 3. Dietary restrictions */}
-      <section>
-        <p className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('preferences.restrictions')}</p>
+        <p className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('preferences.household')}</p>
         <div className="flex flex-wrap gap-2">
-          {DIETARY_OPTIONS.map(({ key, labelKey }) => {
-            const active = restrictions.has(key)
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => toggleRestriction(key)}
-                className={cn(
-                  'px-3 py-1.5 rounded-full border text-sm font-medium transition-colors',
-                  active
-                    ? 'border-[#1A1A1A] bg-[#1A1A1A] text-white'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400'
-                )}
-              >
-                {t(labelKey)}
-              </button>
-            )
-          })}
+          {/* Current user chip — always selected */}
+          <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-[#4F7942] bg-white">
+            <div className="relative">
+              <UserAvatar
+                firstName={user?.firstName}
+                lastName={user?.lastName}
+                email={user?.email}
+                size="sm"
+              />
+              <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#4F7942]">
+                <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 12 10" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="1,5 4,9 11,1" />
+                </svg>
+              </span>
+            </div>
+            <span className="text-sm font-medium text-[#1A1A1A] max-w-[120px] truncate">
+              {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email || '—'}
+            </span>
+          </div>
+
+          {/* Invite placeholder */}
+          <button
+            type="button"
+            onClick={() => toast({ title: t('preferences.inviteComingSoon') })}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-dashed border-gray-300 text-sm text-gray-400 hover:border-gray-500 hover:text-gray-600 transition-colors"
+          >
+            <UserPlus className="h-4 w-4" />
+            {t('preferences.inviteMember')}
+          </button>
         </div>
       </section>
 
-      {/* 4. Shopping cadence */}
+      {/* Section 2 — Plan constraints */}
+      <section>
+        <p className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('preferences.constraints')}</p>
+        <div className="space-y-4">
+          {/* Max budget */}
+          <div>
+            <Label htmlFor="budget-max">{t('preferences.budgetMax')}</Label>
+            <div className="flex items-center gap-2 mt-1">
+              <Input
+                id="budget-max"
+                type="number"
+                min={0}
+                value={budgetMax}
+                onChange={e => setBudgetMax(e.target.value)}
+                placeholder={t('common.optional')}
+                className="w-32"
+              />
+              <span className="text-sm text-gray-500">{t('preferences.budgetUnit')}</span>
+            </div>
+          </div>
+
+          {/* Max prep time */}
+          <div>
+            <Label htmlFor="prep-time-max">{t('preferences.prepTimeMax')}</Label>
+            <div className="flex items-center gap-2 mt-1">
+              <Input
+                id="prep-time-max"
+                type="number"
+                min={0}
+                value={prepTimeMax}
+                onChange={e => setPrepTimeMax(e.target.value)}
+                placeholder={t('common.optional')}
+                className="w-32"
+              />
+              <span className="text-sm text-gray-500">{t('preferences.prepTimeUnit')}</span>
+            </div>
+          </div>
+
+          {/* Recipe repetitions stepper */}
+          <div>
+            <Label>{t('preferences.maxRepetitions')}</Label>
+            <div className="flex items-center gap-3 mt-1">
+              <button
+                type="button"
+                onClick={() => setMaxRepetitions(v => Math.max(1, v - 1))}
+                className="h-9 w-9 rounded-[10px] border border-gray-200 bg-white text-[#1A1A1A] font-semibold text-base hover:border-gray-400 transition-colors flex items-center justify-center"
+                aria-label="-"
+              >
+                −
+              </button>
+              <span className="w-6 text-center text-sm font-semibold text-[#1A1A1A]">{maxRepetitions}</span>
+              <button
+                type="button"
+                onClick={() => setMaxRepetitions(v => Math.min(7, v + 1))}
+                className="h-9 w-9 rounded-[10px] border border-gray-200 bg-white text-[#1A1A1A] font-semibold text-base hover:border-gray-400 transition-colors flex items-center justify-center"
+                aria-label="+"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 3 — Constraint priorities (only when at least one constraint is set) */}
+      {hasAnyConstraint && (
+        <section>
+          <p className="text-sm font-semibold text-[#1A1A1A] mb-1">{t('preferences.weightsTitle')}</p>
+          <p className="text-xs text-gray-500 mb-4">{t('preferences.weightsHint')}</p>
+          <div className="space-y-4">
+            {(
+              [
+                { key: 'leftovers' as WeightKey, label: t('preferences.weightLeftovers') },
+                { key: 'budget' as WeightKey, label: t('preferences.weightBudget') },
+                { key: 'prepTime' as WeightKey, label: t('preferences.weightPrepTime') },
+                { key: 'recipeRepeat' as WeightKey, label: t('preferences.weightRecipeRepeat') },
+              ]
+            ).map(({ key, label }) => {
+              const isActive = activeWeightKeys.includes(key)
+              return (
+                <div key={key}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className={cn('text-sm', isActive ? 'text-[#1A1A1A] font-medium' : 'text-gray-400')}>
+                      {label}
+                    </span>
+                    {isActive
+                      ? <span className="text-sm font-semibold text-[#1A1A1A]">{weights[key]}%</span>
+                      : <span className="text-xs text-gray-400">{t('preferences.weightDisabled')}</span>
+                    }
+                  </div>
+                  <Slider
+                    value={weights[key]}
+                    min={0}
+                    max={100}
+                    step={1}
+                    disabled={!isActive}
+                    onChange={v => setWeights(prev => distributeWeights(key, v, prev, activeWeightKeys))}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Section 4 — Shopping cadence */}
       <section>
         <p className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('preferences.shoppingCadence')}</p>
         <div className="grid grid-cols-2 gap-2">
@@ -207,32 +298,22 @@ export function PlanPreferencesForm() {
               <p className="font-semibold text-sm text-[#1A1A1A]">
                 {days === 7 ? t('preferences.cadenceWeekly') : t('preferences.cadenceBiweekly')}
               </p>
-              <p className="text-xs text-gray-500 mt-0.5">{days} {days === 7 ? 'nap' : 'nap'}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{days} nap</p>
             </button>
           ))}
         </div>
       </section>
 
-      {/* 5. Shopping day */}
-      <section>
-        <p className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('preferences.shoppingDay')}</p>
-        <select
-          value={shoppingDay}
-          onChange={e => setShoppingDay(e.target.value)}
-          className="flex h-10 w-full rounded-[12px] border border-input bg-background px-3 py-2 text-sm"
-        >
-          {DAY_KEYS.map(day => (
-            <option key={day} value={day}>
-              {t(`preferences.days.${day}`)}
-            </option>
-          ))}
-        </select>
-      </section>
-
       {/* Submit */}
       <div className="pt-2">
-        {mutation.isError && (
+        {mutation.isError && !is422 && (
           <p className="text-xs text-red-500 mb-3">{t('preferences.error')}</p>
+        )}
+        {is422 && (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 mb-3">
+            <p className="text-sm font-medium text-red-800">{t('preferences.infeasibleTitle')}</p>
+            <p className="text-sm text-red-700 mt-1">{t('preferences.infeasibleDesc')}</p>
+          </div>
         )}
         <Button
           type="submit"

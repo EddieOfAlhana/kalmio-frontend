@@ -26,7 +26,8 @@
     "delete": "Delete",
     "search": "Search",
     "signOut": "Sign out",
-    "offline": "No internet connection"
+    "offline": "No internet connection",
+    "back": "Back"
   },
   "language": {
     "en": "EN",
@@ -331,7 +332,18 @@
     "dietarySave": "Save dietary preferences",
     "dietarySaveSuccess": "Dietary preferences saved.",
     "dietarySaveError": "Failed to save dietary preferences.",
-    "allergyDisclaimer": "We do our best to honour your dietary settings and allergy restrictions, but Kalmio makes no legal warranties regarding the accuracy or completeness of dietary information. Always verify ingredient labels when managing severe allergies."
+    "allergyDisclaimer": "We do our best to honour your dietary settings and allergy restrictions, but Kalmio makes no legal warranties regarding the accuracy or completeness of dietary information. Always verify ingredient labels when managing severe allergies.",
+    "mealPrefSaved": "Meal preferences saved.",
+    "mealPrefError": "Error saving preferences.",
+    "mealPrefs": {
+      "title": "Meal Preferences",
+      "subtitle": "These feed the planner — each person sets their own.",
+      "kcalTarget": "Daily calorie target",
+      "meals": "Meals",
+      "mealCalories": "Calorie distribution",
+      "proteinMin": "Minimum protein",
+      "save": "Save"
+    }
   },
   "dietary": {
     "groups": {
@@ -641,7 +653,25 @@
     },
     "generate": "Generate plan",
     "generating": "One moment — putting your week together.",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "household": "Who is this plan for?",
+    "inviteMember": "Invite",
+    "inviteComingSoon": "Invite feature coming soon.",
+    "constraints": "Planner settings",
+    "budgetMax": "Max daily budget",
+    "budgetUnit": "per day",
+    "prepTimeMax": "Max prep time",
+    "prepTimeUnit": "min/meal",
+    "maxRepetitions": "Max recipe repetitions / week",
+    "weightsTitle": "Priorities",
+    "weightsHint": "What should the planner optimise for? Values add up to 100.",
+    "weightLeftovers": "Leftover use",
+    "weightBudget": "Budget",
+    "weightPrepTime": "Prep time",
+    "weightRecipeRepeat": "Variety",
+    "weightDisabled": "No constraint set",
+    "infeasibleTitle": "Couldn't build a feasible plan.",
+    "infeasibleDesc": "Relax some constraints, or expand the recipe database."
   },
   "ipVault": {
     "title": "IP Vault",

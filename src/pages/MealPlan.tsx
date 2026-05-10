@@ -383,22 +383,28 @@ export function MealPlan() {
     )
   }
 
-  if (activePlan) {
-    return <PlanCalendarView plan={activePlan} onRegenerate={() => setShowPreferencesForm(true)} />
-  }
-
+  // Preferences form takes priority so the "Regenerate" button works even when a plan exists
   if (showPreferencesForm) {
     return (
       <div>
         <Header
           title={t('preferences.title')}
           subtitle={t('preferences.subtitle')}
+          actions={
+            <Button variant="outline" size="sm" onClick={() => setShowPreferencesForm(false)}>
+              {t('common.back')}
+            </Button>
+          }
         />
         <div className="mt-6">
-          <PlanPreferencesForm />
+          <PlanPreferencesForm onSuccess={() => setShowPreferencesForm(false)} />
         </div>
       </div>
     )
+  }
+
+  if (activePlan) {
+    return <PlanCalendarView plan={activePlan} onRegenerate={() => setShowPreferencesForm(true)} />
   }
 
   return (
