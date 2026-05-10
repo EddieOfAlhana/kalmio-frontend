@@ -448,6 +448,22 @@ export interface DashboardDto {
   }
 }
 
+export interface DailyMacroDto {
+  date: string
+  consumed: { kcal: number; protein: number; fat: number; carbs: number }
+  target: { kcal: number; protein: number; fat: number; carbs: number }
+}
+
+export interface LogOffPlanMealRequest {
+  date: string
+  mealType?: string
+  displayName: string
+  kcal: number
+  proteinG?: number
+  fatG?: number
+  carbG?: number
+}
+
 // ── Shopping List ─────────────────────────────────────────────────────────
 
 export interface ShoppingListRequest {

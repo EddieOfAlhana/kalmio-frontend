@@ -7,6 +7,7 @@ import { TomorrowPrepModule } from '@/components/dashboard/TomorrowPrepModule'
 import { PlanGlanceModule } from '@/components/dashboard/PlanGlanceModule'
 import { ActivationCard } from '@/components/dashboard/ActivationCard'
 import { PointsModule } from '@/components/dashboard/PointsModule'
+import { MacrosModule } from '@/components/dashboard/MacrosModule'
 import { dashboardService } from '@/services/dashboard'
 import { planService } from '@/services/plans'
 
@@ -41,6 +42,7 @@ export function Dashboard() {
           activePlan={activePlan}
           isLoading={isLoading}
         />
+        {hasActivePlan && <MacrosModule date={today} />}
         {(dashboard?.todaysPrepTasks?.length ?? 0) > 0 && (
           <TodaysPrepModule
             tasks={dashboard!.todaysPrepTasks}

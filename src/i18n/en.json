@@ -53,7 +53,23 @@
         "SNACK": "Snack",
         "MORNING_SNACK": "Morning snack",
         "AFTERNOON_SNACK": "Afternoon snack"
+      },
+      "logOtherModal": {
+        "title": "Log something else",
+        "name": "What did you eat?",
+        "kcal": "Calories (kcal)",
+        "protein": "Protein (g)",
+        "fat": "Fat (g)",
+        "carbs": "Carbs (g)",
+        "log": "Log",
+        "logging": "Logging…",
+        "logged": "Logged."
       }
+    },
+    "macros": {
+      "title": "Today's nutrition",
+      "kcal": "kcal",
+      "protein": "protein"
     },
     "prep": {
       "todayTitle": "Prep today",

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from '@/components/ui/toast'
 import { planService } from '@/services/plans'
+import { LogOffPlanMealModal } from './LogOffPlanMealModal'
 import type { TodaysMealCard, Plan } from '@/types'
 
 interface TodaysMealsModuleProps {
@@ -61,6 +62,7 @@ function MealCard({ meal, planId, today }: MealCardProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [logModalOpen, setLogModalOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -79,6 +81,7 @@ function MealCard({ meal, planId, today }: MealCardProps) {
       planService.updateMeal(planId, meal.mealId, { status: 'EATEN' }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['dashboard', today] })
+      void queryClient.invalidateQueries({ queryKey: ['macros', today] })
       toast({ title: t('dashboard.meals.markEaten'), variant: 'success' })
     },
     onError: () => {
@@ -91,6 +94,7 @@ function MealCard({ meal, planId, today }: MealCardProps) {
       planService.updateMeal(planId, meal.mealId, { status: 'SKIPPED' }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['dashboard', today] })
+      void queryClient.invalidateQueries({ queryKey: ['macros', today] })
       setMenuOpen(false)
     },
     onError: () => {
@@ -179,7 +183,7 @@ function MealCard({ meal, planId, today }: MealCardProps) {
                       className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F9F7F2] transition-colors"
                       onClick={() => {
                         setMenuOpen(false)
-                        toast({ title: t('common.comingSoon') })
+                        setLogModalOpen(true)
                       }}
                     >
                       {t('dashboard.meals.logOther')}
@@ -202,6 +206,14 @@ function MealCard({ meal, planId, today }: MealCardProps) {
           </div>
         </div>
       </div>
+      <LogOffPlanMealModal
+        open={logModalOpen}
+        onOpenChange={setLogModalOpen}
+        mealType={meal.mealType}
+        date={today}
+        planId={planId}
+        mealId={meal.mealId}
+      />
     </div>
   )
 }

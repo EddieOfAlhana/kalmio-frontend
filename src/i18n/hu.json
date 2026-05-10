@@ -53,7 +53,23 @@
         "SNACK": "Snack",
         "MORNING_SNACK": "Tízórai",
         "AFTERNOON_SNACK": "Uzsonna"
+      },
+      "logOtherModal": {
+        "title": "Mást ettem",
+        "name": "Mit ettél?",
+        "kcal": "Kalória (kcal)",
+        "protein": "Fehérje (g)",
+        "fat": "Zsír (g)",
+        "carbs": "Szénhidrát (g)",
+        "log": "Rögzítés",
+        "logging": "Rögzítés…",
+        "logged": "Rögzítve."
       }
+    },
+    "macros": {
+      "title": "Tápanyagok ma",
+      "kcal": "kcal",
+      "protein": "fehérje"
     },
     "prep": {
       "todayTitle": "Előkészítendő ma",
