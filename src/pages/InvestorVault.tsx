@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { marked } from 'marked'
 import { Shield, ChevronDown, ChevronUp, Calendar, Tag } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
 import { Card, CardContent } from '@/components/ui/card'
@@ -49,9 +50,10 @@ function DocumentCard({ doc }: { doc: IpDocument }) {
             {expanded && (
               <div className="mt-4 pt-4 border-t border-gray-100">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Technical Specification</p>
-                <div className="prose prose-sm max-w-none text-gray-700">
-                  <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">{doc.content}</pre>
-                </div>
+                <div
+                  className="ip-prose"
+                  dangerouslySetInnerHTML={{ __html: marked.parse(doc.content) as string }}
+                />
               </div>
             )}
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { marked } from 'marked'
 import { Eye, EyeOff, Plus, Trash2, Key, Clock, Globe, Lock, ChevronDown, ChevronUp, BookOpen } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Card, CardContent } from '@/components/ui/card'
@@ -46,9 +47,12 @@ function DocumentCard({ doc, onEdit, onTogglePublish, onDelete }: {
             <h3 className="font-semibold text-[#1A1A1A]">{doc.title}</h3>
             <p className="text-sm text-gray-500 mt-1 line-clamp-2">{doc.summary}</p>
             {expanded && (
-              <pre className="mt-3 text-xs text-gray-600 whitespace-pre-wrap font-sans border rounded p-3 bg-gray-50 max-h-64 overflow-y-auto">
-                {doc.content}
-              </pre>
+              <div className="mt-3 border rounded p-3 bg-gray-50 max-h-64 overflow-y-auto">
+                <div
+                  className="ip-prose"
+                  dangerouslySetInnerHTML={{ __html: marked.parse(doc.content) as string }}
+                />
+              </div>
             )}
             <div className="flex gap-1 mt-2 flex-wrap">
               {doc.tags.map(tag => (
