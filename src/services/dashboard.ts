@@ -12,6 +12,9 @@ export const dashboardService = {
 
   logOffPlanMeal: (req: LogOffPlanMealRequest): Promise<unknown> =>
     api.post('/api/off-plan-meals', req).then(r => r.data),
+
+  deleteOffPlanMeal: (id: string): Promise<void> =>
+    api.delete(`/api/off-plan-meals/${id}`).then(r => r.data),
 }
 
 export const prepTaskService = {

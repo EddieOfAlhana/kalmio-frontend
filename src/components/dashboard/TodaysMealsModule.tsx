@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Check, MoreHorizontal } from 'lucide-react'
+import { Check, MoreHorizontal, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from '@/components/ui/toast'
 import { planService } from '@/services/plans'
+import { dashboardService } from '@/services/dashboard'
 import { LogOffPlanMealModal } from './LogOffPlanMealModal'
 import type { TodaysMealCard, OffPlanMealCard, Plan } from '@/types'
 
@@ -103,6 +104,19 @@ function MealCard({ meal, planId, today }: MealCardProps) {
     },
   })
 
+  const markPlanned = useMutation({
+    mutationFn: () =>
+      planService.updateMeal(planId, meal.mealId, { status: 'PLANNED' }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['dashboard', today] })
+      void queryClient.invalidateQueries({ queryKey: ['macros', today] })
+      setMenuOpen(false)
+    },
+    onError: () => {
+      toast({ title: t('dashboard.meals.errorUpdating'), variant: 'destructive' })
+    },
+  })
+
   const isEaten = meal.status === 'EATEN'
   const isSkipped = meal.status === 'SKIPPED'
   const isFinal = isEaten || isSkipped || meal.status === 'REPLACED'
@@ -150,8 +164,8 @@ function MealCard({ meal, planId, today }: MealCardProps) {
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <StatusPill status={meal.status} />
-            {/* Three-dot overflow menu — only for non-final meals */}
-            {!isFinal && (
+            {/* Three-dot overflow menu — hidden only for REPLACED meals */}
+            {meal.status !== 'REPLACED' && (
               <div className="relative" ref={menuRef}>
                 <button
                   type="button"
@@ -166,40 +180,45 @@ function MealCard({ meal, planId, today }: MealCardProps) {
                     role="menu"
                     className="absolute right-0 top-8 z-20 min-w-[160px] rounded-[12px] border border-[#e5e4e7] bg-white shadow-lg py-1"
                   >
-                    <button
-                      role="menuitem"
-                      type="button"
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F9F7F2] transition-colors"
-                      onClick={() => {
-                        setMenuOpen(false)
-                        markSkipped.mutate()
-                      }}
-                      disabled={markSkipped.isPending}
-                    >
-                      {t('dashboard.meals.markSkipped')}
-                    </button>
-                    <button
-                      role="menuitem"
-                      type="button"
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F9F7F2] transition-colors"
-                      onClick={() => {
-                        setMenuOpen(false)
-                        setLogModalOpen(true)
-                      }}
-                    >
-                      {t('dashboard.meals.logOther')}
-                    </button>
-                    <button
-                      role="menuitem"
-                      type="button"
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F9F7F2] transition-colors"
-                      onClick={() => {
-                        setMenuOpen(false)
-                        toast({ title: t('common.comingSoon') })
-                      }}
-                    >
-                      {t('dashboard.meals.replaceRecipe')}
-                    </button>
+                    {isFinal ? (
+                      <button
+                        role="menuitem"
+                        type="button"
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F9F7F2] transition-colors"
+                        onClick={() => markPlanned.mutate()}
+                        disabled={markPlanned.isPending}
+                      >
+                        {t('dashboard.meals.undoStatus')}
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          role="menuitem"
+                          type="button"
+                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F9F7F2] transition-colors"
+                          onClick={() => { setMenuOpen(false); markSkipped.mutate() }}
+                          disabled={markSkipped.isPending}
+                        >
+                          {t('dashboard.meals.markSkipped')}
+                        </button>
+                        <button
+                          role="menuitem"
+                          type="button"
+                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F9F7F2] transition-colors"
+                          onClick={() => { setMenuOpen(false); setLogModalOpen(true) }}
+                        >
+                          {t('dashboard.meals.logOther')}
+                        </button>
+                        <button
+                          role="menuitem"
+                          type="button"
+                          className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#F9F7F2] transition-colors"
+                          onClick={() => { setMenuOpen(false); toast({ title: t('common.comingSoon') }) }}
+                        >
+                          {t('dashboard.meals.replaceRecipe')}
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
@@ -219,11 +238,23 @@ function MealCard({ meal, planId, today }: MealCardProps) {
   )
 }
 
-function OffPlanMealCardItem({ meal }: { meal: OffPlanMealCard }) {
+function OffPlanMealCardItem({ meal, today }: { meal: OffPlanMealCard; today: string }) {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
+
+  const deleteMeal = useMutation({
+    mutationFn: () => dashboardService.deleteOffPlanMeal(meal.id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['dashboard', today] })
+      void queryClient.invalidateQueries({ queryKey: ['macros', today] })
+    },
+    onError: () => {
+      toast({ title: t('dashboard.meals.errorUpdating'), variant: 'destructive' })
+    },
+  })
+
   return (
     <div className="flex items-start gap-3 p-3 rounded-[12px] bg-[#F9F7F2]">
-      {/* Left spacer — aligns content with MealCard body (no checkbox) */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
@@ -235,9 +266,24 @@ function OffPlanMealCardItem({ meal }: { meal: OffPlanMealCard }) {
               <MacroPill kcal={meal.macros.kcal} protein={meal.macros.protein} />
             )}
           </div>
-          <span className="shrink-0 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-400">
-            {t('dashboard.meals.offPlanBadge')}
-          </span>
+          <div className="flex items-center gap-1 shrink-0">
+            <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-400">
+              {t('dashboard.meals.offPlanBadge')}
+            </span>
+            <button
+              type="button"
+              aria-label={t('dashboard.meals.deleteOffPlan')}
+              onClick={() => deleteMeal.mutate()}
+              disabled={deleteMeal.isPending}
+              className="p-1.5 rounded-lg text-gray-300 hover:text-red-400 hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28]"
+            >
+              {deleteMeal.isPending ? (
+                <Spinner className="h-4 w-4" />
+              ) : (
+                <Trash2 className="h-4 w-4" aria-hidden />
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -295,7 +341,7 @@ export function TodaysMealsModule({ meals, offPlanMeals, activePlan, isLoading }
               <hr className="border-dashed border-[#e5e4e7] my-1" />
             )}
             {offPlanMeals.map(meal => (
-              <OffPlanMealCardItem key={meal.id} meal={meal} />
+              <OffPlanMealCardItem key={meal.id} meal={meal} today={today} />
             ))}
           </>
         )}

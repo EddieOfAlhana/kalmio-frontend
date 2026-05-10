@@ -56,6 +56,8 @@
       },
       "addOffPlan": "+ Hozzáadok valamit",
       "offPlanBadge": "Saját bejegyzés",
+      "undoStatus": "Visszaállítás",
+      "deleteOffPlan": "Törlés",
       "logOtherModal": {
         "title": "Mást ettem",
         "name": "Mit ettél?",

@@ -67,6 +67,9 @@ export function LogOffPlanMealModal({
       onOpenChange(false)
       resetForm()
     },
+    onError: () => {
+      toast({ title: t('dashboard.meals.errorUpdating'), variant: 'destructive' })
+    },
   })
 
   const canSubmit = displayName.trim() !== '' && kcal !== ''
