@@ -582,7 +582,66 @@
       "unit": "Unit",
       "add": "Add",
       "adding": "Adding…"
+    },
+    "expiry": {
+      "fresh": "Fresh",
+      "useSoon": "Use soon",
+      "expired": "Expired",
+      "dateLabel": "Expiry date (optional)",
+      "defaultHint": "If left blank, we'll estimate based on category."
     }
+  },
+  "plan": {
+    "dateRange": "{{start}} – {{end}}",
+    "generating": "One moment — putting your week together.",
+    "active": "Active plan",
+    "noActive": "No plan yet — shall we put your week together?",
+    "newPlan": "Plan my week",
+    "regenerate": "New plan",
+    "mealStatus": {
+      "PLANNED": "Planned",
+      "EATEN": "Eaten",
+      "SKIPPED": "Skipped",
+      "REPLACED": "Replaced"
+    },
+    "actions": {
+      "markEaten": "Mark as eaten",
+      "markSkipped": "Skip this"
+    },
+    "mealCount_one": "{{count}} meal",
+    "mealCount_other": "{{count}} meals",
+    "mealActions": "Actions"
+  },
+  "preferences": {
+    "title": "Plan my week",
+    "subtitle": "A few questions and I'll put it together.",
+    "householdSize": "Household size",
+    "calorieTarget": "Calorie level",
+    "caloriePresets": {
+      "low": "Less",
+      "lowSub": "1600 kcal · weight loss",
+      "moderate": "Moderate",
+      "moderateSub": "2000 kcal · maintenance",
+      "high": "More",
+      "highSub": "2400 kcal · active lifestyle"
+    },
+    "restrictions": "Dietary preferences",
+    "shoppingCadence": "Shopping cadence",
+    "cadenceWeekly": "Weekly",
+    "cadenceBiweekly": "Bi-weekly",
+    "shoppingDay": "Preferred shopping day",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "generate": "Generate plan",
+    "generating": "One moment — putting your week together.",
+    "error": "Something went wrong. Please try again."
   },
   "ipVault": {
     "title": "IP Vault",

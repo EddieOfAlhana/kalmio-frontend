@@ -199,12 +199,20 @@ export interface FridgeItem {
   amount: number
   unit: Unit
   addedAt: string
+  expiryDate: string | null   // ISO date string "YYYY-MM-DD"
+  source: string              // "MANUAL" | "SHOPPING" | "GROOMING"
 }
 
 export interface AddFridgeItemRequest {
   ingredientId: string
   amount: number
   unit: Unit
+  expiryDate?: string         // optional ISO date string
+}
+
+export interface UpdateFridgeItemRequest {
+  expiryDate?: string
+  amount?: number
 }
 
 export interface GenerateMealPlanRequest {
@@ -281,6 +289,50 @@ export interface SavedMealPlan {
   mealsPerDay: number
   slots: SavedMealSlot[]
   createdAt: string
+}
+
+// ── Calendar Plans ────────────────────────────────────────────────────────
+
+export type PlanStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED'
+export type PlannedMealStatus = 'PLANNED' | 'EATEN' | 'SKIPPED' | 'REPLACED'
+
+export interface PlannedMeal {
+  id: string
+  planId: string
+  date: string              // ISO date "YYYY-MM-DD"
+  mealType: MealType
+  recipeId: string
+  recipeName: string
+  macros: Macros | null
+  estimatedCostPerServing: number | null
+  servingMultiplier: number
+  status: PlannedMealStatus
+  replacedWithRecipeId: string | null
+  eatenAt: string | null
+  notes: string | null
+}
+
+export interface Plan {
+  id: string
+  userId: string
+  startDate: string         // "YYYY-MM-DD"
+  endDate: string           // "YYYY-MM-DD"
+  status: PlanStatus
+  shoppingCycleDays: number
+  createdAt: string
+  meals: PlannedMeal[]
+}
+
+export interface CreatePlanRequest {
+  startDate: string
+  cycleDays: number
+  constraints: GenerateMealPlanRequest
+}
+
+export interface UpdatePlannedMealRequest {
+  status: PlannedMealStatus
+  replacedWithRecipeId?: string
+  notes?: string
 }
 
 // ── Feedback ──────────────────────────────────────────────────────────────

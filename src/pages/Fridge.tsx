@@ -20,9 +20,48 @@ const CATEGORY_COLOR: Record<IngredientCategory, 'green' | 'orange' | 'gray' | '
 
 const UNITS: Unit[] = ['G', 'ML', 'PIECE']
 
+type ExpiryStatus = 'fresh' | 'useSoon' | 'expired'
+
+function getExpiryStatus(expiryDate: string | null, today: Date): ExpiryStatus {
+  if (!expiryDate) return 'fresh'
+  const exp = new Date(expiryDate)
+  const diffDays = Math.floor((exp.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+  if (diffDays < 0) return 'expired'
+  if (diffDays <= 2) return 'useSoon'
+  return 'fresh'
+}
+
+const EXPIRY_STATUS_ORDER: Record<ExpiryStatus, number> = {
+  expired: 0,
+  useSoon: 1,
+  fresh: 2,
+}
+
+function sortByExpiry(items: FridgeItem[], today: Date): FridgeItem[] {
+  return [...items].sort((a, b) => {
+    const aStatus = getExpiryStatus(a.expiryDate, today)
+    const bStatus = getExpiryStatus(b.expiryDate, today)
+    const statusDiff = EXPIRY_STATUS_ORDER[aStatus] - EXPIRY_STATUS_ORDER[bStatus]
+    if (statusDiff !== 0) return statusDiff
+    // Within the same status, sort by expiryDate ascending (soonest first)
+    if (a.expiryDate && b.expiryDate) return a.expiryDate.localeCompare(b.expiryDate)
+    if (a.expiryDate) return -1
+    if (b.expiryDate) return 1
+    return 0
+  })
+}
+
 export function Fridge() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+
+  const today = useMemo(() => {
+    const d = new Date()
+    d.setHours(0, 0, 0, 0)
+    return d
+  }, [])
+
+  const todayIso = today.toISOString().split('T')[0]
 
   const [search, setSearch] = useState('')
   const [ingredientDialogOpen, setIngredientDialogOpen] = useState(false)
@@ -30,6 +69,7 @@ export function Fridge() {
   const [selectedIngredient, setSelectedIngredient] = useState<Ingredient | null>(null)
   const [amount, setAmount] = useState('')
   const [unit, setUnit] = useState<Unit>('G')
+  const [expiryDate, setExpiryDate] = useState('')
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['fridge'],
@@ -44,6 +84,7 @@ export function Fridge() {
       setSelectedIngredient(null)
       setAmount('')
       setUnit('G')
+      setExpiryDate('')
     },
   })
 
@@ -58,8 +99,8 @@ export function Fridge() {
     return items.filter(i => i.ingredientName.toLowerCase().includes(q))
   }, [items, search])
 
-  const nonPantry = filtered.filter(i => !i.pantryItem)
-  const pantry = filtered.filter(i => i.pantryItem)
+  const nonPantry = sortByExpiry(filtered.filter(i => !i.pantryItem), today)
+  const pantry = sortByExpiry(filtered.filter(i => i.pantryItem), today)
 
   function handleIngredientSelect(ing: Ingredient) {
     setSelectedIngredient(ing)
@@ -74,6 +115,7 @@ export function Fridge() {
       ingredientId: selectedIngredient.id,
       amount: Number(amount),
       unit,
+      ...(expiryDate ? { expiryDate } : {}),
     })
   }
 
@@ -125,8 +167,8 @@ export function Fridge() {
           title={t('fridge.nonPantryGroup')}
           titleHint={t('fridge.nonPantryHint')}
           items={nonPantry}
+          today={today}
           onDelete={id => deleteMutation.mutate(id)}
-          deletingId={deleteMutation.isPending ? undefined : undefined}
         />
       )}
 
@@ -135,6 +177,7 @@ export function Fridge() {
           title={t('fridge.pantryGroup')}
           titleHint={t('fridge.pantryHint')}
           items={pantry}
+          today={today}
           onDelete={id => deleteMutation.mutate(id)}
         />
       )}
@@ -184,6 +227,21 @@ export function Fridge() {
                   </select>
                 </div>
               </div>
+
+              {/* Expiry date field */}
+              <div>
+                <Label htmlFor="fridge-expiry-date">{t('fridge.expiry.dateLabel')}</Label>
+                <Input
+                  id="fridge-expiry-date"
+                  type="date"
+                  min={todayIso}
+                  value={expiryDate}
+                  onChange={e => setExpiryDate(e.target.value)}
+                  className="mt-1"
+                />
+                <p className="text-xs text-gray-400 mt-1">{t('fridge.expiry.defaultHint')}</p>
+              </div>
+
               <div className="flex justify-end gap-2 pt-2">
                 <Button variant="secondary" onClick={() => setAddDialogOpen(false)}>
                   {t('common.cancel')}
@@ -203,17 +261,27 @@ export function Fridge() {
   )
 }
 
+function ExpiryBadge({ expiryDate, today }: { expiryDate: string | null; today: Date }) {
+  const { t } = useTranslation()
+  const status = getExpiryStatus(expiryDate, today)
+  if (status === 'fresh') return null
+  const variant = status === 'expired' ? 'red' : 'amber'
+  const label = status === 'expired' ? t('fridge.expiry.expired') : t('fridge.expiry.useSoon')
+  return <Badge variant={variant}>{label}</Badge>
+}
+
 function FridgeGroup({
   title,
   titleHint,
   items,
+  today,
   onDelete,
 }: {
   title: string
   titleHint: string
   items: FridgeItem[]
+  today: Date
   onDelete: (id: string) => void
-  deletingId?: string
 }) {
   const { t } = useTranslation()
   return (
@@ -231,7 +299,7 @@ function FridgeGroup({
             key={item.id}
             className="flex items-center justify-between p-3 rounded-[12px] bg-[#F9F7F2]"
           >
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-2 min-w-0 flex-wrap">
               {item.pantryItem && (
                 <Archive className="h-3.5 w-3.5 text-green-600 shrink-0" />
               )}
@@ -241,6 +309,7 @@ function FridgeGroup({
                 </Badge>
               )}
               <span className="font-medium text-sm text-[#1A1A1A] truncate">{item.ingredientName}</span>
+              <ExpiryBadge expiryDate={item.expiryDate} today={today} />
             </div>
             <div className="flex items-center gap-3 shrink-0 ml-2">
               <span className="text-sm font-semibold text-[#4F7942]">

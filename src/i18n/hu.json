@@ -582,7 +582,66 @@
       "unit": "Egység",
       "add": "Hozzáadás",
       "adding": "Hozzáadás…"
+    },
+    "expiry": {
+      "fresh": "Friss",
+      "useSoon": "Hamarosan lejár",
+      "expired": "Lejárt",
+      "dateLabel": "Lejárati dátum (opcionális)",
+      "defaultHint": "Ha nem adod meg, a kategória alapján számítjuk ki."
     }
+  },
+  "plan": {
+    "dateRange": "{{start}} – {{end}}",
+    "generating": "Egy pillanat — összerakom a heteded.",
+    "active": "Aktív terv",
+    "noActive": "Még nem terveztünk hetet — mikor kezdjük?",
+    "newPlan": "Tervezzük meg a heted",
+    "regenerate": "Új terv",
+    "mealStatus": {
+      "PLANNED": "Tervezett",
+      "EATEN": "Megcsináltam",
+      "SKIPPED": "Kihagyom",
+      "REPLACED": "Helyettesítettem"
+    },
+    "actions": {
+      "markEaten": "Megcsináltam",
+      "markSkipped": "Kihagyom"
+    },
+    "mealCount_one": "{{count}} étkezés",
+    "mealCount_other": "{{count}} étkezés",
+    "mealActions": "Műveletek"
+  },
+  "preferences": {
+    "title": "Tervezzük meg a heted",
+    "subtitle": "Pár kérdés, és összerakom.",
+    "householdSize": "Háztartás mérete",
+    "calorieTarget": "Kalória szint",
+    "caloriePresets": {
+      "low": "Kevesebb",
+      "lowSub": "1600 kcal · fogyás",
+      "moderate": "Alap",
+      "moderateSub": "2000 kcal · fenntartás",
+      "high": "Több",
+      "highSub": "2400 kcal · aktív életmód"
+    },
+    "restrictions": "Étrendi preferenciák",
+    "shoppingCadence": "Vásárlási ciklus",
+    "cadenceWeekly": "Hetente",
+    "cadenceBiweekly": "Kéthetente",
+    "shoppingDay": "Vásárlás napja",
+    "days": {
+      "monday": "Hétfő",
+      "tuesday": "Kedd",
+      "wednesday": "Szerda",
+      "thursday": "Csütörtök",
+      "friday": "Péntek",
+      "saturday": "Szombat",
+      "sunday": "Vasárnap"
+    },
+    "generate": "Generálj tervet",
+    "generating": "Egy pillanat — összerakom a heteded.",
+    "error": "Hiba történt. Próbáld újra."
   },
   "ipVault": {
     "title": "IP Trezor",

@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useForm, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import axios from 'axios'
-import { Zap, Clock, ChevronDown, ChevronUp, ShoppingCart, CheckCircle, Pencil, Check, Minus, Plus, RefreshCw, Eye } from 'lucide-react'
+import { Zap, Clock, ChevronDown, ChevronUp, ShoppingCart, CheckCircle, Pencil, Check, Minus, Plus, RefreshCw, Eye, MoreHorizontal } from 'lucide-react'
 import { Knob } from '@/components/ui/knob'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
@@ -19,12 +19,14 @@ import { Spinner } from '@/components/ui/spinner'
 import { MacroRing } from '@/components/ui/macro-ring'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { mealPlansService, savedPlanToMealPlan, savedSlotToMeal } from '@/services/mealPlans'
+import { planService } from '@/services/plans'
 import { fridgeService } from '@/services/fridge'
 import { usersService, type DietaryPreferences } from '@/services/users'
 import { recipesService } from '@/services/recipes'
 import { useMealPlanStore } from '@/store/mealPlan'
+import { PlanPreferencesForm } from '@/components/PlanPreferencesForm'
 import { formatCurrency, formatMacro } from '@/lib/utils'
-import type { GeneratedMeal, GenerateMealPlanRequest, MealType, Macros, ConstraintWeights, Recipe } from '@/types'
+import type { GeneratedMeal, GenerateMealPlanRequest, MealType, Macros, ConstraintWeights, Recipe, Plan, PlannedMeal, PlannedMealStatus } from '@/types'
 
 const MEAL_ORDER: MealType[] = ['BREAKFAST', 'MORNING_SNACK', 'LUNCH', 'AFTERNOON_SNACK', 'DINNER', 'SNACK']
 
@@ -167,6 +169,14 @@ export function MealPlan() {
   const { t } = useTranslation()
   const { plan, setPlan, updateMeal } = useMealPlanStore()
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set([0]))
+  const [showPreferencesForm, setShowPreferencesForm] = useState(false)
+
+  // Try the new Plan API first
+  const { data: activePlan, isLoading: activePlanLoading } = useQuery({
+    queryKey: ['plan', 'active'],
+    queryFn: planService.getActive,
+    staleTime: 60_000,
+  })
 
   const { data: savedPlan } = useQuery({
     queryKey: ['saved-meal-plans'],
@@ -361,6 +371,36 @@ export function MealPlan() {
     : null
   const costPerDay = totalCost != null && plan ? totalCost / plan.days : null
 
+  // If there is an active calendar plan, render the new view
+  if (activePlanLoading) {
+    return (
+      <div>
+        <Header title={t('mealPlan.title')} subtitle={t('mealPlan.subtitle')} />
+        <div className="flex justify-center py-12">
+          <Spinner className="h-6 w-6" />
+        </div>
+      </div>
+    )
+  }
+
+  if (activePlan) {
+    return <PlanCalendarView plan={activePlan} onRegenerate={() => setShowPreferencesForm(true)} />
+  }
+
+  if (showPreferencesForm) {
+    return (
+      <div>
+        <Header
+          title={t('preferences.title')}
+          subtitle={t('preferences.subtitle')}
+        />
+        <div className="mt-6">
+          <PlanPreferencesForm />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <Header
@@ -368,14 +408,26 @@ export function MealPlan() {
         subtitle={t('mealPlan.subtitle')}
         actions={
           plan && (
-            <Button variant="outline" onClick={() => navigate('/shopping-list')}>
+            <Button variant="outline" onClick={() => navigate('/app/shopping-list')}>
               <ShoppingCart className="h-4 w-4" /> {t('mealPlan.shoppingList')}
             </Button>
           )
         }
       />
 
-      {/* Generation form */}
+      {/* New plan CTA — opens preferences form */}
+      {!plan && (
+        <Card className="mb-6">
+          <CardContent className="py-8 flex flex-col items-center text-center">
+            <p className="text-sm text-gray-500 mb-4">{t('plan.noActive')}</p>
+            <Button size="lg" onClick={() => setShowPreferencesForm(true)}>
+              {t('plan.newPlan')}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Legacy generation form */}
       <Card className="mb-6">
         <CardHeader><CardTitle>{t('mealPlan.form.title')}</CardTitle></CardHeader>
         <CardContent>
@@ -636,6 +688,211 @@ export function MealPlan() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+// ── PlanCalendarView ──────────────────────────────────────────────────────────
+
+function statusToVariant(status: PlannedMealStatus): 'green' | 'amber' | 'orange' | 'gray' {
+  if (status === 'EATEN') return 'green'
+  if (status === 'SKIPPED') return 'amber'
+  if (status === 'REPLACED') return 'orange'
+  return 'gray'
+}
+
+function formatDateRange(startDate: string, endDate: string): string {
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+  const startFmt = start.toLocaleDateString('hu-HU', { month: 'short', day: 'numeric' })
+  const endFmt = end.toLocaleDateString('hu-HU', { month: 'short', day: 'numeric' })
+  return `${startFmt} – ${endFmt}`
+}
+
+function formatDayHeader(dateStr: string): string {
+  const date = new Date(dateStr)
+  const dayOfWeek = date.toLocaleDateString('hu-HU', { weekday: 'long' })
+  const dayDate = date.toLocaleDateString('hu-HU', { month: 'short', day: 'numeric' })
+  return `${dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1)}, ${dayDate}`
+}
+
+function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: () => void }) {
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
+  const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set())
+
+  // Group meals by date
+  const mealsByDate = useMemo<Map<string, PlannedMeal[]>>(() => {
+    const map = new Map<string, PlannedMeal[]>()
+    for (const meal of plan.meals) {
+      const arr = map.get(meal.date) ?? []
+      arr.push(meal)
+      map.set(meal.date, arr)
+    }
+    // Sort meals within each day by MEAL_ORDER
+    for (const [date, arr] of map) {
+      map.set(date, arr.sort((a, b) => MEAL_ORDER.indexOf(a.mealType) - MEAL_ORDER.indexOf(b.mealType)))
+    }
+    return map
+  }, [plan.meals])
+
+  const sortedDates = useMemo(() => Array.from(mealsByDate.keys()).sort(), [mealsByDate])
+
+  const updateMealMutation = useMutation({
+    mutationFn: ({ mealId, status }: { mealId: string; status: PlannedMealStatus }) =>
+      planService.updateMeal(plan.id, mealId, { status }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['plan', 'active'] })
+    },
+  })
+
+  function toggleDate(date: string) {
+    setExpandedDates(prev => {
+      const next = new Set(prev)
+      if (next.has(date)) next.delete(date)
+      else next.add(date)
+      return next
+    })
+  }
+
+  const dateRange = formatDateRange(plan.startDate, plan.endDate)
+
+  return (
+    <div>
+      <Header
+        title={t('plan.active')}
+        subtitle={dateRange}
+        actions={
+          <Button variant="outline" size="sm" onClick={onRegenerate}>
+            {t('plan.regenerate')}
+          </Button>
+        }
+      />
+
+      <div className="space-y-3 mt-4">
+        {sortedDates.map(date => {
+          const meals = mealsByDate.get(date) ?? []
+          const expanded = expandedDates.has(date)
+          return (
+            <Card key={date}>
+              <button
+                type="button"
+                onClick={() => toggleDate(date)}
+                className="w-full text-left"
+                aria-expanded={expanded}
+              >
+                <CardContent className="pt-4 pb-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-headline font-bold text-sm text-[#1A1A1A]">
+                        {formatDayHeader(date)}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {t('plan.mealCount', { count: meals.length })}
+                      </p>
+                    </div>
+                    {expanded
+                      ? <ChevronUp className="h-4 w-4 text-gray-400 shrink-0" />
+                      : <ChevronDown className="h-4 w-4 text-gray-400 shrink-0" />
+                    }
+                  </div>
+                </CardContent>
+              </button>
+
+              {expanded && (
+                <div className="border-t border-[#e5e4e7] px-4 pb-4 pt-3 space-y-2">
+                  {meals.map(meal => (
+                    <PlannedMealCard
+                      key={meal.id}
+                      meal={meal}
+                      onMarkEaten={() => updateMealMutation.mutate({ mealId: meal.id, status: 'EATEN' })}
+                      onMarkSkipped={() => updateMealMutation.mutate({ mealId: meal.id, status: 'SKIPPED' })}
+                      isPending={updateMealMutation.isPending}
+                    />
+                  ))}
+                </div>
+              )}
+            </Card>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function PlannedMealCard({
+  meal,
+  onMarkEaten,
+  onMarkSkipped,
+  isPending,
+}: {
+  meal: PlannedMeal
+  onMarkEaten: () => void
+  onMarkSkipped: () => void
+  isPending: boolean
+}) {
+  const { t } = useTranslation()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const statusVariant = statusToVariant(meal.status)
+
+  return (
+    <div className="bg-[#F9F7F2] rounded-[12px] p-3">
+      <div className="flex items-start gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <span
+              className="inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold text-white"
+              style={{ background: MEAL_COLOR[meal.mealType], fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            >
+              {t(`mealPlan.meals.${meal.mealType}`)}
+            </span>
+            <Badge variant={statusVariant}>
+              {t(`plan.mealStatus.${meal.status}`)}
+            </Badge>
+          </div>
+          <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{meal.recipeName}</p>
+          {meal.macros && (
+            <div className="flex gap-x-3 text-xs text-gray-500 mt-0.5 flex-wrap">
+              <span>{meal.macros.kcal.toFixed(0)} kcal</span>
+              <span>{meal.macros.protein.toFixed(0)}g P</span>
+              <span>{meal.macros.fat.toFixed(0)}g F</span>
+              <span>{meal.macros.carbs.toFixed(0)}g C</span>
+            </div>
+          )}
+          <p className="text-xs text-gray-400 mt-0.5">×{meal.servingMultiplier.toFixed(1)} {t('mealPlan.serving')}</p>
+        </div>
+
+        {/* Overflow menu */}
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => setMenuOpen(prev => !prev)}
+            disabled={isPending}
+            className="p-1.5 rounded-md text-gray-400 hover:text-[#1A1A1A] hover:bg-gray-200/60 transition-colors"
+            aria-label={t('plan.mealActions')}
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
+          {menuOpen && (
+            <div className="absolute right-0 top-full mt-1 z-10 bg-white border border-gray-200 rounded-[10px] shadow-md py-1 min-w-[160px]">
+              <button
+                type="button"
+                onClick={() => { setMenuOpen(false); onMarkEaten() }}
+                className="w-full text-left px-3 py-2 text-sm text-[#1A1A1A] hover:bg-[#F9F7F2] transition-colors"
+              >
+                {t('plan.actions.markEaten')}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setMenuOpen(false); onMarkSkipped() }}
+                className="w-full text-left px-3 py-2 text-sm text-[#1A1A1A] hover:bg-[#F9F7F2] transition-colors"
+              >
+                {t('plan.actions.markSkipped')}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
