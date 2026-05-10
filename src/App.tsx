@@ -22,6 +22,7 @@ import { IpVault } from '@/pages/admin/IpVault'
 import { InvestorVault } from '@/pages/InvestorVault'
 import { BlogIndex } from '@/pages/BlogIndex'
 import { BlogPost } from '@/pages/BlogPost'
+import { OAuthConsent } from '@/pages/OAuthConsent'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store/auth'
 import { restorePasskeySession, clearPasskeyToken } from '@/lib/passkeySession'
@@ -97,6 +98,7 @@ export default function App() {
                 </Route>
               </Route>
             </Route>
+            <Route path="/oauth/consent" element={<OAuthConsent />} />
             <Route path="/vault" element={<InvestorVault />} />
             <Route path="/blog" element={<BlogIndex />} />
             <Route path="/blog/:slug" element={<BlogPost />} />

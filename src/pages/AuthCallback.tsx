@@ -34,7 +34,8 @@ export function AuthCallback() {
       }
 
       setSession(session)
-      navigate('/app', { replace: true })
+      const next = new URLSearchParams(window.location.search).get('next') ?? '/app'
+      navigate(next, { replace: true })
     }
 
     run()

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -22,6 +22,8 @@ type Step = { mode: 'home' } | { mode: 'sent'; email: string }
 export function Auth() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const nextPath = searchParams.get('next') ?? '/app'
   const setSession = useAuthStore((s) => s.setSession)
 
   const [step, setStep] = useState<Step>({ mode: 'home' })
@@ -48,7 +50,7 @@ export function Auth() {
     try {
       const result = await authenticateWithPasskeyDiscoverable()
       storeSessionFromToken(result.accessToken)
-      navigate('/app', { replace: true })
+      navigate(nextPath, { replace: true })
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : ''
       // User cancelled or no passkey available — reveal the email fallback quietly
@@ -70,7 +72,7 @@ export function Auth() {
     try {
       const result = await authenticateWithPasskey(email)
       storeSessionFromToken(result.accessToken)
-      navigate('/app', { replace: true })
+      navigate(nextPath, { replace: true })
     } catch {
       setError(t('auth.passkeyError'))
     } finally {
