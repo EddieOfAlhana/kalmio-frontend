@@ -606,5 +606,27 @@
     "copied": "Másolva!",
     "lastUsed": "Utoljára használva",
     "neverUsed": "Még nem használták"
+  },
+  "blog": {
+    "nav": "Blog",
+    "indexTitle": "A konyhából",
+    "indexSubtitle": "Gondolatok a táplálkozásról, technológiáról és az egészséges életmódról.",
+    "seeAll": "Összes cikk",
+    "readMore": "Cikk olvasása",
+    "backToBlog": "Összes cikk",
+    "minRead": "{{min}} perc olvasás",
+    "notFound": "A bejegyzés nem található.",
+    "empty": "Még nincsenek bejegyzések.",
+    "categories": {
+      "all": "Összes",
+      "Roadmap": "Fejlesztési terv",
+      "Feature": "Funkció",
+      "Nutrition": "Táplálkozás",
+      "News": "Hírek"
+    },
+    "preview": {
+      "title": "A blogból",
+      "subtitle": "Hírek, fejlesztési frissítések és táplálkozási gondolatok."
+    }
   }
 }

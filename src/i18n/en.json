@@ -606,5 +606,27 @@
     "copied": "Copied!",
     "lastUsed": "Last used",
     "neverUsed": "Never used"
+  },
+  "blog": {
+    "nav": "Blog",
+    "indexTitle": "From the kitchen",
+    "indexSubtitle": "Insights on nutrition, technology, and healthy living.",
+    "seeAll": "See all articles",
+    "readMore": "Read article",
+    "backToBlog": "All articles",
+    "minRead": "{{min}} min read",
+    "notFound": "Post not found.",
+    "empty": "No posts yet.",
+    "categories": {
+      "all": "All",
+      "Roadmap": "Roadmap",
+      "Feature": "Feature",
+      "Nutrition": "Nutrition",
+      "News": "News"
+    },
+    "preview": {
+      "title": "From the blog",
+      "subtitle": "News, roadmap updates, and nutrition insights."
+    }
   }
 }
