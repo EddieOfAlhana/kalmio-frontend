@@ -11,44 +11,81 @@ import { formatCurrency } from '@/lib/utils'
 import { recipesService } from '@/services/recipes'
 import { ingredientsService } from '@/services/ingredients'
 import { mealPlansService, savedPlanToMealPlan } from '@/services/mealPlans'
+import { planService } from '@/services/plans'
 import { useMealPlanStore } from '@/store/mealPlan'
 
 export function Dashboard() {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const activePlan = useMealPlanStore(s => s.plan)
+  const legacyPlan = useMealPlanStore(s => s.plan)
   const setPlan = useMealPlanStore(s => s.setPlan)
+
+  // New calendar plan takes priority over legacy
+  const { data: calendarPlan } = useQuery({
+    queryKey: ['plan', 'active'],
+    queryFn: planService.getActive,
+    staleTime: 60_000,
+  })
 
   const { data: savedPlan } = useQuery({
     queryKey: ['saved-meal-plans'],
     queryFn: mealPlansService.listSaved,
-    enabled: activePlan === null,
+    enabled: !calendarPlan && legacyPlan === null,
     select: plans => plans.length > 0 ? savedPlanToMealPlan(plans[0]) : null,
     staleTime: Infinity,
   })
 
   useEffect(() => {
-    if (savedPlan && !activePlan) {
+    if (savedPlan && !legacyPlan) {
       setPlan(savedPlan)
     }
-  }, [savedPlan, activePlan, setPlan])
+  }, [savedPlan, legacyPlan, setPlan])
 
   const { data: recipes = [] } = useQuery({ queryKey: ['recipes'], queryFn: recipesService.list, staleTime: 30_000 })
   const { data: ingredients = [] } = useQuery({ queryKey: ['ingredients'], queryFn: ingredientsService.list, staleTime: 30_000 })
 
-  const dailySummaries = activePlan
-    ? Array.from({ length: activePlan.days }, (_, day) => {
-        const dayMeals = activePlan.meals.filter(m => m.day === day)
-        const kcal = dayMeals.reduce((s, m) => s + (m.macros?.kcal ?? 0), 0)
-        const protein = dayMeals.reduce((s, m) => s + (m.macros?.protein ?? 0), 0)
-        const fat = dayMeals.reduce((s, m) => s + (m.macros?.fat ?? 0), 0)
-        const carbs = dayMeals.reduce((s, m) => s + (m.macros?.carbs ?? 0), 0)
-        const cost = dayMeals.every(m => m.estimatedCost != null)
-          ? dayMeals.reduce((s, m) => s + (m.estimatedCost ?? 0), 0)
-          : null
-        return { day, kcal, protein, fat, carbs, cost }
-      })
-    : []
+  const hasPlan = !!calendarPlan || !!legacyPlan
+
+  const planDays = calendarPlan
+    ? calendarPlan.shoppingCycleDays
+    : legacyPlan?.days ?? 0
+
+  const totalCost = calendarPlan
+    ? (calendarPlan.meals.some(m => m.estimatedCostPerServing != null)
+        ? calendarPlan.meals.reduce((s, m) => s + (m.estimatedCostPerServing ?? 0), 0)
+        : null)
+    : legacyPlan?.totalEstimatedCost ?? null
+
+  const dailySummaries = calendarPlan
+    ? (() => {
+        const groups: Record<string, typeof calendarPlan.meals[number][]> = {}
+        for (const m of calendarPlan.meals) { (groups[m.date] ??= []).push(m) }
+        return Object.entries(groups)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([date, meals], idx) => ({
+            day: idx, date,
+            kcal: meals.reduce((s, m) => s + (m.macros?.kcal ?? 0), 0),
+            protein: meals.reduce((s, m) => s + (m.macros?.protein ?? 0), 0),
+            fat: meals.reduce((s, m) => s + (m.macros?.fat ?? 0), 0),
+            carbs: meals.reduce((s, m) => s + (m.macros?.carbs ?? 0), 0),
+            cost: meals.every(m => m.estimatedCostPerServing != null)
+              ? meals.reduce((s, m) => s + (m.estimatedCostPerServing ?? 0), 0) : null,
+          }))
+      })()
+    : legacyPlan
+      ? Array.from({ length: legacyPlan.days }, (_, day) => {
+          const dayMeals = legacyPlan.meals.filter(m => m.day === day)
+          return {
+            day, date: null as string | null,
+            kcal: dayMeals.reduce((s, m) => s + (m.macros?.kcal ?? 0), 0),
+            protein: dayMeals.reduce((s, m) => s + (m.macros?.protein ?? 0), 0),
+            fat: dayMeals.reduce((s, m) => s + (m.macros?.fat ?? 0), 0),
+            carbs: dayMeals.reduce((s, m) => s + (m.macros?.carbs ?? 0), 0),
+            cost: dayMeals.every(m => m.estimatedCost != null)
+              ? dayMeals.reduce((s, m) => s + (m.estimatedCost ?? 0), 0) : null,
+          }
+        })
+      : []
 
   return (
     <div>
@@ -68,8 +105,8 @@ export function Dashboard() {
         {[
           { icon: ChefHat, label: t('dashboard.stats.recipes'), value: recipes.length, to: '/app/recipes', color: '#F28C28' },
           { icon: Leaf, label: t('dashboard.stats.ingredients'), value: ingredients.length, to: '/app/ingredients', color: '#4F7942' },
-          { icon: UtensilsCrossed, label: t('dashboard.stats.activePlan'), value: activePlan ? `${activePlan.days}d` : '—', to: '/app/meal-plans', color: '#1A1A1A' },
-          { icon: ShoppingCart, label: t('dashboard.stats.totalCost'), value: activePlan?.totalEstimatedCost != null ? formatCurrency(activePlan.totalEstimatedCost) : '—', to: '/app/shopping-list', color: '#F28C28' },
+          { icon: UtensilsCrossed, label: t('dashboard.stats.activePlan'), value: hasPlan ? `${planDays}d` : '—', to: '/app/meal-plans', color: '#1A1A1A' },
+          { icon: ShoppingCart, label: t('dashboard.stats.totalCost'), value: totalCost != null ? formatCurrency(totalCost) : '—', to: '/app/shopping-list', color: '#F28C28' },
         ].map(({ icon: Icon, label, value, to, color }) => (
           <button key={label} onClick={() => navigate(to)} className="text-left focus:outline-none">
             <Card className="hover:shadow-md transition-shadow cursor-pointer">
@@ -88,11 +125,11 @@ export function Dashboard() {
       </div>
 
       {/* Active plan summary */}
-      {activePlan ? (
+      {hasPlan ? (
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-base font-headline font-bold text-[#1A1A1A]">
-              {t('dashboard.activePlan.title', { days: activePlan.days })}
+              {t('dashboard.activePlan.title', { days: planDays })}
             </h2>
             <Button variant="ghost" size="sm" onClick={() => navigate('/app/meal-plans')}>
               {t('dashboard.activePlan.view')} <ArrowRight className="h-3.5 w-3.5" />
@@ -103,7 +140,10 @@ export function Dashboard() {
               <Card key={day.day}>
                 <CardContent className="pt-4">
                   <p className="text-xs font-medium text-gray-500 mb-3">
-                    {t('dashboard.activePlan.day', { day: day.day + 1 })}
+                    {day.date
+                      ? new Date(day.date).toLocaleDateString('hu-HU', { weekday: 'short', month: 'short', day: 'numeric' })
+                      : t('dashboard.activePlan.day', { day: day.day + 1 })
+                    }
                   </p>
                   <div className="flex items-center gap-3">
                     <MacroRing
@@ -137,9 +177,9 @@ export function Dashboard() {
               </Card>
             ))}
           </div>
-          {activePlan.days > 4 && (
+          {dailySummaries.length > 4 && (
             <Button variant="ghost" size="sm" className="mt-2" onClick={() => navigate('/app/meal-plans')}>
-              {t('dashboard.activePlan.moreDays', { count: activePlan.days - 4 })} <ArrowRight className="h-3.5 w-3.5" />
+              {t('dashboard.activePlan.moreDays', { count: dailySummaries.length - 4 })} <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           )}
         </div>

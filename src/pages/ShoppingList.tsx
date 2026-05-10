@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { mealPlansService } from '@/services/mealPlans'
 import { fridgeService } from '@/services/fridge'
+import { planService } from '@/services/plans'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { formatCurrency } from '@/lib/utils'
 import type { ShoppingListItem, IngredientCategory } from '@/types'
@@ -22,8 +23,18 @@ export function ShoppingList() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const plan = useMealPlanStore(s => s.plan)
+  const legacyPlan = useMealPlanStore(s => s.plan)
   const [leftoversAdded, setLeftoversAdded] = useState(false)
+
+  // New calendar plan takes priority
+  const { data: calendarPlan } = useQuery({
+    queryKey: ['plan', 'active'],
+    queryFn: planService.getActive,
+    staleTime: 60_000,
+  })
+
+  const hasPlan = !!calendarPlan || !!legacyPlan
+  const planDays = calendarPlan ? calendarPlan.shoppingCycleDays : legacyPlan?.days
 
   const { data: fridgeItems = [] } = useQuery({
     queryKey: ['fridge'],
@@ -43,16 +54,25 @@ export function ShoppingList() {
   })
 
   useEffect(() => {
-    if (!plan) return
-    mutation.mutate({
-      meals: plan.meals.map(m => ({ recipeId: m.recipe.id, servingMultiplier: m.servingMultiplier })),
-      fridgeItems: fridgeItems.map(fi => ({ ingredientId: fi.ingredientId, amount: fi.amount, unit: fi.unit })),
-    })
-    setLeftoversAdded(false)
+    if (calendarPlan) {
+      // Exclude skipped meals from shopping list
+      const activeMeals = calendarPlan.meals.filter(m => m.status !== 'SKIPPED')
+      mutation.mutate({
+        meals: activeMeals.map(m => ({ recipeId: m.recipeId, servingMultiplier: m.servingMultiplier })),
+        fridgeItems: fridgeItems.map(fi => ({ ingredientId: fi.ingredientId, amount: fi.amount, unit: fi.unit })),
+      })
+      setLeftoversAdded(false)
+    } else if (legacyPlan) {
+      mutation.mutate({
+        meals: legacyPlan.meals.map(m => ({ recipeId: m.recipe.id, servingMultiplier: m.servingMultiplier })),
+        fridgeItems: fridgeItems.map(fi => ({ ingredientId: fi.ingredientId, amount: fi.amount, unit: fi.unit })),
+      })
+      setLeftoversAdded(false)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plan?.id, fridgeItems.length])
+  }, [calendarPlan?.id, legacyPlan?.id, fridgeItems.length])
 
-  if (!plan) {
+  if (!hasPlan) {
     return (
       <div>
         <Header title={t('shoppingList.title')} />
@@ -108,7 +128,7 @@ export function ShoppingList() {
     <div>
       <Header
         title={t('shoppingList.title')}
-        subtitle={plan ? t('shoppingList.subtitle', { days: plan.days }) : undefined}
+        subtitle={planDays != null ? t('shoppingList.subtitle', { days: planDays }) : undefined}
         actions={
           <Button variant="secondary" onClick={() => navigate('/app/meal-plans')}>
             {t('shoppingList.backToPlan')}
