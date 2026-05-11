@@ -115,7 +115,8 @@
       "seeDetails": "See details",
       "hideDetails": "Hide",
       "noChanges": "Everything is on track.",
-      "acceptError": "The suggestion has expired — refreshed."
+      "acceptError": "The suggestion has expired — refreshed.",
+      "wasted": "😢 {{name}} unfortunately cannot be saved{{cost}} — it will go to waste."
     }
   },
   "mealPlan": {

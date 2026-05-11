@@ -530,6 +530,12 @@ export interface IngredientChange {
   unit: string
 }
 
+export interface WastedMeal {
+  recipeId: string
+  recipeName: string
+  estimatedCost: number | null
+}
+
 export interface ReplanDiff {
   diffId: string
   planId: string
@@ -537,4 +543,5 @@ export interface ReplanDiff {
   ingredientChanges: IngredientChange[]
   costDelta: number | null      // negative = savings
   narrative: string[]
+  wastedMeals: WastedMeal[]
 }

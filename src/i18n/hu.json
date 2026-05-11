@@ -115,7 +115,8 @@
       "seeDetails": "Részletek",
       "hideDetails": "Elrejt",
       "noChanges": "Minden a terv szerint halad.",
-      "acceptError": "A javaslat lejárt — frissítve."
+      "acceptError": "A javaslat lejárt — frissítve.",
+      "wasted": "😢 {{name}} sajnos nem menthető meg{{cost}} — el kell dobni."
     }
   },
   "mealPlan": {

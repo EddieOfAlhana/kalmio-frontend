@@ -86,6 +86,21 @@ export function ReplanDiffCard({ planId, onAccept, onDecline }: Props) {
           </div>
         )}
 
+        {(diff.wastedMeals ?? []).length > 0 && (
+          <div className="mt-3 space-y-1">
+            {diff.wastedMeals.map((wasted) => (
+              <p key={wasted.recipeId} className="text-sm text-red-600">
+                {t('dashboard.replan.wasted', {
+                  name: wasted.recipeName,
+                  cost: wasted.estimatedCost != null
+                    ? ` (kb. ${Math.round(wasted.estimatedCost)} Ft)`
+                    : '',
+                })}
+              </p>
+            ))}
+          </div>
+        )}
+
         <div className="flex items-center gap-3 mt-3">
           <button
             type="button"
