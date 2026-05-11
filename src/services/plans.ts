@@ -1,5 +1,5 @@
 import { api } from '@/lib/api'
-import type { Plan, PlannedMeal, CreatePlanRequest, UpdatePlannedMealRequest } from '@/types'
+import type { Plan, PlannedMeal, CreatePlanRequest, UpdatePlannedMealRequest, ReplanDiff } from '@/types'
 
 export const planService = {
   create: (req: CreatePlanRequest): Promise<Plan> =>
@@ -19,4 +19,20 @@ export const planService = {
 
   delete: (id: string): Promise<void> =>
     api.delete(`/api/plans/${id}`).then(() => undefined),
+
+  evaluateReplan: (planId: string, fromDate?: string): Promise<ReplanDiff | null> =>
+    api.post<ReplanDiff>(
+      `/api/plans/${planId}/replan-evaluate`,
+      null,
+      { params: fromDate ? { fromDate } : {}, validateStatus: (s) => s === 200 || s === 204 }
+    ).then(r => r.status === 204 ? null : r.data),
+
+  getReplanDiff: (planId: string): Promise<ReplanDiff | null> =>
+    api.get<ReplanDiff>(
+      `/api/plans/${planId}/replan-diff`,
+      { validateStatus: (s) => s === 200 || s === 204 }
+    ).then(r => r.status === 204 ? null : r.data),
+
+  acceptReplan: (planId: string, diffId: string): Promise<Plan> =>
+    api.post<Plan>(`/api/plans/${planId}/replan-accept`, { diffId }).then(r => r.data),
 }

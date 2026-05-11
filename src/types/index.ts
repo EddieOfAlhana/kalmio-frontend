@@ -509,3 +509,32 @@ export interface ShoppingList {
   totalLeftoverCost: number | null
   currency: string
 }
+
+// ── Replan Diff ───────────────────────────────────────────────────────────
+
+export interface MealChange {
+  mealId: string
+  date: string        // ISO date "YYYY-MM-DD"
+  mealType: string    // "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK"
+  oldRecipeId: string
+  oldRecipeName: string
+  newRecipeId: string
+  newRecipeName: string
+}
+
+export interface IngredientChange {
+  ingredientId: string
+  name: string
+  changeType: 'ADDED' | 'REMOVED'
+  amount: number
+  unit: string
+}
+
+export interface ReplanDiff {
+  diffId: string
+  planId: string
+  changes: MealChange[]
+  ingredientChanges: IngredientChange[]
+  costDelta: number | null      // negative = savings
+  narrative: string[]
+}

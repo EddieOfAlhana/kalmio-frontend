@@ -107,6 +107,15 @@
       "title": "Még nincs heti terved",
       "description": "Tervezd meg az első hetedet — 50 pont vár.",
       "cta": "Terv összeállítása"
+    },
+    "replan": {
+      "title": "Terv módosítás elérhető",
+      "accept": "Elfogadom",
+      "decline": "Nem kérem",
+      "seeDetails": "Részletek",
+      "hideDetails": "Elrejt",
+      "noChanges": "Minden a terv szerint halad.",
+      "acceptError": "A javaslat lejárt — frissítve."
     }
   },
   "mealPlan": {

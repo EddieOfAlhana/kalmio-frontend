@@ -107,6 +107,15 @@
       "title": "No weekly plan yet",
       "description": "Plan your first week — 50 points waiting.",
       "cta": "Build a plan"
+    },
+    "replan": {
+      "title": "Plan update available",
+      "accept": "Accept",
+      "decline": "Dismiss",
+      "seeDetails": "See details",
+      "hideDetails": "Hide",
+      "noChanges": "Everything is on track.",
+      "acceptError": "The suggestion has expired — refreshed."
     }
   },
   "mealPlan": {

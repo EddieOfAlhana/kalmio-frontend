@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Header } from '@/components/layout/Header'
 import { TodaysMealsModule } from '@/components/dashboard/TodaysMealsModule'
@@ -8,12 +10,15 @@ import { PlanGlanceModule } from '@/components/dashboard/PlanGlanceModule'
 import { ActivationCard } from '@/components/dashboard/ActivationCard'
 import { PointsModule } from '@/components/dashboard/PointsModule'
 import { MacrosModule } from '@/components/dashboard/MacrosModule'
+import { ReplanDiffCard } from '@/components/dashboard/ReplanDiffCard'
 import { dashboardService } from '@/services/dashboard'
 import { planService } from '@/services/plans'
 
 export function Dashboard() {
   const { t } = useTranslation()
   const today = new Date().toISOString().split('T')[0]
+  const [replanDismissed, setReplanDismissed] = useState(false)
+  const queryClient = useQueryClient()
 
   const { data: dashboard, isLoading } = useQuery({
     queryKey: ['dashboard', today],
@@ -37,6 +42,13 @@ export function Dashboard() {
         subtitle={t('dashboard.subtitle')}
       />
       <div className="space-y-6">
+        {dashboard?.activeFlags?.hasReplanDiff && activePlan && !replanDismissed && (
+          <ReplanDiffCard
+            planId={activePlan.id}
+            onAccept={() => setReplanDismissed(true)}
+            onDecline={() => setReplanDismissed(true)}
+          />
+        )}
         <TodaysMealsModule
           meals={dashboard?.todaysMeals ?? []}
           offPlanMeals={dashboard?.offPlanMeals ?? []}
