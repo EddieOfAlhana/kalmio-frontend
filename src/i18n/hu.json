@@ -622,6 +622,18 @@
       "addToFridge": "Maradékok a hűtőbe",
       "addingToFridge": "Hozzáadás…",
       "addedToFridge": "Maradékok hozzáadva a hűtőhöz"
+    },
+    "actions": {
+      "print": "Nyomtatás",
+      "copy": "Másolás",
+      "copied": "Másolva",
+      "email": "E-mail",
+      "tescoSoon": "Tesco — Hamarosan"
+    },
+    "bought": "Megvettem",
+    "allInFridge": {
+      "title": "Minden megvan a hűtőben",
+      "desc": "A tervhez szükséges összes hozzávaló rendelkezésre áll."
     }
   },
   "feedback": {

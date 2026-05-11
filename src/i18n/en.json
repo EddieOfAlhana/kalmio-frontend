@@ -659,6 +659,18 @@
       "addToFridge": "Add leftovers to fridge",
       "addingToFridge": "Adding to fridge…",
       "addedToFridge": "Leftovers added to your fridge"
+    },
+    "actions": {
+      "print": "Print",
+      "copy": "Copy",
+      "copied": "Copied",
+      "email": "Email",
+      "tescoSoon": "Tesco — Coming soon"
+    },
+    "bought": "I bought this",
+    "allInFridge": {
+      "title": "Everything's in the fridge",
+      "desc": "All ingredients for your plan are already available."
     }
   },
   "fridge": {

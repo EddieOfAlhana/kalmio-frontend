@@ -1,5 +1,5 @@
 import { api } from '@/lib/api'
-import type { Plan, PlannedMeal, CreatePlanRequest, UpdatePlannedMealRequest, ReplanDiff } from '@/types'
+import type { Plan, PlannedMeal, CreatePlanRequest, UpdatePlannedMealRequest, ReplanDiff, ShoppingList } from '@/types'
 
 export const planService = {
   create: (req: CreatePlanRequest): Promise<Plan> =>
@@ -35,4 +35,7 @@ export const planService = {
 
   acceptReplan: (planId: string, diffId: string): Promise<Plan> =>
     api.post<Plan>(`/api/plans/${planId}/replan-accept`, { diffId }).then(r => r.data),
+
+  getShoppingList: (planId: string): Promise<ShoppingList> =>
+    api.get<ShoppingList>(`/api/plans/${planId}/shopping-list`).then(r => r.data),
 }

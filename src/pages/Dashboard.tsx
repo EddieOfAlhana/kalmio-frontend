@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Header } from '@/components/layout/Header'
 import { TodaysMealsModule } from '@/components/dashboard/TodaysMealsModule'
@@ -18,7 +17,6 @@ export function Dashboard() {
   const { t } = useTranslation()
   const today = new Date().toISOString().split('T')[0]
   const [replanDismissed, setReplanDismissed] = useState(false)
-  const queryClient = useQueryClient()
 
   const { data: dashboard, isLoading } = useQuery({
     queryKey: ['dashboard', today],

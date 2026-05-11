@@ -1,8 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ShoppingCart, ExternalLink, AlertCircle, Package, Archive, Refrigerator, Check } from 'lucide-react'
+import {
+  ShoppingCart, ExternalLink, AlertCircle, Package, Archive,
+  Refrigerator, Check, Printer, Copy, Mail,
+} from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -25,6 +28,7 @@ export function ShoppingList() {
   const queryClient = useQueryClient()
   const legacyPlan = useMealPlanStore(s => s.plan)
   const [leftoversAdded, setLeftoversAdded] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   // New calendar plan takes priority
   const { data: calendarPlan } = useQuery({
@@ -41,10 +45,71 @@ export function ShoppingList() {
     queryFn: fridgeService.list,
   })
 
-  const mutation = useMutation({
+  // ── Calendar-plan path: GET endpoint ─────────────────────────────────────
+  const {
+    data: calendarShoppingList,
+    isLoading: calendarLoading,
+    isError: calendarError,
+    error: calendarErrorObj,
+  } = useQuery({
+    queryKey: ['shopping-list', calendarPlan?.id],
+    queryFn: () => planService.getShoppingList(calendarPlan!.id),
+    enabled: !!calendarPlan,
+    staleTime: 60_000,
+  })
+
+  // ── Legacy path: POST mutation ────────────────────────────────────────────
+  const legacyMutation = useMutation({
     mutationFn: mealPlansService.shoppingList,
   })
 
+  // Trigger legacy mutation when a legacyPlan (but no calendarPlan) is present.
+  // We keep the same effect-free approach — the caller page redirects here after
+  // generating, so we fire once on mount when legacyPlan is available.
+  const [legacyTriggered, setLegacyTriggered] = useState(false)
+  if (legacyPlan && !calendarPlan && !legacyTriggered && !legacyMutation.isPending) {
+    setLegacyTriggered(true)
+    legacyMutation.mutate({
+      meals: legacyPlan.meals.map(m => ({ recipeId: m.recipe.id, servingMultiplier: m.servingMultiplier })),
+      fridgeItems: fridgeItems.map(fi => ({ ingredientId: fi.ingredientId, amount: fi.amount, unit: fi.unit })),
+    })
+  }
+
+  // Resolve the active shopping list and loading/error state
+  const shoppingList = calendarPlan ? calendarShoppingList : legacyMutation.data
+  const isLoading = calendarPlan ? calendarLoading : legacyMutation.isPending
+  const isError = calendarPlan ? calendarError : legacyMutation.isError
+  const errorMessage = calendarPlan
+    ? (calendarErrorObj as Error | null)?.message ?? t('shoppingList.error')
+    : (legacyMutation.error as Error | null)?.message ?? t('shoppingList.error')
+
+  // ── "I bought this" state ─────────────────────────────────────────────────
+  // Key is per-plan so checks don't bleed across plans. The plan ID is unknown
+  // during the initial loading render, so we sync from localStorage once the ID
+  // resolves rather than reading in the useState initializer (which would always
+  // read the "legacy" key on first render while the query is still in-flight).
+  const planKey = calendarPlan?.id ?? 'legacy'
+  const [bought, setBought] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(`shopping-list-bought-${planKey}`)
+      setBought(raw ? new Set<string>(JSON.parse(raw) as string[]) : new Set<string>())
+    } catch {
+      setBought(new Set<string>())
+    }
+  }, [planKey])
+
+  function toggleBought(key: string) {
+    setBought(prev => {
+      const next = new Set(prev)
+      next.has(key) ? next.delete(key) : next.add(key)
+      localStorage.setItem(`shopping-list-bought-${planKey}`, JSON.stringify([...next]))
+      return next
+    })
+  }
+
+  // ── Leftovers helpers ─────────────────────────────────────────────────────
   const addLeftoversMutation = useMutation({
     mutationFn: fridgeService.addBatch,
     onSuccess: () => {
@@ -52,52 +117,6 @@ export function ShoppingList() {
       setLeftoversAdded(true)
     },
   })
-
-  useEffect(() => {
-    if (calendarPlan) {
-      // Exclude skipped meals from shopping list
-      const activeMeals = calendarPlan.meals.filter(m => m.status !== 'SKIPPED')
-      mutation.mutate({
-        meals: activeMeals.map(m => ({ recipeId: m.recipeId, servingMultiplier: m.servingMultiplier })),
-        fridgeItems: fridgeItems.map(fi => ({ ingredientId: fi.ingredientId, amount: fi.amount, unit: fi.unit })),
-      })
-      setLeftoversAdded(false)
-    } else if (legacyPlan) {
-      mutation.mutate({
-        meals: legacyPlan.meals.map(m => ({ recipeId: m.recipe.id, servingMultiplier: m.servingMultiplier })),
-        fridgeItems: fridgeItems.map(fi => ({ ingredientId: fi.ingredientId, amount: fi.amount, unit: fi.unit })),
-      })
-      setLeftoversAdded(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calendarPlan?.id, legacyPlan?.id, fridgeItems.length])
-
-  if (!hasPlan) {
-    return (
-      <div>
-        <Header title={t('shoppingList.title')} />
-        <Card>
-          <CardContent className="py-12 flex flex-col items-center text-center">
-            <ShoppingCart className="h-10 w-10 text-[#F28C28] mb-3" />
-            <h3 className="font-headline font-bold text-[#1A1A1A] mb-1">{t('shoppingList.noActivePlan.title')}</h3>
-            <p className="text-sm text-gray-500 mb-4">{t('shoppingList.noActivePlan.description')}</p>
-            <Button onClick={() => navigate('/app/meal-plans')}>{t('shoppingList.noActivePlan.button')}</Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  const shoppingList = mutation.data
-
-  const grouped = shoppingList
-    ? shoppingList.items.reduce<Record<string, ShoppingListItem[]>>((acc, item) => {
-        const cat = item.ingredientCategory ?? 'OTHER'
-        if (!acc[cat]) acc[cat] = []
-        acc[cat].push(item)
-        return acc
-      }, {})
-    : {}
 
   const missingCount = shoppingList?.items.filter(i => !i.retailProduct).length ?? 0
   const nonPantryLeftovers = shoppingList?.items.filter(
@@ -128,6 +147,69 @@ export function ShoppingList() {
     }
   }
 
+  // ── Grouped items ─────────────────────────────────────────────────────────
+  const grouped = shoppingList
+    ? shoppingList.items.reduce<Record<string, ShoppingListItem[]>>((acc, item) => {
+        const cat = item.ingredientCategory ?? 'OTHER'
+        if (!acc[cat]) acc[cat] = []
+        acc[cat].push(item)
+        return acc
+      }, {})
+    : {}
+
+  // ── "All in fridge" state ─────────────────────────────────────────────────
+  const allCovered = (shoppingList?.items.length ?? 0) > 0 &&
+    shoppingList!.items.every(
+      i => i.fridgeAmount != null && i.fridgeAmount >= i.totalAmount
+    )
+
+  // ── Copy / Email helpers ──────────────────────────────────────────────────
+  function buildPlainText(): string {
+    if (!shoppingList) return ''
+    const lines: string[] = ['Bevásárlólista\n']
+    Object.entries(grouped).forEach(([cat, items]) => {
+      lines.push(`\n${cat}`)
+      items.forEach(item => {
+        const needed = item.fridgeAmount != null
+          ? Math.max(0, item.totalAmount - item.fridgeAmount)
+          : item.totalAmount
+        lines.push(`  ${item.ingredientName}: ${needed.toFixed(0)} ${item.unit}`)
+      })
+    })
+    return lines.join('\n')
+  }
+
+  function handleCopy() {
+    if (!shoppingList) return
+    navigator.clipboard.writeText(buildPlainText()).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  function handleEmail() {
+    if (!shoppingList) return
+    const body = encodeURIComponent(buildPlainText())
+    window.open(`mailto:?subject=${encodeURIComponent('Bevásárlólista')}&body=${body}`)
+  }
+
+  // ── No plan guard ─────────────────────────────────────────────────────────
+  if (!hasPlan) {
+    return (
+      <div>
+        <Header title={t('shoppingList.title')} />
+        <Card>
+          <CardContent className="py-12 flex flex-col items-center text-center">
+            <ShoppingCart className="h-10 w-10 text-[#F28C28] mb-3" />
+            <h3 className="font-headline font-bold text-[#1A1A1A] mb-1">{t('shoppingList.noActivePlan.title')}</h3>
+            <p className="text-sm text-gray-500 mb-4">{t('shoppingList.noActivePlan.description')}</p>
+            <Button onClick={() => navigate('/app/meal-plans')}>{t('shoppingList.noActivePlan.button')}</Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div>
       <Header
@@ -140,18 +222,18 @@ export function ShoppingList() {
         }
       />
 
-      {mutation.isPending && (
+      {isLoading && (
         <div className="flex flex-col items-center justify-center py-16 gap-3">
           <Spinner className="h-8 w-8" />
           <p className="text-sm text-gray-500">{t('shoppingList.building')}</p>
         </div>
       )}
 
-      {mutation.isError && (
+      {isError && (
         <Card className="border-red-200">
           <CardContent className="py-6 flex items-center gap-3">
             <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />
-            <p className="text-sm text-red-600">{(mutation.error as Error).message ?? t('shoppingList.error')}</p>
+            <p className="text-sm text-red-600">{errorMessage}</p>
           </CardContent>
         </Card>
       )}
@@ -203,22 +285,44 @@ export function ShoppingList() {
             </div>
           )}
 
-          {/* Grouped list */}
-          {Object.entries(grouped).map(([category, items]) => (
-            <Card key={category} className="mb-4">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Badge variant={CATEGORY_COLOR[category as IngredientCategory] ?? 'gray'}>{category}</Badge>
-                  <span className="text-gray-400 font-normal text-sm">{items.length} {t('shoppingList.items')}</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                {items.map(item => (
-                  <ShoppingItem key={item.ingredientId + item.unit} item={item} currency={shoppingList.currency} />
-                ))}
+          {/* "All in fridge" empty state */}
+          {allCovered ? (
+            <Card className="border-green-200 bg-green-50 mb-4">
+              <CardContent className="py-12 flex flex-col items-center text-center">
+                <Refrigerator className="h-10 w-10 text-green-600 mb-3" />
+                <h3 className="font-headline font-bold text-[#1A1A1A] mb-1">
+                  {t('shoppingList.allInFridge.title')}
+                </h3>
+                <p className="text-sm text-gray-500">{t('shoppingList.allInFridge.desc')}</p>
               </CardContent>
             </Card>
-          ))}
+          ) : (
+            /* Grouped list */
+            Object.entries(grouped).map(([category, items]) => (
+              <Card key={category} className="mb-4">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Badge variant={CATEGORY_COLOR[category as IngredientCategory] ?? 'gray'}>{category}</Badge>
+                    <span className="text-gray-400 font-normal text-sm">{items.length} {t('shoppingList.items')}</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-2">
+                  {items.map(item => {
+                    const itemKey = `${item.ingredientId}:${item.unit}`
+                    return (
+                      <ShoppingItem
+                        key={itemKey}
+                        item={item}
+                        currency={shoppingList.currency}
+                        isBought={bought.has(itemKey)}
+                        onToggle={() => toggleBought(itemKey)}
+                      />
+                    )
+                  })}
+                </CardContent>
+              </Card>
+            ))
+          )}
 
           {/* Leftovers summary */}
           <Card className={leftoverItems.length > 0 ? 'border-orange-200' : ''}>
@@ -305,13 +409,44 @@ export function ShoppingList() {
               )}
             </CardContent>
           </Card>
+
+          {/* Footer action bar */}
+          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-200">
+            <Button variant="secondary" size="sm" onClick={() => window.print()}>
+              <Printer className="h-4 w-4 mr-1.5" />
+              {t('shoppingList.actions.print')}
+            </Button>
+            <Button variant="secondary" size="sm" onClick={handleCopy}>
+              {copied
+                ? <><Check className="h-4 w-4 mr-1.5 text-green-600" />{t('shoppingList.actions.copied')}</>
+                : <><Copy className="h-4 w-4 mr-1.5" />{t('shoppingList.actions.copy')}</>
+              }
+            </Button>
+            <Button variant="secondary" size="sm" onClick={handleEmail}>
+              <Mail className="h-4 w-4 mr-1.5" />
+              {t('shoppingList.actions.email')}
+            </Button>
+            <Button variant="secondary" size="sm" disabled className="opacity-50 cursor-not-allowed">
+              {t('shoppingList.actions.tescoSoon')}
+            </Button>
+          </div>
         </div>
       )}
     </div>
   )
 }
 
-function ShoppingItem({ item, currency }: { item: ShoppingListItem; currency: string }) {
+function ShoppingItem({
+  item,
+  currency,
+  isBought,
+  onToggle,
+}: {
+  item: ShoppingListItem
+  currency: string
+  isBought: boolean
+  onToggle: () => void
+}) {
   const { t } = useTranslation()
   const hasProduct = !!item.retailProduct
   const coveredByFridge = item.fridgeAmount != null && item.fridgeAmount > 0
@@ -319,15 +454,19 @@ function ShoppingItem({ item, currency }: { item: ShoppingListItem; currency: st
   return (
     <div className={`flex items-start gap-3 p-3 rounded-[12px] ${hasProduct ? 'bg-[#F9F7F2]' : 'bg-amber-50 border border-amber-200'}`}>
       <div className="shrink-0 mt-0.5">
-        {hasProduct
-          ? <Package className="h-4 w-4 text-[#4F7942]" />
-          : <AlertCircle className="h-4 w-4 text-amber-500" />
+        {isBought
+          ? <Check className="h-4 w-4 text-green-600" />
+          : hasProduct
+            ? <Package className="h-4 w-4 text-[#4F7942]" />
+            : <AlertCircle className="h-4 w-4 text-amber-500" />
         }
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-          <p className="font-semibold text-sm text-[#1A1A1A]">{item.ingredientName}</p>
+          <p className={`font-semibold text-sm text-[#1A1A1A] ${isBought ? 'line-through opacity-50' : ''}`}>
+            {item.ingredientName}
+          </p>
           {item.pantryItem && (
             <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700">
               <Archive className="h-2.5 w-2.5" />
@@ -373,7 +512,7 @@ function ShoppingItem({ item, currency }: { item: ShoppingListItem; currency: st
         )}
       </div>
 
-      <div className="shrink-0 text-right">
+      <div className="shrink-0 flex flex-col items-end gap-1.5">
         {item.retailProduct?.estimatedCost != null && (
           <p className="text-sm font-bold text-[#4F7942]">
             {formatCurrency(item.retailProduct.estimatedCost, currency)}
@@ -384,11 +523,28 @@ function ShoppingItem({ item, currency }: { item: ShoppingListItem; currency: st
             href={item.retailProduct.remoteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-[#F28C28] hover:underline mt-1"
+            className="inline-flex items-center gap-1 text-xs text-[#F28C28] hover:underline"
           >
             {t('shoppingList.tesco')} <ExternalLink className="h-3 w-3" />
           </a>
         )}
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-pressed={isBought}
+          aria-label={t('shoppingList.bought')}
+          className={`
+            inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded
+            transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4F7942]
+            ${isBought
+              ? 'bg-green-100 text-green-700'
+              : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+            }
+          `}
+        >
+          {isBought && <Check className="h-2.5 w-2.5" />}
+          {t('shoppingList.bought')}
+        </button>
       </div>
     </div>
   )
