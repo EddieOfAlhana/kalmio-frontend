@@ -478,6 +478,10 @@
       "neverUsed": "Never used",
       "revoke": "Revoke",
       "revokeError": "Failed to revoke the key.",
+      "revokeAll": "Revoke all",
+      "revokeAllConfirm": "Revoke all {{count}} keys?",
+      "revokeAllConfirmButton": "Yes, revoke all",
+      "revokeAllError": "Failed to revoke all keys.",
       "generateButton": "Generate API key",
       "form": {
         "label": "Key name",

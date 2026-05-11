@@ -478,6 +478,10 @@
       "neverUsed": "Soha nem használták",
       "revoke": "Visszavon",
       "revokeError": "Nem sikerült visszavonni a kulcsot.",
+      "revokeAll": "Összes visszavonása",
+      "revokeAllConfirm": "Visszavonod a(z) {{count}} kulcsot?",
+      "revokeAllConfirmButton": "Igen, visszavonom",
+      "revokeAllError": "Nem sikerült visszavonni az összes kulcsot.",
       "generateButton": "Új API kulcs generálása",
       "form": {
         "label": "Kulcs neve",

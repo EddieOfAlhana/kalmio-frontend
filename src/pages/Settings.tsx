@@ -54,6 +54,7 @@ export function Settings() {
   const [customName, setCustomName] = useState('')
 
   // ── API Keys state ─────────────────────────────────────────────────────────
+  const [confirmRevokeAll, setConfirmRevokeAll] = useState(false)
   const [showKeyForm, setShowKeyForm] = useState(false)
   const [newKeyName, setNewKeyName] = useState('')
   const [revealedKey, setRevealedKey] = useState<ApiKeyCreated | null>(null)
@@ -111,6 +112,22 @@ export function Settings() {
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ['api-keys'] })
     },
+  })
+
+  const revokeAllKeysMutation = useMutation({
+    mutationFn: () => apiKeysService.revokeAll(),
+    onMutate: async () => {
+      await qc.cancelQueries({ queryKey: ['api-keys'] })
+      const previous = qc.getQueryData<ApiKey[]>(['api-keys'])
+      qc.setQueryData<ApiKey[]>(['api-keys'], [])
+      return { previous }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) qc.setQueryData(['api-keys'], context.previous)
+      toast({ title: t('settings.apiKeys.revokeAllError'), variant: 'destructive' })
+    },
+    onSuccess: () => { setConfirmRevokeAll(false) },
+    onSettled: () => { qc.invalidateQueries({ queryKey: ['api-keys'] }) },
   })
 
   const handleCopyKey = () => {
@@ -380,9 +397,47 @@ export function Settings() {
       <div className="space-y-4 max-w-lg mt-6">
         <Card>
           <CardContent className="pt-5 space-y-4">
-            <div>
+            <div className="flex items-center justify-between">
               <h2 className="font-semibold text-sm text-[#1A1A1A]">{t('settings.apiKeys.title')}</h2>
+              {apiKeys.length >= 2 && !confirmRevokeAll && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setConfirmRevokeAll(true)}
+                  className="text-red-500 hover:text-red-600 hover:bg-red-50 text-xs"
+                >
+                  {t('settings.apiKeys.revokeAll')}
+                </Button>
+              )}
             </div>
+
+            {confirmRevokeAll && (
+              <div className="flex items-center gap-2 rounded-xl border border-red-100 bg-red-50 px-3 py-2">
+                <p className="flex-1 text-xs text-red-700">
+                  {t('settings.apiKeys.revokeAllConfirm', { count: apiKeys.length })}
+                </p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setConfirmRevokeAll(false)}
+                  className="text-xs"
+                >
+                  {t('common.cancel')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={revokeAllKeysMutation.isPending}
+                  onClick={() => revokeAllKeysMutation.mutate()}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-100 text-xs"
+                >
+                  {t('settings.apiKeys.revokeAllConfirmButton')}
+                </Button>
+              </div>
+            )}
 
             {apiKeysLoading ? (
               <div className="flex justify-center py-2"><Spinner /></div>

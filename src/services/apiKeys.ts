@@ -22,4 +22,6 @@ export const apiKeysService = {
     api.post<ApiKeyCreated>('/api/user/api-keys', { name }).then(r => r.data),
 
   revoke: (id: number) => api.delete(`/api/user/api-keys/${id}`),
+
+  revokeAll: () => api.delete('/api/user/api-keys'),
 }
