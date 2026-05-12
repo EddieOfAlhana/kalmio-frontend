@@ -24,6 +24,7 @@ export interface UserSettings {
   firstName: string | null
   lastName: string | null
   avatarUrl: string | null
+  username: string | null
   languagePreference: string | null
   mealPlanPreferences: UserMealPreferences | null
   dietaryPreferences: DietaryPreferences | null
@@ -40,6 +41,7 @@ export interface UpdateProfileRequest {
   firstName?: string | null
   lastName?: string | null
   avatarUrl?: string | null
+  username?: string | null
 }
 
 export const usersService = {

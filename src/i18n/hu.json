@@ -3,7 +3,9 @@
     "dashboard": "Irányítópult",
     "mealPlans": "Étrendek",
     "recipes": "Receptek",
+    "myRecipes": "Saját receptjeim",
     "ingredients": "Hozzávalók",
+    "myIngredients": "Saját hozzávalóim",
     "shoppingList": "Bevásárlólista",
     "fridge": "A hűtőm",
     "home": "Főoldal",
@@ -12,7 +14,8 @@
     "retail": "Bolti termékek",
     "settings": "Beállítások",
     "admin": "Admin",
-    "ipVault": "IP Trezor"
+    "ipVault": "IP Trezor",
+    "contentReview": "Tartalom jóváhagyás"
   },
   "common": {
     "version": "Táplálkozási Motor v0.1",
@@ -210,6 +213,7 @@
     "edit": "Szerkesztés",
     "delete": "Törlöd: \"{{name}}\"?",
     "viewDetails": "Részletek",
+    "createdBy": "Készítette: @{{username}}",
     "detail": {
       "prep": "Előkészítés",
       "cook": "Főzés",
@@ -382,6 +386,9 @@
     "lastNamePlaceholder": "pl. Kovács",
     "email": "E-mail cím",
     "memberSince": "Tag azóta: {{date}}",
+    "username": "Felhasználónév",
+    "usernamePlaceholder": "felhasznalonev",
+    "usernameHint": "Ez az azonosítód jelenik meg a receptkártyákon. Csak betűk, számok és alulvonás (3–50 karakter).",
     "saveSuccess": "Profil frissítve.",
     "saveError": "Nem sikerült frissíteni a profilt.",
     "avatarUploadHint": "Kattints vagy húzz ide egy képet a fotód módosításához",
@@ -514,6 +521,61 @@
       "subtitle_other": "{{count}} regisztrált felhasználó",
       "promote": "Admin kinevezése",
       "demote": "Admin visszavonása"
+    },
+    "contentReview": {
+      "title": "Tartalom jóváhagyás",
+      "subtitle": "Felhasználói receptek és hozzávalók áttekintése",
+      "tabs": {
+        "recipes": "Receptek",
+        "ingredients": "Hozzávalók"
+      },
+      "noRecipesPending": "Nincs jóváhagyásra váró recept.",
+      "noIngredientsPending": "Nincs jóváhagyásra váró hozzávaló.",
+      "approve": "Jóváhagyás",
+      "reject": "Elutasítás",
+      "approveSuccess": "Jóváhagyva.",
+      "approveError": "Nem sikerült jóváhagyni.",
+      "rejectSuccess": "Elutasítva.",
+      "rejectError": "Nem sikerült elutasítani."
+    }
+  },
+  "myContent": {
+    "status": {
+      "private": "Privát",
+      "pendingReview": "Jóváhagyás alatt",
+      "public": "Nyilvános"
+    },
+    "recipes": {
+      "title": "Saját receptjeim",
+      "subtitle_one": "{{count}} recept",
+      "subtitle_other": "{{count}} recept",
+      "addNew": "Új recept",
+      "submit": "Beküldés jóváhagyásra",
+      "withdraw": "Visszavonás",
+      "submitSuccess": "Recept beküldve jóváhagyásra.",
+      "submitError": "Nem sikerült beküldeni a receptet.",
+      "withdrawSuccess": "Beküldés visszavonva.",
+      "withdrawError": "Nem sikerült visszavonni a beküldést.",
+      "empty": {
+        "title": "Még nincs saját recepted",
+        "description": "Hozz létre egy receptet a receptkönyvtárban, majd küldd be jóváhagyásra."
+      }
+    },
+    "ingredients": {
+      "title": "Saját hozzávalóim",
+      "subtitle_one": "{{count}} hozzávaló",
+      "subtitle_other": "{{count}} hozzávaló",
+      "addNew": "Új hozzávaló",
+      "submit": "Beküldés jóváhagyásra",
+      "withdraw": "Visszavonás",
+      "submitSuccess": "Hozzávaló beküldve jóváhagyásra.",
+      "submitError": "Nem sikerült beküldeni a hozzávalót.",
+      "withdrawSuccess": "Beküldés visszavonva.",
+      "withdrawError": "Nem sikerült visszavonni a beküldést.",
+      "empty": {
+        "title": "Még nincs saját hozzávalód",
+        "description": "Hozz létre egy hozzávalót a katalógusban, majd küldd be jóváhagyásra."
+      }
     }
   },
   "landing": {

@@ -17,6 +17,7 @@ import type { DietaryRestrictionKey, MealType } from '@/types'
 interface FormValues {
   firstName: string
   lastName: string
+  username: string
 }
 
 const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -89,6 +90,7 @@ export function Profile() {
       reset({
         firstName: user.firstName ?? '',
         lastName: user.lastName ?? '',
+        username: user.username ?? '',
       })
     }
   }, [user, reset])
@@ -108,6 +110,7 @@ export function Profile() {
     mutation.mutate({
       firstName: values.firstName.trim() || null,
       lastName: values.lastName.trim() || null,
+      username: values.username.trim() || null,
     })
   }
 
@@ -390,6 +393,22 @@ export function Profile() {
                   disabled
                   className="mt-1 bg-gray-50 text-gray-500"
                 />
+              </div>
+
+              <div>
+                <Label htmlFor="username">{t('profile.username')}</Label>
+                <div className="relative mt-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm select-none">@</span>
+                  <Input
+                    id="username"
+                    {...register('username')}
+                    placeholder={t('profile.usernamePlaceholder')}
+                    maxLength={50}
+                    className="pl-7"
+                    autoComplete="username"
+                  />
+                </div>
+                <p className="text-xs text-gray-400 mt-1">{t('profile.usernameHint')}</p>
               </div>
             </CardContent>
           </Card>

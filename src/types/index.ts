@@ -51,6 +51,8 @@ export interface IngredientTranslations {
   hu: IngredientLocaleTranslation | null
 }
 
+export type ContentVisibility = 'PUBLIC' | 'PRIVATE' | 'PENDING_REVIEW'
+
 export interface Ingredient {
   id: string
   name: string
@@ -65,6 +67,8 @@ export interface Ingredient {
   machineTranslated: boolean
   /** Shelf-stable pantry staple — excluded from leftover calculations. */
   pantryItem: boolean
+  visibility: ContentVisibility
+  createdByUsername: string | null
 }
 
 export interface CreateIngredientRequest {
@@ -112,6 +116,8 @@ export interface Recipe {
   tags: RecipeTag[]
   translations: RecipeTranslations | null
   machineTranslated: boolean
+  visibility: ContentVisibility
+  createdByUsername: string | null
 }
 
 export interface CreateRecipeRequest {

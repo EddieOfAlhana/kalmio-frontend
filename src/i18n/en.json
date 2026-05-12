@@ -3,7 +3,9 @@
     "dashboard": "Dashboard",
     "mealPlans": "Meal Plans",
     "recipes": "Recipes",
+    "myRecipes": "My Recipes",
     "ingredients": "Ingredients",
+    "myIngredients": "My Ingredients",
     "shoppingList": "Shopping List",
     "fridge": "My Fridge",
     "home": "Home",
@@ -12,7 +14,8 @@
     "retail": "Retail",
     "settings": "Settings",
     "admin": "Admin",
-    "ipVault": "IP Vault"
+    "ipVault": "IP Vault",
+    "contentReview": "Content Review"
   },
   "common": {
     "version": "Nutrition Engine v0.1",
@@ -210,6 +213,7 @@
     "edit": "Edit",
     "delete": "Delete \"{{name}}\"?",
     "viewDetails": "Details",
+    "createdBy": "By @{{username}}",
     "detail": {
       "prep": "Prep",
       "cook": "Cook",
@@ -382,6 +386,9 @@
     "lastNamePlaceholder": "e.g. Smith",
     "email": "Email address",
     "memberSince": "Member since {{date}}",
+    "username": "Username",
+    "usernamePlaceholder": "username",
+    "usernameHint": "This identifier appears on recipe cards. Letters, numbers, and underscores only (3–50 characters).",
     "saveSuccess": "Profile updated.",
     "saveError": "Failed to update profile.",
     "avatarUploadHint": "Click or drop an image to change your photo",
@@ -514,6 +521,61 @@
       "subtitle_other": "{{count}} registered users",
       "promote": "Make admin",
       "demote": "Remove admin"
+    },
+    "contentReview": {
+      "title": "Content Review",
+      "subtitle": "Review user-submitted recipes and ingredients",
+      "tabs": {
+        "recipes": "Recipes",
+        "ingredients": "Ingredients"
+      },
+      "noRecipesPending": "No recipes pending review.",
+      "noIngredientsPending": "No ingredients pending review.",
+      "approve": "Approve",
+      "reject": "Reject",
+      "approveSuccess": "Approved.",
+      "approveError": "Failed to approve.",
+      "rejectSuccess": "Rejected.",
+      "rejectError": "Failed to reject."
+    }
+  },
+  "myContent": {
+    "status": {
+      "private": "Private",
+      "pendingReview": "Pending review",
+      "public": "Public"
+    },
+    "recipes": {
+      "title": "My Recipes",
+      "subtitle_one": "{{count}} recipe",
+      "subtitle_other": "{{count}} recipes",
+      "addNew": "New recipe",
+      "submit": "Submit for review",
+      "withdraw": "Withdraw",
+      "submitSuccess": "Recipe submitted for review.",
+      "submitError": "Failed to submit recipe.",
+      "withdrawSuccess": "Submission withdrawn.",
+      "withdrawError": "Failed to withdraw submission.",
+      "empty": {
+        "title": "No recipes yet",
+        "description": "Create a recipe in the recipe library, then submit it for review."
+      }
+    },
+    "ingredients": {
+      "title": "My Ingredients",
+      "subtitle_one": "{{count}} ingredient",
+      "subtitle_other": "{{count}} ingredients",
+      "addNew": "New ingredient",
+      "submit": "Submit for review",
+      "withdraw": "Withdraw",
+      "submitSuccess": "Ingredient submitted for review.",
+      "submitError": "Failed to submit ingredient.",
+      "withdrawSuccess": "Submission withdrawn.",
+      "withdrawError": "Failed to withdraw submission.",
+      "empty": {
+        "title": "No ingredients yet",
+        "description": "Create an ingredient in the catalog, then submit it for review."
+      }
     }
   },
   "landing": {

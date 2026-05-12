@@ -19,6 +19,8 @@ export function savedSlotToMeal(s: SavedMealSlot): GeneratedMeal {
       tags: s.recipeTags,
       translations: s.recipeTranslations ?? null,
       machineTranslated: false,
+      visibility: 'PUBLIC',
+      createdByUsername: null,
     },
     servingMultiplier: Number(s.servingMultiplier),
     estimatedCost: s.estimatedCost,

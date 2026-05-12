@@ -208,6 +208,13 @@ export function Recipes() {
                     )}
                   </div>
 
+                  {/* Creator attribution */}
+                  {r.createdByUsername && (
+                    <p className="text-[11px] text-gray-400 mb-1.5">
+                      {t('recipes.createdBy', { username: r.createdByUsername })}
+                    </p>
+                  )}
+
                   {/* Tags row */}
                   {(r.tags ?? []).length > 0 && (
                     <div className="flex gap-1 flex-wrap mb-2">
