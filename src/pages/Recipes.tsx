@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle, SlidersHorizontal } from 'lucide-react'
 import { useForm, useFieldArray, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -18,9 +18,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { IngredientSearchDialog } from '@/components/IngredientSearchDialog'
 import { recipesService } from '@/services/recipes'
 import { ingredientsService } from '@/services/ingredients'
+import { usersService } from '@/services/users'
 import { formatCurrency } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
-import type { Recipe, RecipeTag, Unit, RecipeTranslations } from '@/types'
+import type { Recipe, RecipeTag, Unit, RecipeTranslations, DietaryRestrictionKey } from '@/types'
+
+const DIETARY_GROUPS: { key: string; items: DietaryRestrictionKey[] }[] = [
+  { key: 'lifestyle', items: ['vegetarian', 'vegan', 'pescatarian'] },
+  { key: 'allergens', items: ['glutenFree', 'dairyFree', 'lactoseFree', 'milkProteinFree', 'eggFree', 'nutFree', 'peanutFree', 'soyFree', 'fishFree', 'shellfishFree', 'sesameFree'] },
+  { key: 'religious', items: ['halal', 'kosher'] },
+  { key: 'metabolic', items: ['keto', 'lowGi', 'lowFodmap', 'paleo'] },
+]
 
 const TAGS: RecipeTag[] = ['QUICK', 'CHEAP', 'MEALPREP', 'HIGH_PROTEIN']
 const UNITS: Unit[] = ['G', 'ML', 'PIECE']
@@ -92,7 +100,25 @@ export function Recipes() {
 
   const { data: recipes = [], isLoading } = useQuery({ queryKey: ['recipes'], queryFn: recipesService.list })
   const { data: ingredients = [] } = useQuery({ queryKey: ['ingredients'], queryFn: ingredientsService.list, staleTime: 30_000 })
+  const { data: user } = useQuery({ queryKey: ['me'], queryFn: usersService.getMe })
   const ingredientMap = new Map(ingredients.map(i => [i.id, i.translations?.[lang]?.name ?? i.name]))
+  const ingredientConstraintsMap = new Map(ingredients.map(i => [i.id, i.constraints]))
+
+  const [activeRestrictions, setActiveRestrictions] = useState<Set<DietaryRestrictionKey>>(new Set())
+  const [showDietaryFilter, setShowDietaryFilter] = useState(false)
+  const restrictionsInitialized = useRef(false)
+
+  useEffect(() => {
+    if (user && !restrictionsInitialized.current) {
+      restrictionsInitialized.current = true
+      if (user.dietaryPreferences) {
+        const active = (Object.entries(user.dietaryPreferences) as [DietaryRestrictionKey, boolean][])
+          .filter(([, v]) => v)
+          .map(([k]) => k)
+        setActiveRestrictions(new Set(active))
+      }
+    }
+  }, [user])
 
   const createMutation = useMutation({
     mutationFn: recipesService.create,
@@ -117,10 +143,21 @@ export function Recipes() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['recipes'] }); setTranslationTarget(null) },
   })
 
+  const activeRestrictionsArr = [...activeRestrictions]
   const filtered = recipes.filter(r => {
-    if (!search) return true
-    const displayName = r.translations?.[lang]?.name ?? r.name
-    return displayName.toLowerCase().includes(search.toLowerCase())
+    if (search) {
+      const displayName = r.translations?.[lang]?.name ?? r.name
+      if (!displayName.toLowerCase().includes(search.toLowerCase())) return false
+    }
+    if (activeRestrictionsArr.length > 0) {
+      const passes = r.ingredients.every(ri => {
+        const c = ingredientConstraintsMap.get(ri.ingredientId)
+        if (!c) return true
+        return activeRestrictionsArr.every(key => c[key])
+      })
+      if (!passes) return false
+    }
+    return true
   })
 
   return (
@@ -135,9 +172,73 @@ export function Recipes() {
         ) : undefined}
       />
 
-      <div className="relative mb-4">
+      <div className="relative mb-3">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input placeholder={t('recipes.search')} value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+      </div>
+
+      <div className="mb-4">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowDietaryFilter(f => !f)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+              activeRestrictions.size > 0
+                ? 'bg-[#4F7942] text-white border-[#4F7942]'
+                : 'bg-white text-gray-500 border-gray-200 hover:border-[#4F7942]'
+            }`}
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            {t('recipes.dietaryFilter')}
+            {activeRestrictions.size > 0 && (
+              <span className="bg-white/30 rounded-full px-1.5 text-[10px] leading-4">
+                {activeRestrictions.size}
+              </span>
+            )}
+          </button>
+          {activeRestrictions.size > 0 && (
+            <button
+              type="button"
+              onClick={() => setActiveRestrictions(new Set())}
+              className="text-xs text-gray-400 hover:text-gray-600 underline"
+            >
+              {t('recipes.clearFilters')}
+            </button>
+          )}
+        </div>
+
+        {showDietaryFilter && (
+          <div className="mt-3 p-3 bg-[#F9F7F2] rounded-[12px] space-y-3">
+            {DIETARY_GROUPS.map(group => (
+              <div key={group.key}>
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1.5">
+                  {t(`dietary.groups.${group.key}`)}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {group.items.map(item => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => setActiveRestrictions(prev => {
+                        const next = new Set(prev)
+                        if (next.has(item)) next.delete(item)
+                        else next.add(item)
+                        return next
+                      })}
+                      className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                        activeRestrictions.has(item)
+                          ? 'bg-[#4F7942] text-white border-[#4F7942]'
+                          : 'bg-white text-gray-500 border-gray-200 hover:border-[#4F7942]'
+                      }`}
+                    >
+                      {t(`dietary.${item}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {isLoading ? (

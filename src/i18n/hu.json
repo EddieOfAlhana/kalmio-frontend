@@ -266,7 +266,9 @@
       "cancel": "Mégse",
       "create": "Recept létrehozása",
       "save": "Mentés"
-    }
+    },
+    "dietaryFilter": "Étrendi szűrők",
+    "clearFilters": "Szűrők törlése"
   },
   "ingredients": {
     "title": "Hozzávalók",

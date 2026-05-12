@@ -266,7 +266,9 @@
       "cancel": "Cancel",
       "create": "Create Recipe",
       "save": "Save Changes"
-    }
+    },
+    "dietaryFilter": "Dietary filters",
+    "clearFilters": "Clear filters"
   },
   "ingredients": {
     "title": "Ingredients",
