@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react' // useRef: StrictMode guard
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Header } from '@/components/layout/Header'
@@ -156,6 +156,7 @@ function ItemRow({ item, today, decision, onChange }: ItemRowProps) {
 export function Grooming() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const today = useMemo(() => {
     const d = new Date()
@@ -198,7 +199,10 @@ export function Grooming() {
   const completeMutation = useMutation({
     mutationFn: ({ sid, dec }: { sid: string; dec: GroomingDecision[] }) =>
       groomingService.complete(sid, dec),
-    onSuccess: () => navigate('/app/meal-plans'),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['points'] })
+      navigate('/app/meal-plans')
+    },
   })
 
   function handleComplete() {

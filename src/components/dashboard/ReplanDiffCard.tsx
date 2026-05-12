@@ -29,6 +29,7 @@ export function ReplanDiffCard({ planId, onAccept, onDecline }: Props) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['plan', 'active'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard', today] })
+      queryClient.invalidateQueries({ queryKey: ['points'] })
       onAccept()
     },
     onError: () => {

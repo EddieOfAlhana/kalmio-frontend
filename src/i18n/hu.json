@@ -813,6 +813,25 @@
     "expiresToday": "ma jár le",
     "expiredDaysAgo": "{{days}} napja lejárt"
   },
+  "points": {
+    "total": "{{count}} pont",
+    "nextHint": {
+      "firstPlan": "Tervezd meg a heted — +50 pont",
+      "firstGrooming": "Végezz átvilágítást — +20 pont",
+      "firstPrepDone": "Jelölj készre egy előkészítést — +10 pont",
+      "keepGoing": "Folytasd a sorozatot — +20 pont hetente"
+    },
+    "toast": {
+      "firstPlan": "+50 pont — első tervezés kész.",
+      "firstGrooming": "+20 pont — első átvilágítás kész.",
+      "firstPrepDone": "+10 pont — első előkészítés kész.",
+      "firstReplanAccepted": "+10 pont — első újratervezés elfogadva.",
+      "planGenerated": "+20 pont",
+      "groomingCompleted": "+10 pont",
+      "prepTaskDone": "+5 pont",
+      "replanAccepted": "+5 pont"
+    }
+  },
   "blog": {
     "nav": "Blog",
     "indexTitle": "A konyhából",

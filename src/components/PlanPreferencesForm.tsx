@@ -90,6 +90,7 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
     mutationFn: planService.create,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['plan', 'active'] })
+      void queryClient.invalidateQueries({ queryKey: ['points'] })
       onSuccess?.()
     },
   })

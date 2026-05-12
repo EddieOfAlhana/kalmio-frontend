@@ -510,6 +510,20 @@ export interface ShoppingList {
   currency: string
 }
 
+// ── Points ────────────────────────────────────────────────────────────────
+
+export interface PointEventDto {
+  eventType: string
+  points: number
+  occurredAt: string
+}
+
+export interface PointsResponse {
+  total: number
+  recentEvents: PointEventDto[]
+  earnedFirstAchievements: string[]
+}
+
 // ── Replan Diff ───────────────────────────────────────────────────────────
 
 export interface MealChange {

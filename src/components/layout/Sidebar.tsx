@@ -10,12 +10,14 @@ import { FeedbackPanel } from '@/components/FeedbackPanel'
 import { feedbackService } from '@/services/feedback'
 import { usersService } from '@/services/users'
 import { UserAvatar } from '@/components/ui/UserAvatar'
+import { usePoints } from '@/hooks/usePoints'
 
 export function Sidebar() {
   const { t } = useTranslation()
   const signOut = useAuthStore((s) => s.signOut)
   const isAdmin = useAuthStore((s) => s.isAdmin)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
+  const { data: points } = usePoints()
 
   const { data: unreadCount = 0 } = useQuery({
     queryKey: ['feedback', 'unread'],
@@ -134,7 +136,17 @@ export function Sidebar() {
       </nav>
 
       <div className="px-4 py-4 border-t border-white/10 flex items-center justify-between gap-2">
-        <p className="text-xs text-white/40 truncate">{t('common.version')}</p>
+        <div className="flex items-center gap-2 min-w-0">
+          <p className="text-xs text-white/40 truncate">{t('common.version')}</p>
+          {points !== undefined && (
+            <span
+              aria-label={t('points.total', { count: points.total })}
+              className="shrink-0 text-[10px] font-semibold font-mono tabular-nums text-amber-400/80 bg-amber-400/10 px-1.5 py-0.5 rounded-full leading-none"
+            >
+              {points.total} pt
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => setFeedbackOpen(true)}

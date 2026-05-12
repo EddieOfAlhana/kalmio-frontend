@@ -813,6 +813,25 @@
     "expiresToday": "expires today",
     "expiredDaysAgo": "{{days}} days ago"
   },
+  "points": {
+    "total": "{{count}} points",
+    "nextHint": {
+      "firstPlan": "Plan your first week — +50 points",
+      "firstGrooming": "Complete a pantry review — +20 points",
+      "firstPrepDone": "Complete your first prep task — +10 points",
+      "keepGoing": "Keep your streak going — +20 points per week"
+    },
+    "toast": {
+      "firstPlan": "+50 points — first plan complete.",
+      "firstGrooming": "+20 points — first pantry review done.",
+      "firstPrepDone": "+10 points — first prep done.",
+      "firstReplanAccepted": "+10 points — first replan accepted.",
+      "planGenerated": "+20 points",
+      "groomingCompleted": "+10 points",
+      "prepTaskDone": "+5 points",
+      "replanAccepted": "+5 points"
+    }
+  },
   "blog": {
     "nav": "Blog",
     "indexTitle": "From the kitchen",

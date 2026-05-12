@@ -39,6 +39,7 @@ function PrepTaskRow({ task, dashboardDate }: PrepTaskRowProps) {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['dashboard', dashboardDate] })
+      void queryClient.invalidateQueries({ queryKey: ['points'] })
       toast({ title: t('dashboard.prep.markDone'), variant: 'success' })
     },
     onError: () => {

@@ -12,11 +12,14 @@ import { MacrosModule } from '@/components/dashboard/MacrosModule'
 import { ReplanDiffCard } from '@/components/dashboard/ReplanDiffCard'
 import { dashboardService } from '@/services/dashboard'
 import { planService } from '@/services/plans'
+import { usePointsToast } from '@/hooks/usePointsToast'
 
 export function Dashboard() {
   const { t } = useTranslation()
   const today = new Date().toISOString().split('T')[0]
   const [replanDismissed, setReplanDismissed] = useState(false)
+
+  usePointsToast()
 
   const { data: dashboard, isLoading } = useQuery({
     queryKey: ['dashboard', today],
@@ -68,7 +71,7 @@ export function Dashboard() {
         ) : (
           <ActivationCard />
         )}
-        <PointsModule total={dashboard?.pointsTotal ?? 0} />
+        <PointsModule />
       </div>
     </div>
   )
