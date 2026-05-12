@@ -116,7 +116,7 @@
       "hideDetails": "Hide",
       "noChanges": "Everything is on track.",
       "acceptError": "The suggestion has expired — refreshed.",
-      "wasted": "😢 {{name}} unfortunately cannot be saved{{cost}} — it will go to waste."
+      "wasted": "{{name}} cannot be saved{{cost}} — it will go to waste."
     }
   },
   "mealPlan": {
@@ -393,7 +393,7 @@
     "dietarySave": "Save dietary preferences",
     "dietarySaveSuccess": "Dietary preferences saved.",
     "dietarySaveError": "Failed to save dietary preferences.",
-    "allergyDisclaimer": "We do our best to honour your dietary settings and allergy restrictions, but Kalmio makes no legal warranties regarding the accuracy or completeness of dietary information. Always verify ingredient labels when managing severe allergies.",
+    "allergyDisclaimer": "Kalmio applies your dietary settings and allergy restrictions but makes no legal warranties regarding the accuracy or completeness of dietary information. Always verify ingredient labels when managing severe allergies.",
     "mealPrefSaved": "Meal preferences saved.",
     "mealPrefError": "Error saving preferences.",
     "mealPrefs": {
@@ -502,7 +502,7 @@
       "reveal": {
         "warning": "This is the only time you will see this key. Save it now!",
         "copy": "Copy",
-        "copied": "Copied!",
+        "copied": "Copied",
         "dismiss": "Got it"
       }
     }
@@ -543,13 +543,13 @@
       }
     },
     "fomo": {
-      "text": "Join our early-access beta community. Be one of the few people who actually hit their goals this year — frictionlessly."
+      "text": "Early access — the beta is open now. The system is live, the data is real."
     },
     "steps": {
       "title": "Three steps, done",
       "step1": {
         "title": "Set your goal",
-        "desc": "Calories, protein, budget — you decide, we optimise."
+        "desc": "Calories, protein, budget — you decide, the solver optimises."
       },
       "step2": {
         "title": "Set your constraints",
@@ -561,8 +561,8 @@
       }
     },
     "finalCta": {
-      "title": "Ready?",
-      "subtitle": "Generate your first meal plan now — for free.",
+      "title": "Let's start.",
+      "subtitle": "Your first meal plan is free.",
       "button": "Generate Meal Plan",
       "buttonLoggedIn": "Go to my plan"
     }
@@ -594,7 +594,7 @@
     "new": "New",
     "send": "Submit",
     "sending": "Submitting…",
-    "sent": "Feedback submitted — thank you!",
+    "sent": "Feedback submitted.",
     "error": "Something went wrong. Please try again.",
     "statusUpdated": "Status updated.",
     "empty": "No feedback yet.",
@@ -675,6 +675,7 @@
   },
   "fridge": {
     "title": "My Fridge",
+    "startGrooming": "Review pantry",
     "subtitle_one": "{{count}} item",
     "subtitle_other": "{{count}} items",
     "subtitle": "{{count}} items",
@@ -700,7 +701,7 @@
       "useSoon": "Use soon",
       "expired": "Expired",
       "dateLabel": "Expiry date (optional)",
-      "defaultHint": "If left blank, we'll estimate based on category.",
+      "defaultHint": "If left blank, the system estimates from category.",
       "setDate": "Set expiry date"
     }
   },
@@ -708,8 +709,8 @@
     "dateRange": "{{start}} – {{end}}",
     "generating": "One moment — putting your week together.",
     "active": "Active plan",
-    "noActive": "No plan yet — shall we put your week together?",
-    "newPlan": "Plan my week",
+    "noActive": "No plan yet — when shall we start?",
+    "newPlan": "Build weekly plan",
     "regenerate": "New plan",
     "mealStatus": {
       "PLANNED": "Planned",
@@ -726,7 +727,7 @@
     "mealActions": "Actions"
   },
   "preferences": {
-    "title": "Plan my week",
+    "title": "Build weekly plan",
     "subtitle": "A few questions and I'll put it together.",
     "householdSize": "Household size",
     "calorieTarget": "Calorie level",
@@ -799,7 +800,7 @@
   },
   "grooming": {
     "title": "Fridge Check",
-    "emptyFridge": "Nothing in the fridge — we'll start fresh.",
+    "emptyFridge": "Fridge is empty — starting from scratch.",
     "skipCta": "Skip to planning",
     "planCta": "Plan my week",
     "keep": "Keep",

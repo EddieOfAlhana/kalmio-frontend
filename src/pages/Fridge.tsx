@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Refrigerator, Plus, Trash2, Search, Archive, Calendar } from 'lucide-react'
+import { Refrigerator, Plus, Trash2, Search, Archive, Calendar, ClipboardCheck } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -53,6 +54,7 @@ function sortByExpiry(items: FridgeItem[], today: Date): FridgeItem[] {
 
 export function Fridge() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   const today = useMemo(() => {
@@ -135,10 +137,16 @@ export function Fridge() {
         title={t('fridge.title')}
         subtitle={t('fridge.subtitle', { count: items.length })}
         actions={
-          <Button onClick={() => setIngredientDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-1.5" />
-            {t('fridge.addItem')}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={() => navigate('/app/grooming')}>
+              <ClipboardCheck className="h-4 w-4 mr-1.5" />
+              {t('fridge.startGrooming')}
+            </Button>
+            <Button onClick={() => setIngredientDialogOpen(true)}>
+              <Plus className="h-4 w-4 mr-1.5" />
+              {t('fridge.addItem')}
+            </Button>
+          </div>
         }
       />
 

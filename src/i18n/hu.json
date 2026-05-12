@@ -116,7 +116,7 @@
       "hideDetails": "Elrejt",
       "noChanges": "Minden a terv szerint halad.",
       "acceptError": "A javaslat lejárt — frissítve.",
-      "wasted": "😢 {{name}} sajnos nem menthető meg{{cost}} — el kell dobni."
+      "wasted": "{{name}} már nem menthető meg{{cost}} — el kell dobni."
     }
   },
   "mealPlan": {
@@ -393,7 +393,7 @@
     "dietarySave": "Étrendi preferenciák mentése",
     "dietarySaveSuccess": "Étrendi preferenciák elmentve.",
     "dietarySaveError": "Nem sikerült menteni az étrendi preferenciákat.",
-    "allergyDisclaimer": "Mindent megteszünk, hogy tiszteletben tartsuk étrendi beállításaidat és allergia-korlátozásaidat, azonban a Kalmio nem vállal jogi felelősséget az étrendi adatok pontosságáért vagy teljességéért. Súlyos allergia esetén mindig ellenőrizd az összetevők feliratatait.",
+    "allergyDisclaimer": "A Kalmio az étrendi beállításaidat és allergia-korlátozásaidat figyelembe veszi, de nem vállal jogi felelősséget az étrendi adatok pontosságáért vagy teljességéért. Súlyos allergia esetén mindig ellenőrizd az összetevők feliratait.",
     "mealPrefSaved": "Étkezési preferenciák mentve.",
     "mealPrefError": "Hiba a mentés során.",
     "mealPrefs": {
@@ -502,7 +502,7 @@
       "reveal": {
         "warning": "Ez az egyetlen alkalom, amikor láthatod ezt a kulcsot. Mentsd el most!",
         "copy": "Másolás",
-        "copied": "Másolva!",
+        "copied": "Másolva",
         "dismiss": "Értettem"
       }
     }
@@ -543,13 +543,13 @@
       }
     },
     "fomo": {
-      "text": "Csatlakozz a korai hozzáférésű béta közösségünkhöz. Legyél te is azon kevesek egyike, akik idén tényleg elérik a céljaikat – súrlódásmentesen."
+      "text": "Korai hozzáférés — a béta most nyílt meg. A rendszer már éles, az adatok valódiak."
     },
     "steps": {
       "title": "Három lépés, és kész",
       "step1": {
         "title": "Add meg a célod",
-        "desc": "Kalória, fehérje, büdzsé – te döntesz, mi optimalizálunk."
+        "desc": "Kalória, fehérje, büdzsé – te döntesz, a rendszer optimalizál."
       },
       "step2": {
         "title": "Állítsd be a kereted",
@@ -561,8 +561,8 @@
       }
     },
     "finalCta": {
-      "title": "Készen állsz?",
-      "subtitle": "Generáld le az első étrendedet most — ingyen.",
+      "title": "Kezdjük el.",
+      "subtitle": "Az első étrend generálása ingyenes.",
       "button": "Étrend generálása",
       "buttonLoggedIn": "Az étrendemhez"
     }
@@ -570,7 +570,7 @@
   "auth": {
     "heroQuote": "Egészséges étkezés.\nMatek, nem mágia.",
     "heroSub": "A céljaid köré épített, optimalizált étrendek.",
-    "headline": "Üdvözlünk!",
+    "headline": "Üdvözlünk.",
     "subheadline": "Lépj be vagy hozz létre fiókot — jelszó nélkül.",
     "continueWithPasskey": "Folytatás jelszókulccsal",
     "passkeyVerifying": "Azonosítás…",
@@ -643,8 +643,8 @@
     "new": "Új",
     "send": "Küldés",
     "sending": "Küldés…",
-    "sent": "Visszajelzés elküldve — köszönjük!",
-    "error": "Hiba történt. Kérjük, próbáld újra.",
+    "sent": "Visszajelzés elküldve.",
+    "error": "Hiba történt. Próbáld újra.",
     "statusUpdated": "Státusz frissítve.",
     "empty": "Még nincs visszajelzés.",
     "submitFirst": "Küldd el az első jelzésedet",
@@ -675,6 +675,7 @@
   },
   "fridge": {
     "title": "A hűtőm",
+    "startGrooming": "Hűtőellenőrzés",
     "subtitle_one": "{{count}} tétel",
     "subtitle_other": "{{count}} tétel",
     "subtitle": "{{count}} tétel",
@@ -700,7 +701,7 @@
       "useSoon": "Hamarosan lejár",
       "expired": "Lejárt",
       "dateLabel": "Lejárati dátum (opcionális)",
-      "defaultHint": "Ha nem adod meg, a kategória alapján számítjuk ki.",
+      "defaultHint": "Ha nem adod meg, a rendszer a kategória alapján számolja.",
       "setDate": "Lejárat megadása"
     }
   },
@@ -708,8 +709,8 @@
     "dateRange": "{{start}} – {{end}}",
     "generating": "Egy pillanat — összerakom a heteded.",
     "active": "Aktív terv",
-    "noActive": "Még nem terveztünk hetet — mikor kezdjük?",
-    "newPlan": "Tervezzük meg a heted",
+    "noActive": "Még nincs heti terv — mikor kezdjük?",
+    "newPlan": "Heti terv összeállítása",
     "regenerate": "Új terv",
     "mealStatus": {
       "PLANNED": "Tervezett",
@@ -726,7 +727,7 @@
     "mealActions": "Műveletek"
   },
   "preferences": {
-    "title": "Tervezzük meg a heted",
+    "title": "Heti terv összeállítása",
     "subtitle": "Pár kérdés, és összerakom.",
     "householdSize": "Háztartás mérete",
     "calorieTarget": "Kalória szint",
@@ -793,15 +794,15 @@
     "investorAccess": "Befektetői hozzáférési tokenek",
     "tokenLabel": "Token megnevezése (pl. A befektető)",
     "copyLink": "Link másolása",
-    "copied": "Másolva!",
+    "copied": "Másolva",
     "lastUsed": "Utoljára használva",
     "neverUsed": "Még nem használták"
   },
   "grooming": {
     "title": "Hűtőellenőrzés",
-    "emptyFridge": "Nincs semmi a hűtőben — kezdjük frissen.",
+    "emptyFridge": "A hűtő üres — frissen kezdünk.",
     "skipCta": "Tovább a tervezéshez",
-    "planCta": "Tervezzük a hetet",
+    "planCta": "Heti terv összeállítása",
     "keep": "Megtartom",
     "discard": "Eldobom",
     "adjustQty": "Mennyiség",
