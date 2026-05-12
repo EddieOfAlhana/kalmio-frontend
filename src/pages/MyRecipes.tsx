@@ -1,6 +1,6 @@
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import { Plus, Clock, SendHorizonal, Undo2 } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from '@/components/ui/toast'
 import { recipesService } from '@/services/recipes'
+import { ingredientsService } from '@/services/ingredients'
+import { RecipeFormDialog, toRequest } from '@/pages/Recipes'
 import { formatCurrency } from '@/lib/utils'
 import type { Recipe } from '@/types'
 
@@ -36,10 +38,30 @@ export function MyRecipes() {
   const { t, i18n } = useTranslation()
   const qc = useQueryClient()
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
+  const [editOpen, setEditOpen] = useState(false)
 
   const { data: recipes = [], isLoading } = useQuery({
     queryKey: ['my-recipes'],
     queryFn: recipesService.mine,
+  })
+
+  const { data: allIngredients = [] } = useQuery({
+    queryKey: ['ingredients'],
+    queryFn: ingredientsService.list,
+    staleTime: 30_000,
+  })
+  const ingredientMap = new Map(allIngredients.map(i => [i.id, i.translations?.[lang]?.name ?? i.name]))
+
+  const createMutation = useMutation({
+    mutationFn: recipesService.create,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['my-recipes'] })
+      setEditOpen(false)
+      toast({ title: t('myContent.recipes.submitSuccess'), variant: 'success' })
+    },
+    onError: () => {
+      toast({ title: t('myContent.recipes.submitError'), variant: 'destructive' })
+    },
   })
 
   const submitMutation = useMutation({
@@ -70,11 +92,9 @@ export function MyRecipes() {
         title={t('myContent.recipes.title')}
         subtitle={t('myContent.recipes.subtitle', { count: recipes.length })}
         actions={
-          <Button asChild>
-            <Link to="/app/recipes">
-              <Plus className="h-4 w-4" />
-              {t('myContent.recipes.addNew')}
-            </Link>
+          <Button onClick={() => setEditOpen(true)}>
+            <Plus className="h-4 w-4" />
+            {t('myContent.recipes.addNew')}
           </Button>
         }
       />
@@ -161,6 +181,15 @@ export function MyRecipes() {
           })}
         </div>
       )}
+
+      <RecipeFormDialog
+        open={editOpen}
+        ingredientMap={ingredientMap}
+        onOpenChange={open => { if (!open) setEditOpen(false) }}
+        onSubmit={values => createMutation.mutate(toRequest(values))}
+        isPending={createMutation.isPending}
+        error={createMutation.error?.message}
+      />
     </div>
   )
 }

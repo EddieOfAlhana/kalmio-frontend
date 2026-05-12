@@ -53,9 +53,9 @@ const schema = z.object({
     unit: z.enum(['G', 'ML', 'PIECE']),
   })).min(1, 'Add at least one ingredient'),
 })
-type FormValues = z.infer<typeof schema>
+export type FormValues = z.infer<typeof schema>
 
-function toRequest(v: FormValues) {
+export function toRequest(v: FormValues) {
   return {
     name: v.name,
     steps: v.steps.split('\n').map(s => s.trim()).filter(Boolean),
@@ -653,7 +653,7 @@ function RecipeTranslationDialog({
 
 // ── Recipe form dialog ─────────────────────────────────────────────────────
 
-function RecipeFormDialog({
+export function RecipeFormDialog({
   open, recipe, ingredientMap, onOpenChange, onSubmit, isPending, error,
 }: {
   open: boolean

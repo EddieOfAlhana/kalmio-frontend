@@ -1,6 +1,6 @@
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import { Plus, SendHorizonal, Undo2 } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from '@/components/ui/toast'
 import { ingredientsService } from '@/services/ingredients'
+import { IngredientFormDialog, toRequest } from '@/pages/Ingredients'
 import type { Ingredient } from '@/types'
 
 const CATEGORY_COLOR: Record<string, 'green' | 'orange' | 'gray' | 'black'> = {
@@ -28,10 +29,23 @@ export function MyIngredients() {
   const { t, i18n } = useTranslation()
   const qc = useQueryClient()
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
+  const [editOpen, setEditOpen] = useState(false)
 
   const { data: ingredients = [], isLoading } = useQuery({
     queryKey: ['my-ingredients'],
     queryFn: ingredientsService.mine,
+  })
+
+  const createMutation = useMutation({
+    mutationFn: ingredientsService.create,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['my-ingredients'] })
+      setEditOpen(false)
+      toast({ title: t('myContent.ingredients.submitSuccess'), variant: 'success' })
+    },
+    onError: () => {
+      toast({ title: t('myContent.ingredients.submitError'), variant: 'destructive' })
+    },
   })
 
   const submitMutation = useMutation({
@@ -62,11 +76,9 @@ export function MyIngredients() {
         title={t('myContent.ingredients.title')}
         subtitle={t('myContent.ingredients.subtitle', { count: ingredients.length })}
         actions={
-          <Button asChild>
-            <Link to="/app/ingredients">
-              <Plus className="h-4 w-4" />
-              {t('myContent.ingredients.addNew')}
-            </Link>
+          <Button onClick={() => setEditOpen(true)}>
+            <Plus className="h-4 w-4" />
+            {t('myContent.ingredients.addNew')}
           </Button>
         }
       />
@@ -141,6 +153,13 @@ export function MyIngredients() {
           })}
         </div>
       )}
+
+      <IngredientFormDialog
+        open={editOpen}
+        onOpenChange={open => { if (!open) setEditOpen(false) }}
+        onSubmit={values => createMutation.mutate(toRequest(values))}
+        isPending={createMutation.isPending}
+      />
     </div>
   )
 }

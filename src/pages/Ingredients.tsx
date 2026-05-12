@@ -55,9 +55,9 @@ const schema = z.object({
   lowFodmap: z.boolean(),
   paleo: z.boolean(),
 })
-type FormValues = z.infer<typeof schema>
+export type FormValues = z.infer<typeof schema>
 
-function toRequest(v: FormValues) {
+export function toRequest(v: FormValues) {
   return {
     name: v.name,
     aliases: v.aliases.split(',').map(s => s.trim()).filter(Boolean),
@@ -420,7 +420,7 @@ function IngredientTranslationDialog({
 
 // ── Form dialog ────────────────────────────────────────────────────────────
 
-function IngredientFormDialog({
+export function IngredientFormDialog({
   open, ingredient, onOpenChange, onSubmit, isPending,
 }: {
   open: boolean
