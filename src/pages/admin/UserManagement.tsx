@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { ShieldCheck, ShieldOff } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { ShieldCheck, ShieldOff, UserCheck } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import { useAuthStore } from '@/store/auth'
 export function UserManagement() {
   const { t } = useTranslation()
   const qc = useQueryClient()
+  const navigate = useNavigate()
   const currentUserId = useAuthStore((s) => s.user?.id)
 
   const { data: users = [], isLoading } = useQuery({
@@ -23,6 +25,15 @@ export function UserManagement() {
     mutationFn: ({ id, role }: { id: string; role: 'USER' | 'ADMIN' }) =>
       adminService.updateRole(id, role),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-users'] }),
+  })
+
+  const impersonateMutation = useMutation({
+    mutationFn: (userId: string) => adminService.impersonate(userId),
+    onSuccess: (data) => {
+      useAuthStore.getState().startImpersonation(data.accessToken, data.email)
+      qc.clear()
+      navigate('/app')
+    },
   })
 
   return (
@@ -48,23 +59,33 @@ export function UserManagement() {
                     {user.role}
                   </Badge>
                   {user.id !== currentUserId && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      disabled={roleMutation.isPending}
-                      onClick={() =>
-                        roleMutation.mutate({
-                          id: user.id,
-                          role: user.role === 'ADMIN' ? 'USER' : 'ADMIN',
-                        })
-                      }
-                    >
-                      {user.role === 'ADMIN' ? (
-                        <><ShieldOff className="h-3.5 w-3.5" /> {t('admin.users.demote')}</>
-                      ) : (
-                        <><ShieldCheck className="h-3.5 w-3.5" /> {t('admin.users.promote')}</>
-                      )}
-                    </Button>
+                    <>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled={roleMutation.isPending}
+                        onClick={() =>
+                          roleMutation.mutate({
+                            id: user.id,
+                            role: user.role === 'ADMIN' ? 'USER' : 'ADMIN',
+                          })
+                        }
+                      >
+                        {user.role === 'ADMIN' ? (
+                          <><ShieldOff className="h-3.5 w-3.5" /> {t('admin.users.demote')}</>
+                        ) : (
+                          <><ShieldCheck className="h-3.5 w-3.5" /> {t('admin.users.promote')}</>
+                        )}
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled={impersonateMutation.isPending}
+                        onClick={() => impersonateMutation.mutate(user.id)}
+                      >
+                        <UserCheck className="h-3.5 w-3.5" /> {t('admin.users.impersonate')}
+                      </Button>
+                    </>
                   )}
                 </div>
               </CardContent>

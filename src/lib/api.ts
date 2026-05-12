@@ -10,6 +10,13 @@ export const api = axios.create({
 })
 
 api.interceptors.request.use(async (config) => {
+  // Impersonation token takes priority over all other auth paths
+  const impersonationToken = useAuthStore.getState().impersonationToken
+  if (impersonationToken) {
+    config.headers.Authorization = `Bearer ${impersonationToken}`
+    return config
+  }
+
   // Try Supabase session first (magic link / OAuth flows)
   const { data: { session } } = await supabase.auth.getSession()
   const token = session?.access_token

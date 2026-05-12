@@ -514,13 +514,18 @@
       }
     }
   },
+  "impersonation": {
+    "banner": "Impersonating: {{email}}",
+    "exit": "Exit"
+  },
   "admin": {
     "users": {
       "title": "User Management",
       "subtitle_one": "{{count}} registered user",
       "subtitle_other": "{{count}} registered users",
       "promote": "Make admin",
-      "demote": "Remove admin"
+      "demote": "Remove admin",
+      "impersonate": "Impersonate"
     },
     "contentReview": {
       "title": "Content Review",

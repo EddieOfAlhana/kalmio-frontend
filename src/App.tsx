@@ -41,6 +41,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   const setSession = useAuthStore((s) => s.setSession)
   const setAppRole = useAuthStore((s) => s.setAppRole)
   const session = useAuthStore((s) => s.session)
+  const impersonationToken = useAuthStore((s) => s.impersonationToken)
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -67,7 +68,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setAppRole(null)
     }
-  }, [session, setAppRole])
+  }, [session, impersonationToken, setAppRole])
 
   return <>{children}</>
 }

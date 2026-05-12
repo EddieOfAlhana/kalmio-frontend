@@ -514,13 +514,18 @@
       }
     }
   },
+  "impersonation": {
+    "banner": "Megszemélyesítés: {{email}}",
+    "exit": "Kilépés"
+  },
   "admin": {
     "users": {
       "title": "Felhasználók kezelése",
       "subtitle_one": "{{count}} regisztrált felhasználó",
       "subtitle_other": "{{count}} regisztrált felhasználó",
       "promote": "Admin kinevezése",
-      "demote": "Admin visszavonása"
+      "demote": "Admin visszavonása",
+      "impersonate": "Megszemélyesítés"
     },
     "contentReview": {
       "title": "Tartalom jóváhagyás",
