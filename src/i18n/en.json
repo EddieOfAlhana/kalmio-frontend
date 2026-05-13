@@ -917,6 +917,17 @@
       "replanAccepted": "+5 points"
     }
   },
+  "timeline": {
+    "todayOnly": "Today only",
+    "setDefault": "Set default time",
+    "setAsWakeTime": "Set as my wake time",
+    "setAsSleepTime": "Set as my sleep time",
+    "wake": "Wake",
+    "sleep": "Sleep",
+    "shopping": "Shopping",
+    "grooming": "Pantry check",
+    "mealPrep": "Meal prep"
+  },
   "footer": {
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",

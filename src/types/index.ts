@@ -420,6 +420,7 @@ export interface TodaysMealCard {
   mealType: string
   macros: { kcal: number; protein: number; fat: number; carbs: number } | null
   status: PlannedMealStatusExtended
+  scheduledTime?: string | null
 }
 
 export interface OffPlanMealCard {
@@ -439,6 +440,7 @@ export interface PrepTaskCard {
   scheduledDate: string
   durationMin: number | null
   status?: string
+  scheduledTime?: string | null
 }
 
 export interface PlanGlanceDto {
@@ -565,4 +567,21 @@ export interface ReplanDiff {
   costDelta: number | null      // negative = savings
   narrative: string[]
   wastedMeals: WastedMeal[]
+}
+
+// ── Calendar / Timeline ───────────────────────────────────────────────────
+
+export interface CalendarDayDto {
+  date: string
+  hasMeals: boolean
+  hasPrepTasks: boolean
+  hasShoppingDay: boolean
+  needsGrooming: boolean
+  isPlanRenewalReminder: boolean
+}
+
+export interface TimePreferencesDto {
+  wakeTime: string        // "HH:mm"
+  sleepTime: string       // "HH:mm"
+  mealTimePrefs: Record<string, string> | null
 }

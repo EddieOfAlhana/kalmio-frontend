@@ -1,5 +1,5 @@
 import { api } from '@/lib/api'
-import type { DietaryConstraints } from '@/types'
+import type { DietaryConstraints, TimePreferencesDto } from '@/types'
 
 export interface UserMealPreferences {
   days?: number
@@ -57,4 +57,8 @@ export const usersService = {
       headers: { 'Content-Type': 'multipart/form-data' },
     }).then(r => r.data)
   },
+  getTimePreferences: (): Promise<TimePreferencesDto> =>
+    api.get<TimePreferencesDto>('/api/users/me/time-preferences').then(r => r.data),
+  patchTimePreferences: (req: Partial<TimePreferencesDto>): Promise<TimePreferencesDto> =>
+    api.patch<TimePreferencesDto>('/api/users/me/time-preferences', req).then(r => r.data),
 }

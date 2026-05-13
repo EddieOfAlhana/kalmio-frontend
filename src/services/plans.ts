@@ -38,4 +38,7 @@ export const planService = {
 
   getShoppingList: (planId: string): Promise<ShoppingList> =>
     api.get<ShoppingList>(`/api/plans/${planId}/shopping-list`).then(r => r.data),
+
+  patchMealScheduledTime: (planId: string, mealId: string, scheduledTime: string | null): Promise<void> =>
+    api.patch(`/api/plans/${planId}/meals/${mealId}/scheduled-time`, { scheduledTime }).then(() => undefined),
 }

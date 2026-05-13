@@ -917,6 +917,17 @@
       "replanAccepted": "+5 pont"
     }
   },
+  "timeline": {
+    "todayOnly": "Csak ma",
+    "setDefault": "Alapértelmezett idő",
+    "setAsWakeTime": "Ez az ébredési időm",
+    "setAsSleepTime": "Ez az alvási időm",
+    "wake": "Ébredés",
+    "sleep": "Lefekvés",
+    "shopping": "Bevásárlás",
+    "grooming": "Hűtőellenőrzés",
+    "mealPrep": "Előkészítés"
+  },
   "footer": {
     "privacy": "Adatkezelési tájékoztató",
     "terms": "Felhasználási feltételek",
