@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Card, CardContent } from '@/components/ui/card'
 import { toast } from '@/components/ui/toast'
 import { planService } from '@/services/plans'
+import { capture } from '@/lib/analytics'
 
 interface Props {
   planId: string
@@ -30,6 +31,7 @@ export function ReplanDiffCard({ planId, onAccept, onDecline }: Props) {
       queryClient.invalidateQueries({ queryKey: ['plan', 'active'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard', today] })
       queryClient.invalidateQueries({ queryKey: ['points'] })
+      capture('replan_accepted', {})
       onAccept()
     },
     onError: () => {

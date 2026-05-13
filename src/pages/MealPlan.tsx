@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import axios from 'axios'
+import { capture } from '@/lib/analytics'
 import { Zap, Clock, ChevronDown, ChevronUp, ShoppingCart, CheckCircle, Pencil, Check, Minus, Plus, RefreshCw, Eye, MoreHorizontal } from 'lucide-react'
 import { Knob } from '@/components/ui/knob'
 import { Header } from '@/components/layout/Header'
@@ -25,7 +26,7 @@ import { usersService, type DietaryPreferences } from '@/services/users'
 import { recipesService } from '@/services/recipes'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { PlanPreferencesForm } from '@/components/PlanPreferencesForm'
-import { formatCurrency, formatMacro } from '@/lib/utils'
+import { formatCurrency, formatMacro, recipePhotoUrl } from '@/lib/utils'
 import type { GeneratedMeal, GenerateMealPlanRequest, MealType, Macros, ConstraintWeights, Recipe, Plan, PlannedMeal, PlannedMealStatus } from '@/types'
 
 const MEAL_ORDER: MealType[] = ['BREAKFAST', 'MORNING_SNACK', 'LUNCH', 'AFTERNOON_SNACK', 'DINNER', 'SNACK']
@@ -297,6 +298,7 @@ export function MealPlan() {
       forceRef.current = false
       setPlan(result)
       setExpandedDays(new Set([0]))
+      capture('plan_generated', { days: result.days, meal_count: result.meals?.length ?? 0, flow: 'legacy' })
       usersService.updateSettings({
         mealPlanPreferences: {
           days: body.days,
@@ -1223,7 +1225,7 @@ function MealDetailDialog({ meal, open, onClose }: { meal: GeneratedMeal; open: 
 
   const displayName = recipe?.translations?.[lang]?.name ?? recipe?.name ?? meal.recipe.name
   const steps = recipe?.translations?.[lang]?.steps ?? recipe?.steps ?? []
-  const photoUrl = `/assets/recipe-photos/${meal.recipe.id}.png`
+  const photoUrl = recipePhotoUrl(recipe ?? meal.recipe)
 
   return (
     <Dialog open={open} onOpenChange={o => !o && onClose()}>

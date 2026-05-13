@@ -268,7 +268,19 @@
       "save": "Save Changes"
     },
     "dietaryFilter": "Dietary filters",
-    "clearFilters": "Clear filters"
+    "clearFilters": "Clear filters",
+    "image": {
+      "sectionLabel": "Recipe image",
+      "uploadButton": "Upload image",
+      "replaceButton": "Replace image",
+      "uploading": "Uploading…",
+      "dragHint": "Drop an image here, or click to browse",
+      "saveFirst": "Save the recipe first.",
+      "uploadSuccess": "Image uploaded.",
+      "uploadError": "Image upload failed.",
+      "errorNotImage": "Only image files are accepted (JPEG, PNG, WebP, GIF).",
+      "errorTooLarge": "File is too large. Maximum 5 MB allowed."
+    }
   },
   "ingredients": {
     "title": "Ingredients",
@@ -561,6 +573,9 @@
       "withdraw": "Withdraw",
       "submitSuccess": "Recipe submitted for review.",
       "submitError": "Failed to submit recipe.",
+      "edit": "Edit",
+      "editSuccess": "Recipe saved.",
+      "editError": "Failed to save recipe.",
       "withdrawSuccess": "Submission withdrawn.",
       "withdrawError": "Failed to withdraw submission.",
       "empty": {
@@ -901,6 +916,17 @@
       "prepTaskDone": "+5 points",
       "replanAccepted": "+5 points"
     }
+  },
+  "footer": {
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookieSettings": "Cookie settings"
+  },
+  "consent": {
+    "body": "This site uses low-calorie cookies, made with lots of love from my mum's recipe.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "learnMore": "Privacy policy"
   },
   "blog": {
     "nav": "Blog",

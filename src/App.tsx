@@ -25,6 +25,8 @@ import { MyIngredients } from '@/pages/MyIngredients'
 import { InvestorVault } from '@/pages/InvestorVault'
 import { BlogIndex } from '@/pages/BlogIndex'
 import { BlogPost } from '@/pages/BlogPost'
+import { Privacy } from '@/pages/Privacy'
+import { Terms } from '@/pages/Terms'
 import { OAuthConsent } from '@/pages/OAuthConsent'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store/auth'
@@ -32,6 +34,10 @@ import { restorePasskeySession, clearPasskeyToken } from '@/lib/passkeySession'
 import { usersService } from '@/services/users'
 import { Toaster } from '@/components/ui/toast'
 import { OfflineBanner } from '@/components/OfflineBanner'
+import { CookieConsent } from '@/components/CookieConsent'
+import { initAnalytics } from '@/lib/analytics'
+
+initAnalytics()
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
@@ -79,11 +85,14 @@ export default function App() {
       <Toaster />
       <OfflineBanner />
       <BrowserRouter>
+        <CookieConsent />
         <AuthProvider>
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/app" element={<AppShell />}>
                 <Route index element={<Dashboard />} />

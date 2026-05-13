@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { MobileNav } from './MobileNav'
+import { LegalFooter } from './LegalFooter'
 import { ImpersonationBanner } from '@/components/ImpersonationBanner'
 
 export function AppShell() {
@@ -12,6 +13,7 @@ export function AppShell() {
         <div className="max-w-5xl mx-auto px-4 py-6 md:px-8 md:py-8">
           <Outlet />
         </div>
+        <LegalFooter variant="light" />
       </main>
       <MobileNav />
     </div>

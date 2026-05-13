@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react' // useRef: StrictMo
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { capture } from '@/lib/analytics'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -201,6 +202,9 @@ export function Grooming() {
       groomingService.complete(sid, dec),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['points'] })
+      const kept = Object.values(decisions).filter(d => d.action === 'KEEP' || d.action === 'ADJUST_QUANTITY').length
+      const discarded = Object.values(decisions).filter(d => d.action === 'DISCARD').length
+      capture('grooming_completed', { items_kept: kept, items_discarded: discarded })
       navigate('/app/meal-plans')
     },
   })

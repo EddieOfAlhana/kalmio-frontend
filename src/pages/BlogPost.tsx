@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowRight, ArrowLeft, Clock } from 'lucide-react'
 import { marked } from 'marked'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { LegalFooter } from '@/components/layout/LegalFooter'
 import { useAuthStore } from '@/store/auth'
 import { getPost, type BlogCategory } from '@/data/blog'
 
@@ -125,9 +126,7 @@ export function BlogPost() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-[#1A1A1A] border-t border-white/10 py-8 px-6 text-center">
-        <p className="text-white/30 text-sm">© 2025 Kalmio · {t('common.version')}</p>
-      </footer>
+      <LegalFooter variant="dark" />
     </div>
   )
 }

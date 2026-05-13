@@ -268,7 +268,19 @@
       "save": "Mentés"
     },
     "dietaryFilter": "Étrendi szűrők",
-    "clearFilters": "Szűrők törlése"
+    "clearFilters": "Szűrők törlése",
+    "image": {
+      "sectionLabel": "Recept képe",
+      "uploadButton": "Kép feltöltése",
+      "replaceButton": "Kép cseréje",
+      "uploading": "Feltöltés…",
+      "dragHint": "Húzd ide a képet, vagy kattints",
+      "saveFirst": "Először mentsd el a receptet.",
+      "uploadSuccess": "Kép feltöltve.",
+      "uploadError": "A kép feltöltése nem sikerült.",
+      "errorNotImage": "Csak képfájl tölthető fel (JPEG, PNG, WebP, GIF).",
+      "errorTooLarge": "A fájl túl nagy. Maximum 5 MB megengedett."
+    }
   },
   "ingredients": {
     "title": "Hozzávalók",
@@ -561,6 +573,9 @@
       "withdraw": "Visszavonás",
       "submitSuccess": "Recept beküldve jóváhagyásra.",
       "submitError": "Nem sikerült beküldeni a receptet.",
+      "edit": "Szerkesztés",
+      "editSuccess": "A recept mentve.",
+      "editError": "Nem sikerült menteni a receptet.",
       "withdrawSuccess": "Beküldés visszavonva.",
       "withdrawError": "Nem sikerült visszavonni a beküldést.",
       "empty": {
@@ -901,6 +916,17 @@
       "prepTaskDone": "+5 pont",
       "replanAccepted": "+5 pont"
     }
+  },
+  "footer": {
+    "privacy": "Adatkezelési tájékoztató",
+    "terms": "Felhasználási feltételek",
+    "cookieSettings": "Sütibeállítások"
+  },
+  "consent": {
+    "body": "Ez az oldal alacsony kalóriás sütiket használ, rengeteg szeretettel a mamám receptje alapján.",
+    "accept": "Elfogadom",
+    "decline": "Elutasítom",
+    "learnMore": "Adatkezelési tájékoztató"
   },
   "blog": {
     "nav": "Blog",

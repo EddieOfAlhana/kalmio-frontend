@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { authenticateWithPasskeyDiscoverable, authenticateWithPasskey } from '@/services/passkey'
 import { useAuthStore } from '@/store/auth'
+import { capture, identify } from '@/lib/analytics'
 
 const emailSchema = z.object({ email: z.string().email() })
 type EmailForm = z.infer<typeof emailSchema>
@@ -38,7 +39,10 @@ export function Auth() {
 
   const storeSessionFromToken = (accessToken: string) => {
     persistPasskeyToken(accessToken)
-    setSession(buildSessionFromAccessToken(accessToken))
+    const session = buildSessionFromAccessToken(accessToken)
+    setSession(session)
+    identify(session.user.id)
+    capture('signup_complete', { method: 'passkey' })
   }
 
   // ── Passkey flows ─────────────────────────────────────────────────────────

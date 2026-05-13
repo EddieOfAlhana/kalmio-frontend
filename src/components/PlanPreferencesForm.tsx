@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { UserPlus } from 'lucide-react'
 import axios from 'axios'
+import { capture } from '@/lib/analytics'
 import { Spinner } from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -91,6 +92,7 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['plan', 'active'] })
       void queryClient.invalidateQueries({ queryKey: ['points'] })
+      capture('plan_generated', { flow: 'new' })
       onSuccess?.()
     },
   })
