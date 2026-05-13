@@ -21,6 +21,7 @@ export function savedSlotToMeal(s: SavedMealSlot): GeneratedMeal {
       machineTranslated: false,
       visibility: 'PUBLIC',
       createdByUsername: null,
+      imageUrl: null,
     },
     servingMultiplier: Number(s.servingMultiplier),
     estimatedCost: s.estimatedCost,

@@ -118,6 +118,7 @@ export interface Recipe {
   machineTranslated: boolean
   visibility: ContentVisibility
   createdByUsername: string | null
+  imageUrl: string | null
 }
 
 export interface CreateRecipeRequest {

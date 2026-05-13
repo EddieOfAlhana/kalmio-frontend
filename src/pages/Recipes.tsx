@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle, SlidersHorizontal } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle, SlidersHorizontal, Upload } from 'lucide-react'
 import { useForm, useFieldArray, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -15,13 +15,17 @@ import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { toast } from '@/components/ui/toast'
 import { IngredientSearchDialog } from '@/components/IngredientSearchDialog'
 import { recipesService } from '@/services/recipes'
 import { ingredientsService } from '@/services/ingredients'
 import { usersService } from '@/services/users'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, recipePhotoUrl } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
 import type { Recipe, RecipeTag, Unit, RecipeTranslations, DietaryRestrictionKey } from '@/types'
+
+const IMAGE_ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+const IMAGE_MAX_SIZE = 5 * 1024 * 1024 // 5 MB
 
 const DIETARY_GROUPS: { key: string; items: DietaryRestrictionKey[] }[] = [
   { key: 'lifestyle', items: ['vegetarian', 'vegan', 'pescatarian'] },
@@ -249,7 +253,7 @@ export function Recipes() {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map(r => {
             const displayName = r.translations?.[lang]?.name ?? r.name
-            const photoUrl = `/assets/recipe-photos/${r.id}.png`
+            const photoUrl = recipePhotoUrl(r)
             return (
               <Card
                 key={r.id}
@@ -410,7 +414,7 @@ function RecipeDetailDialog({
 
   const displayName = recipe.translations?.[lang]?.name ?? recipe.name
   const steps = recipe.translations?.[lang]?.steps ?? recipe.steps ?? []
-  const photoUrl = `/assets/recipe-photos/${recipe.id}.png`
+  const photoUrl = recipePhotoUrl(recipe)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -665,7 +669,62 @@ export function RecipeFormDialog({
   error?: string
 }) {
   const { t } = useTranslation()
+  const qc = useQueryClient()
   const [ingSearchOpen, setIngSearchOpen] = useState(false)
+
+  // ── Image upload state ────────────────────────────────────────────────────
+  const imageInputRef = useRef<HTMLInputElement>(null)
+  const [imageUploading, setImageUploading] = useState(false)
+  const [imageDragOver, setImageDragOver] = useState(false)
+  // local preview URL so the dialog reflects the upload immediately
+  const [localImageUrl, setLocalImageUrl] = useState<string | null>(null)
+
+  // Reset local preview when a different recipe is opened
+  useEffect(() => {
+    setLocalImageUrl(null)
+  }, [recipe?.id])
+
+  const currentPhotoUrl = localImageUrl ?? (recipe ? recipePhotoUrl(recipe) : null)
+
+  async function handleImageFile(file: File) {
+    if (!IMAGE_ACCEPTED.includes(file.type)) {
+      toast({ title: t('recipes.image.errorNotImage'), variant: 'destructive' })
+      return
+    }
+    if (file.size > IMAGE_MAX_SIZE) {
+      toast({ title: t('recipes.image.errorTooLarge'), variant: 'destructive' })
+      return
+    }
+    if (!recipe) return
+    setImageUploading(true)
+    try {
+      const updated = await recipesService.uploadImage(recipe.id, file)
+      // Update all relevant query caches
+      qc.setQueryData<Recipe[]>(['recipes'], prev =>
+        prev?.map(r => r.id === updated.id ? updated : r) ?? prev
+      )
+      qc.setQueryData<Recipe>(['recipe', recipe.id], updated)
+      setLocalImageUrl(updated.imageUrl)
+      toast({ title: t('recipes.image.uploadSuccess'), variant: 'success' })
+    } catch {
+      toast({ title: t('recipes.image.uploadError'), variant: 'destructive' })
+    } finally {
+      setImageUploading(false)
+    }
+  }
+
+  function onImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (file) handleImageFile(file)
+    e.target.value = ''
+  }
+
+  function onImageDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setImageDragOver(false)
+    const file = e.dataTransfer.files[0]
+    if (file) handleImageFile(file)
+  }
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema) as Resolver<FormValues>,
@@ -774,6 +833,66 @@ export function RecipeFormDialog({
                   </div>
                 ))}
               </div>
+            )}
+          </div>
+
+          {/* Image upload */}
+          <div>
+            <Label className="mb-2 block">{t('recipes.image.sectionLabel')}</Label>
+            {recipe ? (
+              <div className="space-y-2">
+                {/* Current image preview */}
+                {currentPhotoUrl && (
+                  <div className="w-full h-32 rounded-[12px] overflow-hidden bg-[#F9F7F2]">
+                    <img
+                      src={currentPhotoUrl}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                    />
+                  </div>
+                )}
+                {/* Drop zone / upload button */}
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept={IMAGE_ACCEPTED.join(',')}
+                  className="sr-only"
+                  aria-label={t('recipes.image.uploadButton')}
+                  onChange={onImageChange}
+                />
+                <button
+                  type="button"
+                  disabled={imageUploading}
+                  onClick={() => imageInputRef.current?.click()}
+                  onDragOver={e => { e.preventDefault(); setImageDragOver(true) }}
+                  onDragLeave={() => setImageDragOver(false)}
+                  onDrop={onImageDrop}
+                  className={`w-full flex items-center justify-center gap-2 border border-dashed rounded-[12px] py-3 text-sm transition-colors ${
+                    imageDragOver
+                      ? 'border-[#4F7942] bg-green-50 text-[#4F7942]'
+                      : 'border-gray-200 text-gray-500 hover:border-[#4F7942] hover:text-[#4F7942]'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {imageUploading
+                    ? <Spinner className="h-4 w-4" />
+                    : <Upload className="h-4 w-4" />
+                  }
+                  <span>
+                    {imageUploading
+                      ? t('recipes.image.uploading')
+                      : recipe.imageUrl || localImageUrl
+                        ? t('recipes.image.replaceButton')
+                        : t('recipes.image.uploadButton')
+                    }
+                  </span>
+                </button>
+                <p className="text-[11px] text-gray-400">{t('recipes.image.dragHint')}</p>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 py-3 px-3 bg-[#F9F7F2] rounded-[12px]">
+                {t('recipes.image.saveFirst')}
+              </p>
             )}
           </div>
 

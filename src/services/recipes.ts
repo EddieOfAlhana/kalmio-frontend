@@ -12,4 +12,11 @@ export const recipesService = {
   updateTranslation: (id: string, body: RecipeTranslations) => api.put<Recipe>(`/api/recipes/${id}/translation`, body).then(r => r.data),
   submitForReview: (id: string) => api.post<Recipe>(`/api/recipes/${id}/submit-for-review`).then(r => r.data),
   withdrawFromReview: (id: string) => api.post<Recipe>(`/api/recipes/${id}/withdraw-review`).then(r => r.data),
+  uploadImage: (recipeId: string, file: File): Promise<Recipe> => {
+    const form = new FormData()
+    form.append('file', file)
+    return api.post<Recipe>(`/api/recipes/${recipeId}/image`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data)
+  },
 }

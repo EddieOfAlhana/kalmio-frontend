@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Clock, SendHorizonal, Undo2 } from 'lucide-react'
+import { Plus, Clock, Pencil, SendHorizonal, Undo2 } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -39,6 +39,7 @@ export function MyRecipes() {
   const qc = useQueryClient()
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [editOpen, setEditOpen] = useState(false)
+  const [editTarget, setEditTarget] = useState<Recipe | null>(null)
 
   const { data: recipes = [], isLoading } = useQuery({
     queryKey: ['my-recipes'],
@@ -83,6 +84,19 @@ export function MyRecipes() {
     },
     onError: () => {
       toast({ title: t('myContent.recipes.withdrawError'), variant: 'destructive' })
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, body }: { id: string; body: ReturnType<typeof toRequest> }) =>
+      recipesService.update(id, body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['my-recipes'] })
+      setEditTarget(null)
+      toast({ title: t('myContent.recipes.editSuccess'), variant: 'success' })
+    },
+    onError: () => {
+      toast({ title: t('myContent.recipes.editError'), variant: 'destructive' })
     },
   })
 
@@ -146,6 +160,14 @@ export function MyRecipes() {
                     </div>
 
                     <div className="shrink-0 flex flex-col items-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => setEditTarget(r)}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                        {t('myContent.recipes.edit')}
+                      </Button>
                       {r.visibility === 'PRIVATE' && (
                         <Button
                           size="sm"
@@ -189,6 +211,18 @@ export function MyRecipes() {
         onSubmit={values => createMutation.mutate(toRequest(values))}
         isPending={createMutation.isPending}
         error={createMutation.error?.message}
+      />
+
+      <RecipeFormDialog
+        open={editTarget !== null}
+        recipe={editTarget ?? undefined}
+        ingredientMap={ingredientMap}
+        onOpenChange={open => { if (!open) setEditTarget(null) }}
+        onSubmit={values => {
+          if (editTarget) updateMutation.mutate({ id: editTarget.id, body: toRequest(values) })
+        }}
+        isPending={updateMutation.isPending}
+        error={updateMutation.error?.message}
       />
     </div>
   )
