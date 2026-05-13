@@ -303,10 +303,10 @@ export function Privacy() {
   const isHu = i18n.language?.startsWith('hu') ?? true
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F9F7F2]">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-[#1A1A1A]/8">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-10 bg-[#F9F7F2]/90 backdrop-blur border-b border-[#1A1A1A]/8">
+        <div className="max-w-3xl mx-auto px-6 sm:px-8 py-4 flex items-center justify-between">
           <Link
             to="/"
             className="font-bold text-[#1A1A1A] text-lg tracking-tight hover:opacity-70 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28] focus-visible:ring-offset-2 rounded"
@@ -318,7 +318,7 @@ export function Privacy() {
       </header>
 
       {/* Content */}
-      <main className="max-w-3xl mx-auto px-4 py-10 pb-16">
+      <main className="max-w-3xl mx-auto px-6 sm:px-8 py-10 pb-16">
         {isHu ? <PrivacyHu /> : <PrivacyEn />}
       </main>
     </div>

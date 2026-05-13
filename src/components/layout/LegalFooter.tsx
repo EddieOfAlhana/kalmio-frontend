@@ -16,7 +16,7 @@ export function LegalFooter({ variant = 'light' }: Props) {
 
   if (variant === 'dark') {
     return (
-      <footer className="border-t border-white/10 py-8 px-6 text-center">
+      <footer className="bg-[#1A1A1A] border-t border-white/10 py-8 px-6 text-center">
         <p className="text-white/30 text-sm">
           {'© 2026 Kalmio · '}
           <Link
