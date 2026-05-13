@@ -1,5 +1,9 @@
 lockfileVersion: '9.0'
 
+onlyBuiltDependencies:
+  - core-js
+  - protobufjs
+
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
