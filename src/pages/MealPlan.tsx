@@ -27,6 +27,7 @@ import { recipesService } from '@/services/recipes'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { PlanPreferencesForm } from '@/components/PlanPreferencesForm'
 import { formatCurrency, formatMacro, recipePhotoUrl } from '@/lib/utils'
+import { getRecipeName, getRecipeSteps } from '@/lib/i18nRecipe'
 import type { GeneratedMeal, GenerateMealPlanRequest, MealType, Macros, ConstraintWeights, Recipe, Plan, PlannedMeal, PlannedMealStatus, PlanJobProgress } from '@/types'
 
 const MEAL_ORDER: MealType[] = ['BREAKFAST', 'MORNING_SNACK', 'LUNCH', 'AFTERNOON_SNACK', 'DINNER', 'SNACK']
@@ -926,12 +927,14 @@ function PlannedMealCard({
   const { data: fullRecipe } = useQuery({
     queryKey: ['recipe', meal.recipeId],
     queryFn: () => recipesService.get(meal.recipeId),
-    enabled: detailOpen,
+    // Always enabled so the card title is localised immediately, not only on
+    // modal open.  staleTime keeps this cheap — the same cache entry is reused
+    // when the detail dialog opens.
     staleTime: 5 * 60 * 1000,
   })
 
-  const steps = fullRecipe?.translations?.[lang]?.steps ?? fullRecipe?.steps ?? []
-  const displayName = fullRecipe?.translations?.[lang]?.name ?? meal.recipeName
+  const steps = getRecipeSteps(fullRecipe, lang)
+  const displayName = getRecipeName(fullRecipe, lang) || meal.recipeName
 
   return (
     <div className="bg-[#F9F7F2] rounded-[12px] overflow-hidden">
@@ -951,7 +954,7 @@ function PlannedMealCard({
               </Badge>
             )}
           </div>
-          <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{meal.recipeName}</p>
+          <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{displayName}</p>
           {meal.macros && (
             <div className="flex gap-x-3 text-xs text-gray-500 mt-0.5 flex-wrap">
               <span>{meal.macros.kcal.toFixed(0)} kcal</span>
@@ -1044,7 +1047,7 @@ function PlannedMealCard({
 
           {/* Recipe swap */}
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500 truncate flex-1 mr-2">{meal.recipeName}</span>
+            <span className="text-xs text-gray-500 truncate flex-1 mr-2">{displayName}</span>
             <Button
               type="button"
               variant="outline"
@@ -1150,7 +1153,8 @@ function RecipePickerDialog({
   onSelect: (recipe: Recipe) => void
   onClose: () => void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'hu' | 'en'
   const [search, setSearch] = useState('')
 
   const { data: recipes = [], isLoading } = useQuery({
@@ -1161,7 +1165,7 @@ function RecipePickerDialog({
   })
 
   const filtered = recipes.filter(r =>
-    r.name.toLowerCase().includes(search.toLowerCase())
+    getRecipeName(r, lang).toLowerCase().includes(search.toLowerCase())
   )
 
   return (
@@ -1201,7 +1205,7 @@ function RecipePickerDialog({
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{recipe.name}</p>
+                    <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{getRecipeName(recipe, lang)}</p>
                     <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-xs text-gray-500 mt-0.5">
                       <span className="flex items-center gap-0.5">
                         <Clock className="h-3 w-3" />
@@ -1248,8 +1252,8 @@ function MealDetailDialog({ meal, open, onClose }: { meal: GeneratedMeal; open: 
     staleTime: 5 * 60 * 1000,
   })
 
-  const displayName = recipe?.translations?.[lang]?.name ?? recipe?.name ?? meal.recipe.name
-  const steps = recipe?.translations?.[lang]?.steps ?? recipe?.steps ?? []
+  const displayName = getRecipeName(recipe ?? meal.recipe, lang)
+  const steps = getRecipeSteps(recipe ?? meal.recipe, lang)
   const photoUrl = recipePhotoUrl(recipe ?? meal.recipe)
 
   return (
@@ -1444,7 +1448,7 @@ function MealSlotCard({
     applyChange(latestEditRef.current.multiplier, recipe)
   }
 
-  const displayName = meal.recipe.translations?.[lang]?.name ?? meal.recipe.name
+  const displayName = getRecipeName(meal.recipe, lang)
 
   return (
     <div className="bg-[#F9F7F2] rounded-[12px] overflow-hidden">
@@ -1534,7 +1538,7 @@ function MealSlotCard({
           {/* Recipe substitution */}
           <div className="flex items-center justify-between">
             <div className="min-w-0 flex-1 mr-2">
-              <span className="text-xs text-gray-500 block truncate">{meal.recipe.name}</span>
+              <span className="text-xs text-gray-500 block truncate">{displayName}</span>
             </div>
             <Button
               type="button"
