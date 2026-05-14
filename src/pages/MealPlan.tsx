@@ -27,7 +27,7 @@ import { recipesService } from '@/services/recipes'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { PlanPreferencesForm } from '@/components/PlanPreferencesForm'
 import { formatCurrency, formatMacro, recipePhotoUrl } from '@/lib/utils'
-import type { GeneratedMeal, GenerateMealPlanRequest, MealType, Macros, ConstraintWeights, Recipe, Plan, PlannedMeal, PlannedMealStatus } from '@/types'
+import type { GeneratedMeal, GenerateMealPlanRequest, MealType, Macros, ConstraintWeights, Recipe, Plan, PlannedMeal, PlannedMealStatus, PlanJobProgress } from '@/types'
 
 const MEAL_ORDER: MealType[] = ['BREAKFAST', 'MORNING_SNACK', 'LUNCH', 'AFTERNOON_SNACK', 'DINNER', 'SNACK']
 
@@ -291,14 +291,30 @@ export function MealPlan() {
 
   const forceRef = useRef(false)
   const lastBodyRef = useRef<GenerateMealPlanRequest | null>(null)
+  const pollAbortRef = useRef<AbortController | null>(null)
+  const [jobProgress, setJobProgress] = useState<PlanJobProgress | null>(null)
+
+  // Abort an in-flight polling loop when the page unmounts so we don't keep hitting the
+  // status endpoint after the user navigates away.
+  useEffect(() => () => pollAbortRef.current?.abort(), [])
 
   const mutation = useMutation({
-    mutationFn: (body: GenerateMealPlanRequest) => mealPlansService.generate(body, forceRef.current),
+    mutationFn: async (body: GenerateMealPlanRequest) => {
+      pollAbortRef.current?.abort()
+      const controller = new AbortController()
+      pollAbortRef.current = controller
+      setJobProgress(null)
+      return mealPlansService.generateAsync(body, {
+        signal: controller.signal,
+        onProgress: setJobProgress,
+      })
+    },
     onSuccess: (result, body) => {
       forceRef.current = false
+      setJobProgress(null)
       setPlan(result)
       setExpandedDays(new Set([0]))
-      capture('plan_generated', { days: result.days, meal_count: result.meals?.length ?? 0, flow: 'legacy' })
+      capture('plan_generated', { days: result.days, meal_count: result.meals?.length ?? 0, flow: 'async' })
       usersService.updateSettings({
         mealPlanPreferences: {
           days: body.days,
@@ -570,7 +586,16 @@ export function MealPlan() {
                 )}
               </Button>
               {mutation.isPending && (
-                <p className="text-sm text-gray-500">{t('mealPlan.form.solverNote')}</p>
+                <p className="text-sm text-gray-500">
+                  {jobProgress?.status === 'PENDING' && jobProgress.queuePosition != null
+                    ? t('mealPlan.form.queuePending', { position: jobProgress.queuePosition })
+                    : jobProgress?.status === 'RUNNING'
+                      ? t('mealPlan.form.queueRunning')
+                      : t('mealPlan.form.solverNote')}
+                  {jobProgress?.status === 'PENDING' && jobProgress.estimatedWaitSeconds != null && (
+                    <span className="text-gray-400">{' · '}{t('mealPlan.form.queueEta', { seconds: jobProgress.estimatedWaitSeconds })}</span>
+                  )}
+                </p>
               )}
               {mutation.isError && !is409 && !is422 && (
                 <p className="text-sm text-red-500">

@@ -286,6 +286,26 @@ export interface MealPlan {
   meals: GeneratedMeal[]
 }
 
+// ── Async plan-job queue ──────────────────────────────────────────────────
+
+export type PlanJobStatus = 'PENDING' | 'RUNNING' | 'DONE' | 'FAILED'
+
+export interface PlanJobStatusResponse {
+  jobId: string
+  status: PlanJobStatus
+  queuePosition: number | null
+  estimatedWaitSeconds: number | null
+  /** Generated MealPlan as a JSON string; populated only when status === 'DONE'. */
+  result: string | null
+  errorMessage: string | null
+}
+
+export interface PlanJobProgress {
+  status: PlanJobStatus
+  queuePosition: number | null
+  estimatedWaitSeconds: number | null
+}
+
 // ── Saved Meal Plans ──────────────────────────────────────────────────────
 
 export interface SavedSlotMacros {

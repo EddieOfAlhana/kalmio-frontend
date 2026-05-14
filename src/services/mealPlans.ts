@@ -1,4 +1,5 @@
 import { api } from '@/lib/api'
+import { awaitJobResult, planJobsService, type AwaitJobOptions } from '@/services/planJobs'
 import type { MealPlan, GeneratedMeal, GenerateMealPlanRequest, ShoppingList, ShoppingListRequest, SavedMealPlan, SavedMealSlot } from '@/types'
 
 export function savedSlotToMeal(s: SavedMealSlot): GeneratedMeal {
@@ -54,8 +55,27 @@ export function savedPlanToMealPlan(saved: SavedMealPlan): MealPlan {
 }
 
 export const mealPlansService = {
+  /**
+   * Legacy synchronous generate. Blocks the HTTP thread for ~10 s while the solver runs and
+   * Heroku/Azure intermediaries can time the request out. Prefer {@link generateAsync}.
+   * @deprecated use {@link generateAsync}
+   */
   generate: (body: GenerateMealPlanRequest, force = false) =>
     api.post<MealPlan>(`/api/meal-plans${force ? '?force=true' : ''}`, body).then(r => r.data),
+
+  /**
+   * Async generate path: enqueue a plan_jobs row and poll until DONE. The returned MealPlan
+   * has the same shape as the legacy endpoint, including {@code savedPlanId} (the worker
+   * auto-saves the plan, matching legacy behaviour).
+   */
+  generateAsync: async (
+    body: GenerateMealPlanRequest,
+    options: AwaitJobOptions = {}
+  ): Promise<MealPlan> => {
+    const { jobId } = await planJobsService.enqueue(body)
+    return awaitJobResult(jobId, options)
+  },
+
   shoppingList: (body: ShoppingListRequest) =>
     api.post<ShoppingList>('/api/meal-plans/shopping-list', body).then(r => r.data),
   listSaved: () =>
