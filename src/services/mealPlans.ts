@@ -19,6 +19,15 @@ export function savedSlotToMeal(s: SavedMealSlot): GeneratedMeal {
       tags: s.recipeTags,
       translations: s.recipeTranslations ?? null,
       machineTranslated: false,
+      // Saved-plan slots predate the per-recipe prep prefs — fall back to neutral defaults
+      // so SavedMealPlan rendering doesn't depend on fields the API doesn't return here.
+      holdDaysRefrigerated: 0,
+      freezableAfterPrep: false,
+      holdDaysFrozen: null,
+      prepLeadTimeHours: 0,
+      culturalTags: [],
+      activePrepMinutes: null,
+      passivePrepMinutes: null,
       visibility: 'PUBLIC',
       createdByUsername: null,
       imageUrl: null,

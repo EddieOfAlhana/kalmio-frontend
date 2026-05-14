@@ -32,7 +32,16 @@
     "offline": "No internet connection",
     "back": "Back",
     "comingSoon": "Coming soon",
-    "errorGeneric": "Something went wrong. Please try again."
+    "errorGeneric": "Something went wrong. Please try again.",
+    "weekdays": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    }
   },
   "language": {
     "en": "EN",
@@ -84,6 +93,12 @@
       "markDone": "Done",
       "done": "Done",
       "durationMin": "~{{count}} min",
+      "cookServings_one": "Cook {{count}} serving",
+      "cookServings_other": "Cook {{count}} servings",
+      "feedsMeals_one": "Feeds {{count}} meal",
+      "feedsMeals_other": "Feeds {{count}} meals",
+      "freezeAtPrep_one": "Freeze {{count}} serving",
+      "freezeAtPrep_other": "Freeze {{count}} servings",
       "windowLabels": {
         "MORNING": "morning",
         "EVENING": "evening",
@@ -91,10 +106,9 @@
         "NIGHT": "night"
       },
       "prepTypeLabels": {
-        "OVERNIGHT_PREP": "Overnight prep",
-        "BATCH_FRIENDLY": "Can make ahead",
-        "MAKE_AHEAD": "Make ahead",
-        "FRESH_ONLY": "Cook fresh"
+        "OVERNIGHT": "Overnight prep",
+        "BATCH": "Batch prep",
+        "FREEZE_BATCH": "Batch prep with freezing"
       }
     },
     "planGlance": {
@@ -265,7 +279,18 @@
       "add": "Add",
       "cancel": "Cancel",
       "create": "Create Recipe",
-      "save": "Save Changes"
+      "save": "Save Changes",
+      "prepPrefs": {
+        "title": "Prep & storage",
+        "subtitle": "How well does this recipe keep? Tells the planner whether to batch repetitions into one cook session.",
+        "holdDaysRefrigerated": "Days it keeps (fridge)",
+        "holdDaysRefrigeratedHint": "0 = must be eaten fresh.",
+        "prepLeadTimeHours": "Lead time (hours)",
+        "prepLeadTimeHoursHint": "Hands-off time before it's ready (overnight oats ≈ 8 h).",
+        "freezableAfterPrep": "Can be frozen after cooking",
+        "holdDaysFrozen": "Days it keeps (frozen)",
+        "holdDaysFrozenHint": "Used when you opt into freezer batching."
+      }
     },
     "dietaryFilter": "Dietary filters",
     "clearFilters": "Clear filters",
@@ -482,6 +507,15 @@
     "languageLabel": "Interface language",
     "mealPlanDefaults": "Meal plan defaults",
     "mealPlanDefaultsHint": "These values will pre-fill the meal plan generator form.",
+    "prepPrefs": {
+      "title": "Prep preferences",
+      "subtitle": "Tells the planner how you like to handle meal prep.",
+      "prefersFreezing": "I'm comfortable freezing prepped food",
+      "prefersFreezingHint": "When on, repeated meals beyond fridge shelf life will be batched into one cook with some portions frozen.",
+      "preferredPrepDayOfWeek": "Preferred prep day",
+      "preferredPrepDayOfWeekHint": "The planner will land batches on this day whenever the recipe's hold window allows.",
+      "noPreference": "No preference"
+    },
     "saveError": "Failed to save settings.",
     "saveSuccess": "Settings saved.",
     "security": {

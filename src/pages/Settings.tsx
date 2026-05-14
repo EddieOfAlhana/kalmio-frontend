@@ -27,6 +27,8 @@ interface FormValues {
   budgetMax: string
   prepTimeMax: string
   maxRecipeRepetitions: string
+  prefersFreezing: boolean
+  preferredPrepDayOfWeek: string // '' = no preference, otherwise '1'..'7'
 }
 
 function deviceLabel(): string {
@@ -192,6 +194,8 @@ export function Settings() {
         budgetMax: settings.mealPlanPreferences?.budgetMax?.toString() ?? '',
         prepTimeMax: settings.mealPlanPreferences?.prepTimeMax?.toString() ?? '',
         maxRecipeRepetitions: settings.mealPlanPreferences?.maxRecipeRepetitions?.toString() ?? '',
+        prefersFreezing: settings.prefersFreezing,
+        preferredPrepDayOfWeek: settings.preferredPrepDayOfWeek?.toString() ?? '',
       })
     }
   }, [settings, reset, i18n.resolvedLanguage])
@@ -220,6 +224,10 @@ export function Settings() {
     mutation.mutate({
       languagePreference: values.languagePreference || null,
       mealPlanPreferences: hasPrefs ? prefs : null,
+      prefersFreezing: values.prefersFreezing,
+      preferredPrepDayOfWeek: values.preferredPrepDayOfWeek
+        ? parseInt(values.preferredPrepDayOfWeek, 10)
+        : null,
     })
   }
 
@@ -309,6 +317,39 @@ export function Settings() {
                 <Label>{t('mealPlan.form.maxRepeats')}</Label>
                 <Input type="number" min={1} {...register('maxRecipeRepetitions')} className="mt-1" />
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Prep preferences */}
+        <Card>
+          <CardContent className="pt-5 space-y-4">
+            <h2 className="font-semibold text-sm text-[#1A1A1A]">{t('settings.prepPrefs.title')}</h2>
+            <p className="text-xs text-gray-400">{t('settings.prepPrefs.subtitle')}</p>
+
+            <label className="flex items-center gap-2 text-sm font-medium text-[#1A1A1A] cursor-pointer">
+              <input
+                type="checkbox"
+                {...register('prefersFreezing')}
+                className="h-4 w-4 rounded border-gray-300 accent-[#4F7942]"
+              />
+              {t('settings.prepPrefs.prefersFreezing')}
+            </label>
+            <p className="text-[10px] text-gray-400 -mt-2 ml-6">{t('settings.prepPrefs.prefersFreezingHint')}</p>
+
+            <div>
+              <Label>{t('settings.prepPrefs.preferredPrepDayOfWeek')}</Label>
+              <Select {...register('preferredPrepDayOfWeek')} className="mt-1">
+                <option value="">{t('settings.prepPrefs.noPreference')}</option>
+                <option value="1">{t('common.weekdays.monday')}</option>
+                <option value="2">{t('common.weekdays.tuesday')}</option>
+                <option value="3">{t('common.weekdays.wednesday')}</option>
+                <option value="4">{t('common.weekdays.thursday')}</option>
+                <option value="5">{t('common.weekdays.friday')}</option>
+                <option value="6">{t('common.weekdays.saturday')}</option>
+                <option value="7">{t('common.weekdays.sunday')}</option>
+              </Select>
+              <p className="text-[10px] text-gray-400 mt-1">{t('settings.prepPrefs.preferredPrepDayOfWeekHint')}</p>
             </div>
           </CardContent>
         </Card>

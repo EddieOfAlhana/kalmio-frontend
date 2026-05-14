@@ -32,7 +32,16 @@
     "offline": "Nincs internetkapcsolat",
     "back": "Vissza",
     "comingSoon": "Hamarosan",
-    "errorGeneric": "Valami hiba történt. Próbáld újra."
+    "errorGeneric": "Valami hiba történt. Próbáld újra.",
+    "weekdays": {
+      "monday": "Hétfő",
+      "tuesday": "Kedd",
+      "wednesday": "Szerda",
+      "thursday": "Csütörtök",
+      "friday": "Péntek",
+      "saturday": "Szombat",
+      "sunday": "Vasárnap"
+    }
   },
   "language": {
     "en": "EN",
@@ -84,6 +93,12 @@
       "markDone": "Megcsináltam",
       "done": "Kész",
       "durationMin": "~{{count}} perc",
+      "cookServings_one": "Készíts {{count}} adagot",
+      "cookServings_other": "Készíts {{count}} adagot",
+      "feedsMeals_one": "{{count}} étkezésre elég",
+      "feedsMeals_other": "{{count}} étkezésre elég",
+      "freezeAtPrep_one": "{{count}} adagot fagyassz le",
+      "freezeAtPrep_other": "{{count}} adagot fagyassz le",
       "windowLabels": {
         "MORNING": "reggel",
         "EVENING": "este",
@@ -91,10 +106,9 @@
         "NIGHT": "éjjel"
       },
       "prepTypeLabels": {
-        "OVERNIGHT_PREP": "Éjszakai előkészítés",
-        "BATCH_FRIENDLY": "Előre elkészíthető",
-        "MAKE_AHEAD": "Előre elkészíthető",
-        "FRESH_ONLY": "Frissen készítendő"
+        "OVERNIGHT": "Éjszakai előkészítés",
+        "BATCH": "Előre elkészített adag",
+        "FREEZE_BATCH": "Előre elkészített adag fagyasztással"
       }
     },
     "planGlance": {
@@ -265,7 +279,18 @@
       "add": "Hozzáadás",
       "cancel": "Mégse",
       "create": "Recept létrehozása",
-      "save": "Mentés"
+      "save": "Mentés",
+      "prepPrefs": {
+        "title": "Előkészítés és tárolás",
+        "subtitle": "Meddig marad ehető a kész étel? Ennek alapján fogjuk össze az ismétléseket egyetlen főzésbe.",
+        "holdDaysRefrigerated": "Hűtőben eltartható (nap)",
+        "holdDaysRefrigeratedHint": "0 = frissen kell elkészíteni.",
+        "prepLeadTimeHours": "Várakozási idő (óra)",
+        "prepLeadTimeHoursHint": "Passzív idő mielőtt kész lesz (overnight zabkása ≈ 8 óra).",
+        "freezableAfterPrep": "Készítés után lefagyasztható",
+        "holdDaysFrozen": "Mélyhűtőben eltartható (nap)",
+        "holdDaysFrozenHint": "Akkor használjuk, ha engedélyezed a fagyasztásos batch előkészítést."
+      }
     },
     "dietaryFilter": "Étrendi szűrők",
     "clearFilters": "Szűrők törlése",
@@ -482,6 +507,15 @@
     "languageLabel": "Felület nyelve",
     "mealPlanDefaults": "Étrendtervezés alapértékek",
     "mealPlanDefaultsHint": "Ezek az értékek előre kitöltik az étrend generáló űrlapot.",
+    "prepPrefs": {
+      "title": "Előkészítési preferenciák",
+      "subtitle": "Innen tudjuk, hogyan szervezzük az előkészítést neked.",
+      "prefersFreezing": "Szívesen lefagyasztok előkészített ételt",
+      "prefersFreezingHint": "Ha engedélyezed, a hűtős eltarthatóságon túli ismétléseket egyetlen főzésbe fogjuk össze és néhány adagot fagyasztásra ajánlunk.",
+      "preferredPrepDayOfWeek": "Preferált előkészítési nap",
+      "preferredPrepDayOfWeekHint": "Ha a recept eltarthatósága megengedi, erre a napra tesszük a batch főzéseket.",
+      "noPreference": "Nincs preferencia"
+    },
     "saveError": "Nem sikerült menteni a beállításokat.",
     "saveSuccess": "Beállítások elmentve.",
     "security": {

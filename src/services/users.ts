@@ -29,12 +29,18 @@ export interface UserSettings {
   mealPlanPreferences: UserMealPreferences | null
   dietaryPreferences: DietaryPreferences | null
   createdAt: string
+  /** When true, the prep scheduler may extend batches into the freezer hold window. */
+  prefersFreezing: boolean
+  /** ISO weekday (1=Mon..7=Sun) the user prefers to do prep on. Null = no preference. */
+  preferredPrepDayOfWeek: number | null
 }
 
 export interface UpdateSettingsRequest {
   languagePreference?: string | null
   mealPlanPreferences?: UserMealPreferences | null
   dietaryPreferences?: DietaryPreferences | null
+  prefersFreezing?: boolean
+  preferredPrepDayOfWeek?: number | null
 }
 
 export interface UpdateProfileRequest {

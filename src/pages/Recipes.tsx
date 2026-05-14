@@ -56,6 +56,11 @@ const schema = z.object({
     amount: z.coerce.number().min(0.001),
     unit: z.enum(['G', 'ML', 'PIECE']),
   })).min(1, 'Add at least one ingredient'),
+  // Prep prefs — drive the batch scheduler & solver. All optional, sensible defaults.
+  holdDaysRefrigerated: z.coerce.number().int().min(0).max(14),
+  freezableAfterPrep: z.boolean(),
+  holdDaysFrozen: z.coerce.number().int().min(0).max(365).nullable(),
+  prepLeadTimeHours: z.coerce.number().int().min(0).max(72),
 })
 export type FormValues = z.infer<typeof schema>
 
@@ -72,6 +77,11 @@ export function toRequest(v: FormValues) {
       amount: i.amount,
       unit: i.unit,
     })),
+    holdDaysRefrigerated: v.holdDaysRefrigerated,
+    freezableAfterPrep: v.freezableAfterPrep,
+    // When the recipe isn't freezable the frozen hold days are meaningless — send null.
+    holdDaysFrozen: v.freezableAfterPrep ? v.holdDaysFrozen : null,
+    prepLeadTimeHours: v.prepLeadTimeHours,
   }
 }
 
@@ -89,6 +99,10 @@ function defaultValues(recipe?: Recipe, ingredientMap?: Map<string, string>): Fo
       amount: i.amount,
       unit: i.unit,
     })) ?? [],
+    holdDaysRefrigerated: recipe?.holdDaysRefrigerated ?? 0,
+    freezableAfterPrep: recipe?.freezableAfterPrep ?? false,
+    holdDaysFrozen: recipe?.holdDaysFrozen ?? null,
+    prepLeadTimeHours: recipe?.prepLeadTimeHours ?? 0,
   }
 }
 
@@ -733,6 +747,7 @@ export function RecipeFormDialog({
 
   const { fields, append, remove } = useFieldArray({ control, name: 'ingredients' })
   const selectedTags = watch('tags')
+  const watchFreezable = watch('freezableAfterPrep')
   const ingredientIds = fields.map(f => f.ingredientId)
 
   function toggleTag(tag: RecipeTag) {
@@ -792,6 +807,44 @@ export function RecipeFormDialog({
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Prep preferences — drive the batch scheduler */}
+          <div className="rounded-[12px] border border-gray-200 p-3 space-y-3 bg-[#F9F7F2]">
+            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+              {t('recipes.form.prepPrefs.title')}
+            </p>
+            <p className="text-xs text-gray-500 -mt-1">{t('recipes.form.prepPrefs.subtitle')}</p>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label>{t('recipes.form.prepPrefs.holdDaysRefrigerated')}</Label>
+                <Input type="number" min="0" max="14" {...register('holdDaysRefrigerated')} />
+                <p className="text-[10px] text-gray-400">{t('recipes.form.prepPrefs.holdDaysRefrigeratedHint')}</p>
+              </div>
+              <div className="space-y-1">
+                <Label>{t('recipes.form.prepPrefs.prepLeadTimeHours')}</Label>
+                <Input type="number" min="0" max="72" {...register('prepLeadTimeHours')} />
+                <p className="text-[10px] text-gray-400">{t('recipes.form.prepPrefs.prepLeadTimeHoursHint')}</p>
+              </div>
+            </div>
+
+            <label className="flex items-center gap-2 text-sm font-medium text-[#1A1A1A] cursor-pointer">
+              <input
+                type="checkbox"
+                {...register('freezableAfterPrep')}
+                className="h-4 w-4 rounded border-gray-300 accent-[#4F7942]"
+              />
+              {t('recipes.form.prepPrefs.freezableAfterPrep')}
+            </label>
+
+            {watchFreezable && (
+              <div className="space-y-1 max-w-[50%]">
+                <Label>{t('recipes.form.prepPrefs.holdDaysFrozen')}</Label>
+                <Input type="number" min="0" max="365" {...register('holdDaysFrozen')} />
+                <p className="text-[10px] text-gray-400">{t('recipes.form.prepPrefs.holdDaysFrozenHint')}</p>
+              </div>
+            )}
           </div>
 
           {/* Ingredients */}

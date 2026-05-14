@@ -10,6 +10,7 @@ import {
   type DragStartEvent,
   type DragEndEvent,
   type DragMoveEvent,
+  type Modifier,
 } from '@dnd-kit/core'
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { useDraggable } from '@dnd-kit/core'
@@ -358,6 +359,9 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
   const [liveDragId, setLiveDragId] = useState<string | null>(null)
   const [liveDragMinutes, setLiveDragMinutes] = useState<number | null>(null)
   const dragBaseMinutesRef = useRef<number>(0)
+  const outerRef = useRef<HTMLDivElement>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
+  const isDotDragRef = useRef(false)
 
   const wakeTime = localWake ?? wakeDefault
   const sleepTime = localSleep ?? sleepDefault
@@ -425,11 +429,22 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
 
   // ── dnd handlers ─────────────────────────────────────────────────────────
 
+  const restrictToTimeline = useCallback<Modifier>(({ transform, draggingNodeRect }) => {
+    const ref = isDotDragRef.current ? outerRef : innerRef
+    if (!ref.current || !draggingNodeRect) return transform
+    const bounds = ref.current.getBoundingClientRect()
+    return {
+      ...transform,
+      y: clamp(transform.y, bounds.top - draggingNodeRect.top, bounds.bottom - draggingNodeRect.bottom),
+    }
+  }, [])
+
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const id = String(event.active.id)
     if (id === 'dot-wake') {
+      isDotDragRef.current = true
       setActiveDotKind('wake')
       setLiveDragId(id)
       dragBaseMinutesRef.current = wakeMinutes
@@ -437,12 +452,14 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
       return
     }
     if (id === 'dot-sleep') {
+      isDotDragRef.current = true
       setActiveDotKind('sleep')
       setLiveDragId(id)
       dragBaseMinutesRef.current = sleepMinutes
       setLiveDragMinutes(sleepMinutes)
       return
     }
+    isDotDragRef.current = false
     const card = cards.find(c => c.id === id)
     if (card) {
       setActiveCard(card)
@@ -462,7 +479,7 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
     } else if (id === 'dot-sleep') {
       newMin = clamp(snapToGrid(base + delta * DRAG_MIN_PER_PX), wakeMinutes + 30, 23 * 60 + 59)
     } else {
-      newMin = clamp(snapToGrid(base + delta * DRAG_MIN_PER_PX), 0, 23 * 60 + 45)
+      newMin = clamp(snapToGrid(base + delta * DRAG_MIN_PER_PX), wakeMinutes, sleepMinutes - 15)
     }
     setLiveDragMinutes(newMin)
   }, [wakeMinutes, sleepMinutes])
@@ -478,13 +495,13 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
     if (id === 'dot-wake') {
       setActiveDotKind(null)
       setLocalWake(newTime)
-      setPendingFeedback({ cardId: id, newTime, cardType: 'sleep-wake', dotKind: 'wake', label: newTime })
+      patchTimePref.mutate({ wakeTime: newTime })
       return
     }
     if (id === 'dot-sleep') {
       setActiveDotKind(null)
       setLocalSleep(newTime)
-      setPendingFeedback({ cardId: id, newTime, cardType: 'sleep-wake', dotKind: 'sleep', label: newTime })
+      patchTimePref.mutate({ sleepTime: newTime })
       return
     }
 
@@ -493,40 +510,37 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
 
     setCardTimeOverrides(prev => ({ ...prev, [id]: newTime }))
     setActiveCard(null)
+
+    if (card.type === 'prep') {
+      if (card.prepTaskId) patchPrepTime.mutate({ taskId: card.prepTaskId, time: newTime })
+      return
+    }
+
+    if (card.mealId && activePlanId)
+      patchMealTime.mutate({ planId: activePlanId, mealId: card.mealId, time: newTime })
+
+    // pill offers optional upgrade to "set as default" time preference
     setPendingFeedback({
       cardId: id, newTime,
-      cardType: card.type === 'prep' ? 'prep' : 'meal',
+      cardType: 'meal',
       mealType: card.mealType,
-      window: card.window,
       mealId: card.mealId,
-      prepTaskId: card.prepTaskId,
       label: newTime,
     })
-  }, [cards, liveDragMinutes])
+  }, [cards, liveDragMinutes, activePlanId, patchTimePref, patchMealTime, patchPrepTime])
 
   const handleTodayOnly = useCallback(() => {
-    if (!pendingFeedback) return
-    const { cardType, mealId, prepTaskId, newTime, dotKind } = pendingFeedback
-    if (cardType === 'sleep-wake' && dotKind) { setPendingFeedback(null); return }
-    if (cardType === 'meal' && mealId && activePlanId)
-      patchMealTime.mutate({ planId: activePlanId, mealId, time: newTime })
-    if (cardType === 'prep' && prepTaskId)
-      patchPrepTime.mutate({ taskId: prepTaskId, time: newTime })
     setPendingFeedback(null)
-  }, [pendingFeedback, activePlanId, patchMealTime, patchPrepTime])
+  }, [])
 
   const handleSetDefault = useCallback(() => {
     if (!pendingFeedback) return
-    const { cardType, mealType, newTime, dotKind } = pendingFeedback
-    if (cardType === 'sleep-wake') {
-      patchTimePref.mutate(dotKind === 'wake' ? { wakeTime: newTime } : { sleepTime: newTime })
-    } else if (cardType === 'meal' && mealType) {
+    const { mealType, newTime } = pendingFeedback
+    if (mealType) {
       patchTimePref.mutate({ mealTimePrefs: { ...(timePref?.mealTimePrefs ?? {}), [mealType]: newTime } })
-      if (pendingFeedback.mealId && activePlanId)
-        patchMealTime.mutate({ planId: activePlanId, mealId: pendingFeedback.mealId, time: newTime })
     }
     setPendingFeedback(null)
-  }, [pendingFeedback, timePref, patchTimePref, patchMealTime, activePlanId])
+  }, [pendingFeedback, timePref, patchTimePref])
 
   // ── sorted point list — uses liveDragMinutes for magnetic re-sort ─────────
 
@@ -577,10 +591,10 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
       onDragMove={handleDragMove}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex flex-col py-1 pb-6">
+      <div ref={outerRef} className="flex flex-col py-1 pb-6">
         <SleepBanner from="00:00" to={wakeTime} />
 
-        <div className="flex flex-col px-3 pt-2">
+        <div ref={innerRef} className="flex flex-col px-3 pt-2">
           {(() => {
             let nodeIndex = -1
             return rows.map((row, i) => {
@@ -652,7 +666,7 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
 
       {/* DragOverlay — anchored to the card rect (setNodeRef is on the card div),
           so it appears exactly where the card is and only moves vertically */}
-      <DragOverlay modifiers={[restrictToVerticalAxis]} dropAnimation={null}>
+      <DragOverlay modifiers={[restrictToVerticalAxis, restrictToTimeline]} dropAnimation={null}>
         {activeCard ? (() => {
           const ns = nodeStyle(activeCard.type)
           return (

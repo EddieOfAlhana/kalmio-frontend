@@ -116,6 +116,20 @@ export interface Recipe {
   tags: RecipeTag[]
   translations: RecipeTranslations | null
   machineTranslated: boolean
+  /** Days the prepared recipe stays consumable in the fridge after cooking. 0 = eat fresh. */
+  holdDaysRefrigerated: number
+  /** Whether the prepared portions tolerate freezing after cooking. */
+  freezableAfterPrep: boolean
+  /** Days the prepared recipe stays consumable when frozen. Null when not freezable. */
+  holdDaysFrozen: number | null
+  /** Hours between starting prep and being ready to eat (overnight oats = ~8). */
+  prepLeadTimeHours: number
+  /** Cultural / cuisine classification labels. */
+  culturalTags: string[]
+  /** Minutes of hands-on active preparation work. */
+  activePrepMinutes: number | null
+  /** Minutes of passive waiting time. */
+  passivePrepMinutes: number | null
   visibility: ContentVisibility
   createdByUsername: string | null
   imageUrl: string | null
@@ -129,6 +143,14 @@ export interface CreateRecipeRequest {
   servings: number
   ingredients: { ingredientId: string; amount: number; unit: Unit; id?: string }[]
   tags: RecipeTag[]
+  /** Optional prep prefs — backend backfills defaults when omitted. */
+  holdDaysRefrigerated?: number
+  freezableAfterPrep?: boolean
+  holdDaysFrozen?: number | null
+  prepLeadTimeHours?: number
+  culturalTags?: string[]
+  activePrepMinutes?: number | null
+  passivePrepMinutes?: number | null
 }
 
 export type UpdateRecipeRequest = CreateRecipeRequest
@@ -410,7 +432,14 @@ export interface GroomingSession {
 // ── Dashboard ─────────────────────────────────────────────────────────────
 
 export type PlannedMealStatusExtended = 'PLANNED' | 'EATEN' | 'SKIPPED' | 'REPLACED'
-export type PrepType = 'OVERNIGHT_PREP' | 'BATCH_FRIENDLY' | 'MAKE_AHEAD' | 'FRESH_ONLY'
+/**
+ * Prep classification emitted by the scheduler.
+ *
+ * - `OVERNIGHT`: lead-time-only recipes (e.g. overnight oats) — one task per meal.
+ * - `BATCH`: same-recipe meals batched within the fridge hold window.
+ * - `FREEZE_BATCH`: batch whose later slots are served from the freezer.
+ */
+export type PrepType = 'OVERNIGHT' | 'BATCH' | 'FREEZE_BATCH'
 export type PrepWindow = 'MORNING' | 'AFTERNOON' | 'EVENING' | 'NIGHT'
 
 export interface TodaysMealCard {
@@ -441,6 +470,12 @@ export interface PrepTaskCard {
   durationMin: number | null
   status?: string
   scheduledTime?: string | null
+  /** Total servings the user should cook for this batch. */
+  servingsToMake?: number | null
+  /** Subset of servings_to_make to freeze at prep time. */
+  servingsToFreeze?: number | null
+  /** Planned meal IDs this prep task feeds. */
+  feedsPlannedMealIds?: string[]
 }
 
 export interface PlanGlanceDto {

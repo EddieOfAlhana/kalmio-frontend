@@ -40,6 +40,21 @@ export function TomorrowPrepModule({ tasks }: TomorrowPrepModuleProps) {
                 {task.recipeName}
               </p>
               <p className="text-xs text-gray-400">{prepTypeLabel(task.prepType, t)}</p>
+              {task.servingsToMake != null && task.servingsToMake > 0 && (
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {t('dashboard.prep.cookServings', { count: Number(task.servingsToMake) })}
+                  {task.feedsPlannedMealIds && task.feedsPlannedMealIds.length > 1 && (
+                    <span className="text-gray-400">
+                      {' '}· {t('dashboard.prep.feedsMeals', { count: task.feedsPlannedMealIds.length })}
+                    </span>
+                  )}
+                </p>
+              )}
+              {task.servingsToFreeze != null && Number(task.servingsToFreeze) > 0 && (
+                <p className="text-[11px] mt-0.5 text-blue-600 font-medium">
+                  {t('dashboard.prep.freezeAtPrep', { count: Number(task.servingsToFreeze) })}
+                </p>
+              )}
               {task.durationMin != null && (
                 <p className="text-xs text-gray-400 mt-0.5">
                   {t('dashboard.prep.durationMin', { count: task.durationMin })}
