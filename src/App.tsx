@@ -36,6 +36,7 @@ import { Toaster } from '@/components/ui/toast'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { CookieConsent } from '@/components/CookieConsent'
 import { initAnalytics } from '@/lib/analytics'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 
 initAnalytics()
 
@@ -80,6 +81,8 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  useDocumentTitle()
+
   return (
     <QueryClientProvider client={queryClient}>
       <Toaster />

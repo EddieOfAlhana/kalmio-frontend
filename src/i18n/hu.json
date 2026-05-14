@@ -1,4 +1,7 @@
 {
+  "meta": {
+    "tabTitle": "Kalmio – Egészséges étkezés. Matek, nem mágia."
+  },
   "nav": {
     "dashboard": "Irányítópult",
     "mealPlans": "Étrendek",

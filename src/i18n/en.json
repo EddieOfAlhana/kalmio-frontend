@@ -1,4 +1,7 @@
 {
+  "meta": {
+    "tabTitle": "Kalmio – Healthy eating. Math, not magic."
+  },
   "nav": {
     "dashboard": "Dashboard",
     "mealPlans": "Meal Plans",
