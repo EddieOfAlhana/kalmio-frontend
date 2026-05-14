@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { authenticateWithPasskeyDiscoverable, authenticateWithPasskey } from '@/services/passkey'
 import { useAuthStore } from '@/store/auth'
 import { capture, identify } from '@/lib/analytics'
+import { mapAuthError } from '@/lib/authErrors'
 
 const emailSchema = z.object({ email: z.string().email() })
 type EmailForm = z.infer<typeof emailSchema>
@@ -94,7 +95,7 @@ export function Auth() {
       options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     })
     setEmailLoading(false)
-    if (error) { setError(error.message); return }
+    if (error) { setError(t(mapAuthError(error))); return }
     setStep({ mode: 'sent', email })
   }
 

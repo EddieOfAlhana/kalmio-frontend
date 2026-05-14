@@ -706,7 +706,14 @@
     "checkEmail": "Ellenőrizd a postaládád",
     "checkEmailHint": "Küldtünk egy belépési linket a következő címre: {{email}}. Kattints rá a bejelentkezéshez.",
     "tryDifferentEmail": "Próbálj más e-mail címet",
-    "tagline": "Egészséges élet. Egyszerűen."
+    "tagline": "Egészséges élet. Egyszerűen.",
+    "errors": {
+      "invalidEmail": "Ez az e-mail cím nem fogadható el. Ellenőrizd a begépelést, vagy próbálj másik címet.",
+      "rateLimited": "Túl sok kísérlet — várj egy percet, majd próbáld újra.",
+      "signupsDisabled": "A regisztráció jelenleg szünetel. Próbáld újra később.",
+      "network": "Nem sikerült kapcsolódni. Ellenőrizd az internetkapcsolatod.",
+      "generic": "A bejelentkezési kérés nem sikerült. Próbáld újra."
+    }
   },
   "shoppingList": {
     "title": "Bevásárlólista",
