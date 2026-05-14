@@ -703,6 +703,7 @@
     "passkeyError": "Passkey sign-in failed. Make sure you have a passkey registered for this account.",
     "continueWithEmail": "Continue with Email",
     "emailLabel": "Email address",
+    "emailPlaceholder": "you@example.com",
     "invalidEmail": "Please enter a valid email address",
     "or": "or",
     "noPassword": "No password needed — we'll email you a sign-in link.",

@@ -703,6 +703,7 @@
     "passkeyError": "A jelszókulcsos bejelentkezés nem sikerült. Győződj meg róla, hogy van regisztrált jelszókulcsod ehhez a fiókhoz.",
     "continueWithEmail": "Folytatás e-maillel",
     "emailLabel": "E-mail cím",
+    "emailPlaceholder": "te@pelda.hu",
     "invalidEmail": "Adj meg érvényes e-mail címet",
     "or": "vagy",
     "noPassword": "Nincs jelszóra szükség — küldünk egy belépési linket.",

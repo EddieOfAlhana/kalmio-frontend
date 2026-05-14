@@ -207,7 +207,7 @@ export function Auth() {
                           <Input
                             id="auth-email"
                             type="email"
-                            placeholder="you@example.com"
+                            placeholder={t('auth.emailPlaceholder')}
                             autoComplete="email webauthn"
                             autoFocus
                             className="h-11 rounded-xl"
