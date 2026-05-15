@@ -882,8 +882,8 @@ export function RecipeFormDialog({
                         {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
                       </Select>
                     )} />
-                    <button type="button" onClick={() => remove(idx)} className="text-gray-400 hover:text-red-500 transition-colors">
-                      <X className="h-4 w-4" />
+                    <button type="button" onClick={() => remove(idx)} className="text-gray-400 hover:text-red-500 transition-colors" aria-label={t('recipes.removeIngredient')}>
+                      <X className="h-4 w-4" aria-hidden="true" />
                     </button>
                   </div>
                 ))}

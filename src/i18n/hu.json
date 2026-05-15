@@ -25,6 +25,7 @@
     "required": "Kötelező",
     "optional": "opcionális",
     "cancel": "Mégse",
+    "close": "Bezárás",
     "edit": "Szerkesztés",
     "save": "Mentés",
     "create": "Létrehozás",
@@ -237,6 +238,7 @@
     "servings_other": "{{count}} adag",
     "edit": "Szerkesztés",
     "delete": "Törlöd: \"{{name}}\"?",
+    "removeIngredient": "Hozzávaló eltávolítása",
     "viewDetails": "Részletek",
     "createdBy": "Készítette: @{{username}}",
     "detail": {

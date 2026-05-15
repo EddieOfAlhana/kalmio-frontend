@@ -25,6 +25,7 @@
     "required": "Required",
     "optional": "optional",
     "cancel": "Cancel",
+    "close": "Close",
     "edit": "Edit",
     "save": "Save Changes",
     "create": "Create",
@@ -237,6 +238,7 @@
     "servings_other": "{{count}} servings",
     "edit": "Edit",
     "delete": "Delete \"{{name}}\"?",
+    "removeIngredient": "Remove ingredient",
     "viewDetails": "Details",
     "createdBy": "By @{{username}}",
     "detail": {
