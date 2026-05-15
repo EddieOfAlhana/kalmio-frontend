@@ -59,6 +59,30 @@
   "dashboard": {
     "title": "Today",
     "subtitle": "Your day at a glance",
+    "offPlanMeal": {
+      "logButton": "Log a meal",
+      "modalTitle": "Log a meal",
+      "mealType": "Meal type",
+      "mealTypePlaceholder": "Select a type…",
+      "name": "What did you eat?",
+      "namePlaceholder": "e.g. Home-made soup",
+      "kcal": "Calories (kcal)",
+      "optionalMacros": "Macros",
+      "protein": "Protein (g)",
+      "fat": "Fat (g)",
+      "carbs": "Carbs (g)",
+      "submit": "Log",
+      "submitting": "Logging…",
+      "deleteConfirm": "Delete this entry?",
+      "deleteError": "Failed to delete the entry.",
+      "submitError": "Failed to log the meal. Please try again.",
+      "mealTypes": {
+        "BREAKFAST": "Breakfast",
+        "LUNCH": "Lunch",
+        "DINNER": "Dinner",
+        "SNACK": "Snack"
+      }
+    },
     "meals": {
       "title": "Today's meals",
       "markEaten": "Ate this",
@@ -801,7 +825,8 @@
       "signupsDisabled": "Sign-ups are currently paused. Please try again later.",
       "network": "Could not connect. Check your internet connection.",
       "generic": "The sign-in request failed. Please try again.",
-      "otpInvalid": "Incorrect or expired code. Please try again or request a new one."
+      "otpInvalid": "Incorrect or expired code. Please try again or request a new one.",
+      "sessionExpired": "Your session has expired — please sign in again."
     }
   },
   "feedback": {

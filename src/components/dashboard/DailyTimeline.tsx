@@ -18,9 +18,11 @@ import { dashboardService } from '@/services/dashboard'
 import { usersService } from '@/services/users'
 import { planService } from '@/services/plans'
 import { prepTasksService } from '@/services/prepTasks'
+import { offPlanMealsService } from '@/services/offPlanMeals'
 import { getRecipeNameFromTranslations } from '@/lib/i18nRecipe'
-import type { DashboardDto, TimePreferencesDto } from '@/types'
+import type { DashboardDto, OffPlanMealCard, TimePreferencesDto } from '@/types'
 import { useEffect } from 'react'
+import { OffPlanMealLogModal } from './OffPlanMealLogModal'
 
 // ── time helpers ──────────────────────────────────────────────────────────
 
@@ -313,6 +315,102 @@ function DragFeedbackPill({ label, todayOnlyLabel, defaultLabel, onTodayOnly, on
   )
 }
 
+// ── OffPlanMealsSection ───────────────────────────────────────────────────
+
+interface OffPlanMealsSectionProps {
+  offPlanMeals: OffPlanMealCard[]
+  onLog: () => void
+  onDelete: (id: string) => void
+  deletingId?: string
+}
+
+function OffPlanMealsSection({ offPlanMeals, onLog, onDelete, deletingId }: OffPlanMealsSectionProps) {
+  const { t } = useTranslation()
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+
+  return (
+    <div className="mx-3 mt-3 mb-2">
+      {/* Existing off-plan meal cards */}
+      {offPlanMeals.length > 0 && (
+        <div className="flex flex-col gap-1.5 mb-2">
+          {offPlanMeals.map(meal => (
+            <div
+              key={meal.id}
+              className="rounded-xl bg-white border border-gray-100/80 shadow-[0_1px_4px_rgba(0,0,0,0.06)] px-3 py-2.5 flex items-center gap-2"
+            >
+              {/* Type dot */}
+              <div className="w-7 h-7 rounded-full ring-1 ring-gray-200 bg-gray-50 flex items-center justify-center text-sm shrink-0 select-none">
+                +
+              </div>
+
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <p className="text-[13px] font-semibold text-gray-800 leading-tight truncate">
+                    {meal.displayName}
+                  </p>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 font-medium shrink-0">
+                    {t('dashboard.meals.offPlanBadge')}
+                  </span>
+                </div>
+                {meal.macros && (
+                  <p className="text-[11px] text-gray-400 mt-0.5 leading-tight">
+                    {meal.macros.kcal} kcal
+                    {meal.macros.protein > 0 && ` · ${meal.macros.protein}g ${t('dashboard.macros.protein')}`}
+                  </p>
+                )}
+              </div>
+
+              {/* Delete */}
+              {confirmDeleteId === meal.id ? (
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => { onDelete(meal.id); setConfirmDeleteId(null) }}
+                    disabled={deletingId === meal.id}
+                    aria-label={t('common.delete')}
+                    className="text-[11px] px-2 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                  >
+                    {t('common.delete')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDeleteId(null)}
+                    aria-label={t('common.cancel')}
+                    className="text-[11px] px-2 py-1 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28]"
+                  >
+                    {t('common.cancel')}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setConfirmDeleteId(meal.id)}
+                  aria-label={t('dashboard.offPlanMeal.deleteConfirm')}
+                  className="text-gray-300 hover:text-red-400 shrink-0 rounded p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28] transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden>
+                    <path d="M5.5 1a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3ZM2 3.5A.5.5 0 0 1 2.5 3h9a.5.5 0 0 1 0 1H11v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4H2.5A.5.5 0 0 1 2 3.5ZM4 4v7h6V4H4Z"/>
+  </svg>
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Log button */}
+      <button
+        type="button"
+        onClick={onLog}
+        className="w-full rounded-xl border border-dashed border-gray-200 py-2.5 text-[13px] font-medium text-gray-500 hover:border-[#F28C28] hover:text-[#F28C28] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28]"
+      >
+        {t('dashboard.offPlanMeal.logButton')}
+      </button>
+    </div>
+  )
+}
+
 // ── DailyTimeline ─────────────────────────────────────────────────────────
 
 interface DailyTimelineProps {
@@ -361,6 +459,7 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
   const [pendingFeedback, setPendingFeedback] = useState<PendingFeedback | null>(null)
   const [liveDragId, setLiveDragId] = useState<string | null>(null)
   const [liveDragMinutes, setLiveDragMinutes] = useState<number | null>(null)
+  const [showOffPlanModal, setShowOffPlanModal] = useState(false)
   const dragBaseMinutesRef = useRef<number>(0)
   const outerRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
@@ -383,6 +482,11 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
   const patchPrepTime = useMutation({
     mutationFn: ({ taskId, time }: { taskId: string; time: string | null }) =>
       prepTasksService.patchScheduledTime(taskId, time),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['dashboard', date] }),
+  })
+
+  const deleteOffPlanMeal = useMutation({
+    mutationFn: (id: string) => offPlanMealsService.delete(id),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['dashboard', date] }),
   })
 
@@ -671,7 +775,22 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
             {t('dashboard.meals.noMealsToday')}
           </p>
         )}
+
+        {/* ── Off-plan meals section ──────────────────────────────────── */}
+        <OffPlanMealsSection
+          offPlanMeals={dashboard?.offPlanMeals ?? []}
+          onLog={() => setShowOffPlanModal(true)}
+          onDelete={(id) => deleteOffPlanMeal.mutate(id)}
+          deletingId={deleteOffPlanMeal.isPending ? (deleteOffPlanMeal.variables as string | undefined) : undefined}
+        />
       </div>
+
+      {showOffPlanModal && (
+        <OffPlanMealLogModal
+          date={date}
+          onClose={() => setShowOffPlanModal(false)}
+        />
+      )}
 
       {/* DragOverlay — anchored to the card rect (setNodeRef is on the card div),
           so it appears exactly where the card is and only moves vertically */}

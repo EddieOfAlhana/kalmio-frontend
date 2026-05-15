@@ -59,6 +59,30 @@
   "dashboard": {
     "title": "Ma",
     "subtitle": "A mai napod egy pillantásra",
+    "offPlanMeal": {
+      "logButton": "Saját étkezés rögzítése",
+      "modalTitle": "Saját étkezés rögzítése",
+      "mealType": "Étkezés típusa",
+      "mealTypePlaceholder": "Válassz típust…",
+      "name": "Mit ettél?",
+      "namePlaceholder": "pl. Házi leves",
+      "kcal": "Kalória (kcal)",
+      "optionalMacros": "Makrók",
+      "protein": "Fehérje (g)",
+      "fat": "Zsír (g)",
+      "carbs": "Szénhidrát (g)",
+      "submit": "Rögzítés",
+      "submitting": "Rögzítés…",
+      "deleteConfirm": "Törlöd ezt a bejegyzést?",
+      "deleteError": "Nem sikerült törölni a bejegyzést.",
+      "submitError": "Nem sikerült rögzíteni az étkezést. Próbáld újra.",
+      "mealTypes": {
+        "BREAKFAST": "Reggeli",
+        "LUNCH": "Ebéd",
+        "DINNER": "Vacsora",
+        "SNACK": "Snack"
+      }
+    },
     "meals": {
       "title": "Mai étkezések",
       "markEaten": "Megettem",
@@ -801,7 +825,8 @@
       "signupsDisabled": "A regisztráció jelenleg szünetel. Próbáld újra később.",
       "network": "Nem sikerült kapcsolódni. Ellenőrizd az internetkapcsolatod.",
       "generic": "A bejelentkezési kérés nem sikerült. Próbáld újra.",
-      "otpInvalid": "Helytelen vagy lejárt kód. Próbáld újra, vagy kérj újat."
+      "otpInvalid": "Helytelen vagy lejárt kód. Próbáld újra, vagy kérj újat.",
+      "sessionExpired": "Munkamenet lejárt — jelentkezz be újra."
     }
   },
   "shoppingList": {
