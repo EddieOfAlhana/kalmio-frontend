@@ -1109,6 +1109,21 @@
     "decline": "Elutasítom",
     "learnMore": "Adatkezelési tájékoztató"
   },
+  "diofa": {
+    "ariaLabel": "Diófa — {{stage}} stádium, talaj: {{moisture}}",
+    "stages": {
+      "MAG": "Mag",
+      "CSEMETE": "Csemete",
+      "SUHANG": "Suhang",
+      "FIATAL": "Fiatal fa",
+      "TERMO": "Termőfa"
+    },
+    "moisture": {
+      "DRY": "száraz talaj",
+      "OK": "megfelelő talajnedvesség",
+      "WET": "nedves talaj"
+    }
+  },
   "blog": {
     "nav": "Blog",
     "indexTitle": "A konyhából",

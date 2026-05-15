@@ -1109,6 +1109,21 @@
     "decline": "Decline",
     "learnMore": "Privacy policy"
   },
+  "diofa": {
+    "ariaLabel": "Walnut tree — {{stage}} stage, soil: {{moisture}}",
+    "stages": {
+      "MAG": "Seed",
+      "CSEMETE": "Sprout",
+      "SUHANG": "Sapling",
+      "FIATAL": "Young tree",
+      "TERMO": "Bearing tree"
+    },
+    "moisture": {
+      "DRY": "dry soil",
+      "OK": "adequate moisture",
+      "WET": "wet soil"
+    }
+  },
   "blog": {
     "nav": "Blog",
     "indexTitle": "From the kitchen",
