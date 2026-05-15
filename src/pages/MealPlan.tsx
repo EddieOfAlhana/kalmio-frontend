@@ -26,7 +26,7 @@ import { usersService, type DietaryPreferences } from '@/services/users'
 import { recipesService } from '@/services/recipes'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { PlanPreferencesForm } from '@/components/PlanPreferencesForm'
-import { formatCurrency, formatMacro, recipePhotoUrl } from '@/lib/utils'
+import { formatCurrency, formatLocalDate, formatMacro, recipePhotoUrl } from '@/lib/utils'
 import { getRecipeName, getRecipeSteps } from '@/lib/i18nRecipe'
 import type { GeneratedMeal, GenerateMealPlanRequest, MealType, Macros, ConstraintWeights, Recipe, Plan, PlannedMeal, PlannedMealStatus, PlanJobProgress } from '@/types'
 
@@ -168,7 +168,7 @@ function sumMacros(meals: GeneratedMeal[]): Macros {
 
 export function MealPlan() {
   const navigate = useNavigate()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
   const { plan, setPlan, updateMeal } = useMealPlanStore()
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set([0]))
@@ -730,6 +730,8 @@ export function MealPlan() {
               const dayCost = dayMeals.every(m => m.estimatedCost != null)
                 ? dayMeals.reduce((s, m) => s + (m.estimatedCost ?? 0), 0) : null
               const expanded = expandedDays.has(day)
+              const dayDate = new Date()
+              dayDate.setDate(dayDate.getDate() + day)
 
               return (
                 <Card key={day}>
@@ -743,7 +745,7 @@ export function MealPlan() {
                         <MacroRing macros={dayMacros} size={56} />
                         <div className="flex-1 min-w-0">
                           <p className="font-headline font-bold text-sm text-[#1A1A1A]">
-                            {t('mealPlan.day', { day: day + 1 })}
+                            {formatDayHeader(dayDate.toISOString().slice(0, 10), i18n.language)}
                           </p>
                           <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-gray-500 mt-0.5">
                             <span>{dayMacros.kcal.toFixed(0)} kcal</span>
@@ -797,15 +799,12 @@ function formatDateRange(startDate: string, endDate: string): string {
   return `${startFmt} – ${endFmt}`
 }
 
-function formatDayHeader(dateStr: string): string {
-  const date = new Date(dateStr)
-  const dayOfWeek = date.toLocaleDateString('hu-HU', { weekday: 'long' })
-  const dayDate = date.toLocaleDateString('hu-HU', { month: 'short', day: 'numeric' })
-  return `${dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1)}, ${dayDate}`
+function formatDayHeader(dateStr: string, lang: string): string {
+  return formatLocalDate(dateStr, lang, { weekday: 'long', month: 'short', day: 'numeric' })
 }
 
 function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: () => void }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
 
   // Group meals by date
@@ -886,7 +885,7 @@ function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: ()
                     <MacroRing macros={dayMacros} size={52} />
                     <div className="flex-1 min-w-0">
                       <p className="font-headline font-bold text-sm text-[#1A1A1A]">
-                        {formatDayHeader(date)}
+                        {formatDayHeader(date, i18n.language)}
                       </p>
                       <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-gray-500 mt-0.5">
                         <span>{dayMacros.kcal.toFixed(0)} kcal</span>
