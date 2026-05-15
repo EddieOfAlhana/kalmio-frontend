@@ -969,7 +969,13 @@
     },
     "mealCount_one": "{{count}} meal",
     "mealCount_other": "{{count}} meals",
-    "mealActions": "Actions"
+    "mealActions": "Actions",
+    "forbiddenIngredients": {
+      "label": "Ingredients to avoid",
+      "placeholder": "e.g. spinach, broccoli",
+      "empty": "No excluded ingredients",
+      "hint": "Recipes will exclude these ingredients"
+    }
   },
   "preferences": {
     "title": "Build weekly plan",

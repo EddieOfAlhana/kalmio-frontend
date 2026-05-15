@@ -969,7 +969,13 @@
     },
     "mealCount_one": "{{count}} étkezés",
     "mealCount_other": "{{count}} étkezés",
-    "mealActions": "Műveletek"
+    "mealActions": "Műveletek",
+    "forbiddenIngredients": {
+      "label": "Mit kerüljünk?",
+      "placeholder": "Pl. spenót, brokkoli",
+      "empty": "Nincs kizárt hozzávaló",
+      "hint": "Ezeket a hozzávalókat egyik recept sem fogja tartalmazni"
+    }
   },
   "preferences": {
     "title": "Heti terv összeállítása",
