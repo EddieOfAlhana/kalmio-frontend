@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
 const COLORS = [
@@ -45,8 +46,9 @@ export function UserAvatar({ firstName, lastName, email, avatarUrl, size = 'md',
   const seed = firstName || lastName || email || '?'
   const bg = COLORS[hash(seed) % COLORS.length]
   const label = initials(firstName, lastName, email)
+  const [imgFailed, setImgFailed] = useState(false)
 
-  if (avatarUrl) {
+  if (avatarUrl && !imgFailed) {
     return (
       <img
         src={avatarUrl}
@@ -56,6 +58,7 @@ export function UserAvatar({ firstName, lastName, email, avatarUrl, size = 'md',
           sizeClasses[size],
           className
         )}
+        onError={() => setImgFailed(true)}
       />
     )
   }

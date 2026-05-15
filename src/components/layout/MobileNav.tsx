@@ -15,7 +15,7 @@ export function MobileNav() {
   const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   const { data: unreadCount = 0 } = useQuery({
-    queryKey: ['feedback', 'unread'],
+    queryKey: ['feedback', 'unread', isAdmin],
     queryFn: isAdmin ? feedbackService.getAdminUnreadCount : feedbackService.getUnreadCount,
     refetchInterval: 30_000,
   })

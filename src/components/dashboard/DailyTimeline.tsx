@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import {
@@ -387,47 +387,51 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
 
   // ── build card list ──────────────────────────────────────────────────────
 
-  const meals = dashboard?.todaysMeals ?? []
-  const prepTasks = dashboard?.todaysPrepTasks ?? []
-  const cards: TimelineCardData[] = []
+  const cards: TimelineCardData[] = useMemo(() => {
+    const meals = dashboard?.todaysMeals ?? []
+    const prepTasks = dashboard?.todaysPrepTasks ?? []
+    const result: TimelineCardData[] = []
 
-  meals.forEach(meal => {
-    const mealTimePrefs = timePref?.mealTimePrefs ?? {}
-    const defaultTime = mealTimePrefs[meal.mealType] ?? MEAL_DEFAULTS[meal.mealType] ?? '12:00'
-    const scheduledTime = cardTimeOverrides[`meal-${meal.mealId}`] ?? meal.scheduledTime ?? defaultTime
-    cards.push({
-      id: `meal-${meal.mealId}`,
-      type: meal.mealType,
-      label: meal.recipeName,
-      subtitle: meal.macros ? `${meal.macros.kcal} kcal · ${meal.macros.protein}g fehérje` : undefined,
-      startMinutes: hmToMinutes(scheduledTime),
-      mealType: meal.mealType,
-      mealId: meal.mealId,
+    meals.forEach(meal => {
+      const mealTimePrefs = timePref?.mealTimePrefs ?? {}
+      const defaultTime = mealTimePrefs[meal.mealType] ?? MEAL_DEFAULTS[meal.mealType] ?? '12:00'
+      const scheduledTime = cardTimeOverrides[`meal-${meal.mealId}`] ?? meal.scheduledTime ?? defaultTime
+      result.push({
+        id: `meal-${meal.mealId}`,
+        type: meal.mealType,
+        label: meal.recipeName,
+        subtitle: meal.macros ? `${meal.macros.kcal} kcal · ${meal.macros.protein}g ${t('dashboard.macros.protein')}` : undefined,
+        startMinutes: hmToMinutes(scheduledTime),
+        mealType: meal.mealType,
+        mealId: meal.mealId,
+      })
     })
-  })
 
-  prepTasks.forEach(task => {
-    const defaultTime = PREP_WINDOW_DEFAULTS[task.window] ?? '12:00'
-    const scheduledTime = cardTimeOverrides[`prep-${task.id ?? task.recipeId}`] ?? task.scheduledTime ?? defaultTime
-    cards.push({
-      id: `prep-${task.id ?? task.recipeId}`,
-      type: 'prep',
-      label: task.recipeName,
-      subtitle: task.durationMin ? `~ ${task.durationMin} perc` : undefined,
-      startMinutes: hmToMinutes(scheduledTime),
-      window: task.window,
-      prepTaskId: task.id,
+    prepTasks.forEach(task => {
+      const defaultTime = PREP_WINDOW_DEFAULTS[task.window] ?? '12:00'
+      const scheduledTime = cardTimeOverrides[`prep-${task.id ?? task.recipeId}`] ?? task.scheduledTime ?? defaultTime
+      result.push({
+        id: `prep-${task.id ?? task.recipeId}`,
+        type: 'prep',
+        label: task.recipeName,
+        subtitle: task.durationMin ? t('dashboard.prep.durationMin', { count: task.durationMin }) : undefined,
+        startMinutes: hmToMinutes(scheduledTime),
+        window: task.window,
+        prepTaskId: task.id,
+      })
     })
-  })
 
-  if (hasShoppingDay) {
-    cards.push({
-      id: 'shopping',
-      type: 'shopping',
-      label: t('timeline.shopping'),
-      startMinutes: hmToMinutes(cardTimeOverrides['shopping'] ?? '15:00'),
-    })
-  }
+    if (hasShoppingDay) {
+      result.push({
+        id: 'shopping',
+        type: 'shopping',
+        label: t('timeline.shopping'),
+        startMinutes: hmToMinutes(cardTimeOverrides['shopping'] ?? '15:00'),
+      })
+    }
+
+    return result
+  }, [dashboard, timePref, cardTimeOverrides, hasShoppingDay, t])
 
   // ── dnd handlers ─────────────────────────────────────────────────────────
 
