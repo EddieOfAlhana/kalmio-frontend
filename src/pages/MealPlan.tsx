@@ -172,6 +172,7 @@ export function MealPlan() {
   const { plan, setPlan, updateMeal } = useMealPlanStore()
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set([0]))
   const [showPreferencesForm, setShowPreferencesForm] = useState(false)
+  const [advancedOpen, setAdvancedOpen] = useState(false)
 
   // Try the new Plan API first
   const { data: activePlan, isLoading: activePlanLoading } = useQuery({
@@ -519,49 +520,71 @@ export function MealPlan() {
               <Label>{t('mealPlan.form.proteinMin')}</Label>
               <Input type="number" min="0" placeholder={t('mealPlan.form.optional')} {...register('proteinMin')} />
             </div>
-            <div className="space-y-1">
-              <Label>{t('mealPlan.form.budgetMax')}</Label>
-              <Input type="number" min="0" placeholder={t('mealPlan.form.optional')} {...register('budgetMax')} />
-            </div>
-            <div className="space-y-1">
-              <Label>{t('mealPlan.form.prepTimeMax')}</Label>
-              <Input type="number" min="0" placeholder={t('mealPlan.form.optional')} {...register('prepTimeMax')} />
-            </div>
-            <div className="space-y-1">
-              <Label>{t('mealPlan.form.maxRepeats')} <span className="text-gray-400 text-xs">{t('mealPlan.form.maxRepeatsHint')}</span></Label>
-              <Input type="number" min="1" placeholder={t('mealPlan.form.optional')} {...register('maxRecipeRepetitions')} />
-              {errors.maxRecipeRepetitions && <p className="text-xs text-red-500">{errors.maxRecipeRepetitions.message}</p>}
-            </div>
 
-            {/* Constraint priority sliders */}
-            <div className="col-span-2 md:col-span-3 pt-2">
-              <p className="text-sm font-medium text-[#1A1A1A] mb-0.5">{t('mealPlan.form.weightsTitle')}</p>
-              <p className="text-xs text-gray-400 mb-3">{t('mealPlan.form.weightsHint')}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-                {([
-                  { key: 'leftovers' as WeightKey, label: t('mealPlan.form.weightLeftovers'), enabled: true },
-                  { key: 'budget' as WeightKey, label: t('mealPlan.form.weightBudget'), enabled: budgetEnabled },
-                  { key: 'prepTime' as WeightKey, label: t('mealPlan.form.weightPrepTime'), enabled: prepTimeEnabled },
-                  { key: 'recipeRepeat' as WeightKey, label: t('mealPlan.form.weightRecipeRepeat'), enabled: true },
-                ]).map(({ key, label, enabled }) => (
-                  <div key={key} className="space-y-1">
-                    <div className="flex justify-between items-center">
-                      <Label className={!enabled ? 'text-gray-400' : undefined}>{label}</Label>
-                      <span className={`text-sm font-semibold tabular-nums ${enabled ? 'text-[#4F7942]' : 'text-gray-300'}`}>
-                        {weights[key]}%
-                      </span>
-                    </div>
-                    <Slider
-                      value={weights[key]}
-                      disabled={!enabled}
-                      onChange={v => handleWeightChange(key, v)}
-                    />
-                    {!enabled && (
-                      <p className="text-xs text-gray-400">{t('mealPlan.form.weightDisabled')}</p>
-                    )}
+            {/* Advanced settings disclosure */}
+            <div className="col-span-2 md:col-span-3">
+              <button
+                type="button"
+                onClick={() => setAdvancedOpen(v => !v)}
+                className="flex items-center gap-2 text-sm font-semibold text-[#4F7942] hover:text-[#3d6033] transition-colors"
+                aria-expanded={advancedOpen}
+              >
+                {advancedOpen
+                  ? <ChevronUp className="h-4 w-4 shrink-0" />
+                  : <ChevronDown className="h-4 w-4 shrink-0" />
+                }
+                {advancedOpen ? t('preferences.advancedToggleOpen') : t('preferences.advancedToggle')}
+              </button>
+
+              {advancedOpen && (
+                <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <Label>{t('mealPlan.form.budgetMax')}</Label>
+                    <Input type="number" min="0" placeholder={t('mealPlan.form.optional')} {...register('budgetMax')} />
                   </div>
-                ))}
-              </div>
+                  <div className="space-y-1">
+                    <Label>{t('mealPlan.form.prepTimeMax')}</Label>
+                    <Input type="number" min="0" placeholder={t('mealPlan.form.optional')} {...register('prepTimeMax')} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label>{t('mealPlan.form.maxRepeats')}</Label>
+                    <p className="text-xs text-gray-400 mb-1">{t('mealPlan.form.maxRepeatsHint')}</p>
+                    <Input type="number" min="1" placeholder={t('mealPlan.form.optional')} {...register('maxRecipeRepetitions')} />
+                    {errors.maxRecipeRepetitions && <p className="text-xs text-red-500">{errors.maxRecipeRepetitions.message}</p>}
+                  </div>
+
+                  {/* Optimisation priority sliders */}
+                  <div className="col-span-2 md:col-span-3 pt-2">
+                    <p className="text-sm font-medium text-[#1A1A1A] mb-0.5">{t('mealPlan.form.weightsTitle')}</p>
+                    <p className="text-xs text-gray-400 mb-3">{t('mealPlan.form.weightsHint')}</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+                      {([
+                        { key: 'leftovers' as WeightKey, label: t('mealPlan.form.weightLeftovers'), enabled: true },
+                        { key: 'budget' as WeightKey, label: t('mealPlan.form.weightBudget'), enabled: budgetEnabled },
+                        { key: 'prepTime' as WeightKey, label: t('mealPlan.form.weightPrepTime'), enabled: prepTimeEnabled },
+                        { key: 'recipeRepeat' as WeightKey, label: t('mealPlan.form.weightRecipeRepeat'), enabled: true },
+                      ]).map(({ key, label, enabled }) => (
+                        <div key={key} className="space-y-1">
+                          <div className="flex justify-between items-center">
+                            <Label className={!enabled ? 'text-gray-400' : undefined}>{label}</Label>
+                            <span className={`text-sm font-semibold tabular-nums ${enabled ? 'text-[#4F7942]' : 'text-gray-300'}`}>
+                              {weights[key]}%
+                            </span>
+                          </div>
+                          <Slider
+                            value={weights[key]}
+                            disabled={!enabled}
+                            onChange={v => handleWeightChange(key, v)}
+                          />
+                          {!enabled && (
+                            <p className="text-xs text-gray-400">{t('mealPlan.form.weightDisabled')}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Active dietary restrictions badge */}

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { UserPlus } from 'lucide-react'
+import { UserPlus, ChevronDown, ChevronUp } from 'lucide-react'
 import axios from 'axios'
 import { capture } from '@/lib/analytics'
 import { Spinner } from '@/components/ui/spinner'
@@ -71,6 +71,7 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
   const [prepTimeMax, setPrepTimeMax] = useState('')
   const [maxRepetitions, setMaxRepetitions] = useState(2)
   const [cadence, setCadence] = useState<ShoppingCadence>(7)
+  const [advancedOpen, setAdvancedOpen] = useState(false)
   const [weights, setWeights] = useState<ConstraintWeights>({
     leftovers: 25, budget: 25, prepTime: 25, recipeRepeat: 25,
   })
@@ -177,110 +178,125 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
         </div>
       </section>
 
-      {/* Section 2 — Plan constraints */}
+      {/* Section 2 — Advanced settings disclosure */}
       <section>
-        <p className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('preferences.constraints')}</p>
-        <div className="space-y-4">
-          {/* Max budget */}
-          <div>
-            <Label htmlFor="budget-max">{t('preferences.budgetMax')}</Label>
-            <div className="flex items-center gap-2 mt-1">
-              <Input
-                id="budget-max"
-                type="number"
-                min={0}
-                value={budgetMax}
-                onChange={e => setBudgetMax(e.target.value)}
-                placeholder={t('common.optional')}
-                className="w-32"
-              />
-              <span className="text-sm text-gray-500">{t('preferences.budgetUnit')}</span>
-            </div>
-          </div>
+        <button
+          type="button"
+          onClick={() => setAdvancedOpen(v => !v)}
+          className="flex items-center gap-2 text-sm font-semibold text-[#4F7942] hover:text-[#3d6033] transition-colors"
+          aria-expanded={advancedOpen}
+        >
+          {advancedOpen
+            ? <ChevronUp className="h-4 w-4 shrink-0" />
+            : <ChevronDown className="h-4 w-4 shrink-0" />
+          }
+          {advancedOpen ? t('preferences.advancedToggleOpen') : t('preferences.advancedToggle')}
+        </button>
 
-          {/* Max prep time */}
-          <div>
-            <Label htmlFor="prep-time-max">{t('preferences.prepTimeMax')}</Label>
-            <div className="flex items-center gap-2 mt-1">
-              <Input
-                id="prep-time-max"
-                type="number"
-                min={0}
-                value={prepTimeMax}
-                onChange={e => setPrepTimeMax(e.target.value)}
-                placeholder={t('common.optional')}
-                className="w-32"
-              />
-              <span className="text-sm text-gray-500">{t('preferences.prepTimeUnit')}</span>
+        {advancedOpen && (
+          <div className="mt-4 space-y-4 pl-1">
+            {/* Max budget */}
+            <div>
+              <Label htmlFor="budget-max">{t('preferences.budgetMax')}</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  id="budget-max"
+                  type="number"
+                  min={0}
+                  value={budgetMax}
+                  onChange={e => setBudgetMax(e.target.value)}
+                  placeholder={t('common.optional')}
+                  className="w-32"
+                />
+                <span className="text-sm text-gray-500">{t('preferences.budgetUnit')}</span>
+              </div>
             </div>
-          </div>
 
-          {/* Recipe repetitions stepper */}
-          <div>
-            <Label>{t('preferences.maxRepetitions')}</Label>
-            <div className="flex items-center gap-3 mt-1">
-              <button
-                type="button"
-                onClick={() => setMaxRepetitions(v => Math.max(1, v - 1))}
-                className="h-9 w-9 rounded-[10px] border border-gray-200 bg-white text-[#1A1A1A] font-semibold text-base hover:border-gray-400 transition-colors flex items-center justify-center"
-                aria-label="-"
-              >
-                −
-              </button>
-              <span className="w-6 text-center text-sm font-semibold text-[#1A1A1A]">{maxRepetitions}</span>
-              <button
-                type="button"
-                onClick={() => setMaxRepetitions(v => Math.min(7, v + 1))}
-                className="h-9 w-9 rounded-[10px] border border-gray-200 bg-white text-[#1A1A1A] font-semibold text-base hover:border-gray-400 transition-colors flex items-center justify-center"
-                aria-label="+"
-              >
-                +
-              </button>
+            {/* Max prep time */}
+            <div>
+              <Label htmlFor="prep-time-max">{t('preferences.prepTimeMax')}</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  id="prep-time-max"
+                  type="number"
+                  min={0}
+                  value={prepTimeMax}
+                  onChange={e => setPrepTimeMax(e.target.value)}
+                  placeholder={t('common.optional')}
+                  className="w-32"
+                />
+                <span className="text-sm text-gray-500">{t('preferences.prepTimeUnit')}</span>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Section 3 — Constraint priorities (only when at least one constraint is set) */}
-      {hasAnyConstraint && (
-        <section>
-          <p className="text-sm font-semibold text-[#1A1A1A] mb-1">{t('preferences.weightsTitle')}</p>
-          <p className="text-xs text-gray-500 mb-4">{t('preferences.weightsHint')}</p>
-          <div className="space-y-4">
-            {(
-              [
-                { key: 'leftovers' as WeightKey, label: t('preferences.weightLeftovers') },
-                { key: 'budget' as WeightKey, label: t('preferences.weightBudget') },
-                { key: 'prepTime' as WeightKey, label: t('preferences.weightPrepTime') },
-                { key: 'recipeRepeat' as WeightKey, label: t('preferences.weightRecipeRepeat') },
-              ]
-            ).map(({ key, label }) => {
-              const isActive = activeWeightKeys.includes(key)
-              return (
-                <div key={key}>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className={cn('text-sm', isActive ? 'text-[#1A1A1A] font-medium' : 'text-gray-400')}>
-                      {label}
-                    </span>
-                    {isActive
-                      ? <span className="text-sm font-semibold text-[#1A1A1A]">{weights[key]}%</span>
-                      : <span className="text-xs text-gray-400">{t('preferences.weightDisabled')}</span>
-                    }
-                  </div>
-                  <Slider
-                    value={weights[key]}
-                    min={0}
-                    max={100}
-                    step={1}
-                    disabled={!isActive}
-                    onChange={v => setWeights(prev => distributeWeights(key, v, prev, activeWeightKeys))}
-                  />
+            {/* Recipe repetitions stepper */}
+            <div>
+              <Label>{t('preferences.maxRepetitions')}</Label>
+              <p className="text-xs text-gray-500 mt-0.5 mb-2">{t('preferences.maxRepetitionsHint')}</p>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setMaxRepetitions(v => Math.max(1, v - 1))}
+                  className="h-9 w-9 rounded-[10px] border border-gray-200 bg-white text-[#1A1A1A] font-semibold text-base hover:border-gray-400 transition-colors flex items-center justify-center"
+                  aria-label="-"
+                >
+                  −
+                </button>
+                <span className="w-6 text-center text-sm font-semibold text-[#1A1A1A]">{maxRepetitions}</span>
+                <button
+                  type="button"
+                  onClick={() => setMaxRepetitions(v => Math.min(7, v + 1))}
+                  className="h-9 w-9 rounded-[10px] border border-gray-200 bg-white text-[#1A1A1A] font-semibold text-base hover:border-gray-400 transition-colors flex items-center justify-center"
+                  aria-label="+"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Constraint priorities (only when at least one constraint is set) */}
+            {hasAnyConstraint && (
+              <div>
+                <p className="text-sm font-semibold text-[#1A1A1A] mb-1">{t('preferences.weightsTitle')}</p>
+                <p className="text-xs text-gray-500 mb-4">{t('preferences.weightsHint')}</p>
+                <div className="space-y-4">
+                  {(
+                    [
+                      { key: 'leftovers' as WeightKey, label: t('preferences.weightLeftovers') },
+                      { key: 'budget' as WeightKey, label: t('preferences.weightBudget') },
+                      { key: 'prepTime' as WeightKey, label: t('preferences.weightPrepTime') },
+                      { key: 'recipeRepeat' as WeightKey, label: t('preferences.weightRecipeRepeat') },
+                    ]
+                  ).map(({ key, label }) => {
+                    const isActive = activeWeightKeys.includes(key)
+                    return (
+                      <div key={key}>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className={cn('text-sm', isActive ? 'text-[#1A1A1A] font-medium' : 'text-gray-400')}>
+                            {label}
+                          </span>
+                          {isActive
+                            ? <span className="text-sm font-semibold text-[#1A1A1A]">{weights[key]}%</span>
+                            : <span className="text-xs text-gray-400">{t('preferences.weightDisabled')}</span>
+                          }
+                        </div>
+                        <Slider
+                          value={weights[key]}
+                          min={0}
+                          max={100}
+                          step={1}
+                          disabled={!isActive}
+                          onChange={v => setWeights(prev => distributeWeights(key, v, prev, activeWeightKeys))}
+                        />
+                      </div>
+                    )
+                  })}
                 </div>
-              )
-            })}
+              </div>
+            )}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       {/* Section 4 — Shopping cadence */}
       <section>
