@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { UserPlus, ChevronDown, ChevronUp } from 'lucide-react'
@@ -72,9 +72,22 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
   const [maxRepetitions, setMaxRepetitions] = useState(2)
   const [cadence, setCadence] = useState<ShoppingCadence>(7)
   const [advancedOpen, setAdvancedOpen] = useState(false)
+  const prefillApplied = useRef(false)
+  const [carbsTargetG, setCarbsTargetG] = useState('')
+  const [fatTargetG, setFatTargetG] = useState('')
   const [weights, setWeights] = useState<ConstraintWeights>({
     leftovers: 25, budget: 25, prepTime: 25, recipeRepeat: 25,
   })
+
+  // ── Pre-fill macro targets from saved settings (once, when user loads) ────
+  useEffect(() => {
+    if (!user || prefillApplied.current) return
+    prefillApplied.current = true
+    const updates: Array<() => void> = []
+    if (user.carbsTargetG != null) updates.push(() => setCarbsTargetG(String(user.carbsTargetG)))
+    if (user.fatTargetG != null) updates.push(() => setFatTargetG(String(user.fatTargetG)))
+    updates.forEach(fn => fn())
+  }, [user])
 
   // ── Active weight keys (inactive when their constraint is empty) ──────────
   const activeWeightKeys: WeightKey[] = (
@@ -122,6 +135,8 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
           constraintWeights: weights,
           mealCalorieTargets,
           dietaryRestrictions: null,
+          carbsTargetG: carbsTargetG.trim() ? Number(carbsTargetG) : null,
+          fatTargetG: fatTargetG.trim() ? Number(fatTargetG) : null,
         },
       },
     })
@@ -251,6 +266,40 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
                 >
                   +
                 </button>
+              </div>
+            </div>
+
+            {/* Carbs target */}
+            <div>
+              <Label htmlFor="carbs-target-g">{t('settings.macroTargets.carbsTargetG')}</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  id="carbs-target-g"
+                  type="number"
+                  min={0}
+                  value={carbsTargetG}
+                  onChange={e => setCarbsTargetG(e.target.value)}
+                  placeholder={t('common.optional')}
+                  className="w-32"
+                />
+                <span className="text-sm text-gray-500">g</span>
+              </div>
+            </div>
+
+            {/* Fat target */}
+            <div>
+              <Label htmlFor="fat-target-g">{t('settings.macroTargets.fatTargetG')}</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  id="fat-target-g"
+                  type="number"
+                  min={0}
+                  value={fatTargetG}
+                  onChange={e => setFatTargetG(e.target.value)}
+                  placeholder={t('common.optional')}
+                  className="w-32"
+                />
+                <span className="text-sm text-gray-500">g</span>
               </div>
             </div>
 
