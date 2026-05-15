@@ -39,6 +39,7 @@ import { initAnalytics } from '@/lib/analytics'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { PlantingPreview } from '@/pages/_preview/PlantingPreview'
 import { DiofaPreview } from '@/pages/_preview/DiofaPreview'
+import { TasteSwipePreview } from '@/pages/_preview/TasteSwipePreview'
 
 initAnalytics()
 
@@ -114,6 +115,7 @@ export default function App() {
                 <Route path="my-ingredients" element={<MyIngredients />} />
                 <Route path="_preview/planting" element={<PlantingPreview />} />
                 <Route path="_preview/diofa" element={<DiofaPreview />} />
+                <Route path="_preview/taste-swipe" element={<TasteSwipePreview />} />
                 <Route element={<AdminRoute />}>
                   <Route path="admin/users" element={<UserManagement />} />
                   <Route path="admin/ip-vault" element={<IpVault />} />

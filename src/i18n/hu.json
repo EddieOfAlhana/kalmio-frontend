@@ -1146,6 +1146,19 @@
       "subtitle": "Hírek, fejlesztési frissítések és táplálkozási gondolatok."
     }
   },
+  "taste": {
+    "love": "Imádom",
+    "ok": "Megeszem",
+    "hate": "Soha",
+    "skip": "Kihagyom",
+    "progress": "{{current}} / {{total}}",
+    "actionsLabel": "Értékelés",
+    "cardIngredient": "Hozzávaló",
+    "cardRecipe": "Recept",
+    "done": "Megvan az ízlésed.",
+    "doneSubtitle": "Felhasználjuk a hetedben — nincs más dolgod.",
+    "errorSubmit": "Nem sikerült rögzíteni. Próbáld újra."
+  },
   "onboarding": {
     "planting": {
       "ariaLabel": "Dióültetés animáció — az ültetési folyamat előrehaladása",

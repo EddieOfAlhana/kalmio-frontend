@@ -1146,6 +1146,19 @@
       "subtitle": "News, roadmap updates, and nutrition insights."
     }
   },
+  "taste": {
+    "love": "Love it",
+    "ok": "I'd eat it",
+    "hate": "Never",
+    "skip": "Skip",
+    "progress": "{{current}} / {{total}}",
+    "actionsLabel": "Rate this",
+    "cardIngredient": "Ingredient",
+    "cardRecipe": "Recipe",
+    "done": "Your preferences are noted.",
+    "doneSubtitle": "We will factor these into your plan — nothing else to do.",
+    "errorSubmit": "Could not save your response. Please try again."
+  },
   "onboarding": {
     "planting": {
       "ariaLabel": "Walnut planting animation — progress through the planting sequence",

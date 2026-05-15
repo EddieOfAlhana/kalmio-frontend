@@ -585,6 +585,40 @@ export interface ShoppingList {
   currency: string
 }
 
+// ── Taste Signals ─────────────────────────────────────────────────────────
+
+/** Maps to the backend enum — keep in sync with TasteSignal.Signal (E9.1). */
+export type TasteSignalValue = 'LOVE' | 'OK' | 'HATE'
+
+/** Maps to the backend enum — keep in sync with TasteSignal.TargetType (E9.1). */
+export type TasteTargetType = 'INGREDIENT' | 'RECIPE'
+
+/** Maps to the backend enum — keep in sync with TasteSignal.Source (E9.1). */
+export type TasteSignalSource = 'ONBOARDING' | 'IN_APP' | 'POST_MEAL_PROMPT'
+
+/**
+ * Request body for POST /api/users/me/taste-signals.
+ * Backend endpoint provided by KALMIO-153 / E9.1 — may 404 until that ticket ships.
+ */
+export interface TasteSignalRequest {
+  targetType: TasteTargetType
+  targetId: string
+  signal: TasteSignalValue
+  source: TasteSignalSource
+}
+
+/** A single card shown in the taste-swipe deck. */
+export interface TasteCard {
+  id: string
+  targetType: TasteTargetType
+  /** Display name in the active locale. */
+  name: string
+  /** Optional subtitle (recipe: macros blurb; ingredient: category). */
+  subtitle?: string
+  /** Optional image URL. */
+  imageUrl?: string | null
+}
+
 // ── Points ────────────────────────────────────────────────────────────────
 
 export interface PointEventDto {
