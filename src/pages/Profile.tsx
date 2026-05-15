@@ -240,10 +240,7 @@ export function Profile() {
   async function clearBodyData() {
     setBodyDataSaving(true)
     try {
-      const updated = await usersService.patchBodyData({
-        weightKg: null, heightCm: null, ageYears: null,
-        biologicalSex: null, activityLevel: null,
-      })
+      const updated = await usersService.deleteBodyData()
       qc.setQueryData(['me'], updated)
       setWeightKg('')
       setHeightCm('')

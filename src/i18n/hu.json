@@ -463,7 +463,7 @@
     "bodyData": {
       "title": "Testadatok",
       "subtitle": "Ezek alapján számítjuk a javasolt kalória- és fehérjecélodat.",
-      "privacy": "Testadataid kizárólag a TDEE-alapú célszámítás céljából kerülnek felhasználásra — más felhasználók nem látják őket, és nem kerülnek harmadik félhez.",
+      "privacy": "Testadataidat kizárólag a javasolt kalória- és fehérjecél kiszámításához használjuk — más felhasználók nem látják, és harmadik félhez nem kerül.",
       "weightKg": "Testsúly (kg)",
       "heightCm": "Testmagasság (cm)",
       "ageYears": "Életkor",
@@ -472,11 +472,11 @@
       "sexFemale": "Nő",
       "sexPreferNotToSay": "Nem szeretném megadni",
       "activityLevel": "Aktivitási szint",
-      "activitySedentary": "Ülő (nincs mozgás)",
+      "activitySedentary": "Ülő (kevés vagy semmi mozgás)",
       "activityLight": "Könnyű (1–3 nap/hét)",
       "activityModerate": "Mérsékelt (3–5 nap/hét)",
       "activityActive": "Aktív (6–7 nap/hét)",
-      "activityVeryActive": "Nagyon aktív (fizikai munka vagy napi edzés)",
+      "activityVeryActive": "Nagyon aktív (fizikai munka vagy kétszeri napi edzés)",
       "save": "Mentés",
       "saving": "Mentés…",
       "saveSuccess": "Testadatok elmentve.",
@@ -562,8 +562,8 @@
     },
     "suggestion": {
       "title": "Javasolt célok",
-      "kcal": "Javasolt kalória cél: {{n}} kcal (TDEE alapján)",
-      "protein": "Javasolt fehérje: {{n}}g (1,8g / testsúly kg)",
+      "kcal": "Javasolt kalóriacél: {{n}} kcal (TDEE alapján)",
+      "protein": "Javasolt fehérje: {{n}}g (1,8 g / kg testsúly)",
       "accept": "Elfogadom",
       "hint": "A javaslatot a profilban megadott testadataid alapján számítottuk."
     },

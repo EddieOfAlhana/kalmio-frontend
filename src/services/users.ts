@@ -87,4 +87,6 @@ export const usersService = {
     api.patch<TimePreferencesDto>('/api/users/me/time-preferences', req).then(r => r.data),
   patchBodyData: (body: BodyDataRequest): Promise<UserSettings> =>
     api.patch<UserSettings>('/api/users/me/body-data', body).then(r => r.data),
+  deleteBodyData: (): Promise<UserSettings> =>
+    api.delete<UserSettings>('/api/users/me/body-data').then(r => r.data),
 }
