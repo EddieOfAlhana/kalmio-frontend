@@ -302,7 +302,9 @@
       "kcal": "kcal",
       "protein": "Protein",
       "fat": "Fat",
-      "carbs": "Carbs"
+      "carbs": "Carbs",
+      "noIngredients": "No ingredients listed.",
+      "piece": "pc"
     },
     "tags": {
       "QUICK": "Quick",

@@ -302,7 +302,9 @@
       "kcal": "kcal",
       "protein": "Fehérje",
       "fat": "Zsír",
-      "carbs": "Szénhidrát"
+      "carbs": "Szénhidrát",
+      "noIngredients": "Nincsenek hozzávalók.",
+      "piece": "db"
     },
     "tags": {
       "QUICK": "Gyors",

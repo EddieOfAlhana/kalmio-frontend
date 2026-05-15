@@ -12,10 +12,11 @@ import { MacroRing } from '@/components/ui/macro-ring'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { planService } from '@/services/plans'
 import { recipesService } from '@/services/recipes'
+import { ingredientsService } from '@/services/ingredients'
 import { PlanPreferencesForm } from '@/components/PlanPreferencesForm'
 import { formatCurrency, formatLocalDate } from '@/lib/utils'
 import { getRecipeName, getRecipeSteps } from '@/lib/i18nRecipe'
-import type { MealType, Recipe, Plan, PlannedMeal, PlannedMealStatus } from '@/types'
+import type { MealType, Recipe, Ingredient, Plan, PlannedMeal, PlannedMealStatus } from '@/types'
 
 const MEAL_ORDER: MealType[] = ['BREAKFAST', 'MORNING_SNACK', 'LUNCH', 'AFTERNOON_SNACK', 'DINNER', 'SNACK']
 
@@ -291,6 +292,18 @@ function PlannedMealCard({
     staleTime: 5 * 60 * 1000,
   })
 
+  const { data: allIngredients = [] } = useQuery({
+    queryKey: ['ingredients'],
+    queryFn: ingredientsService.list,
+    staleTime: 30_000,
+  })
+
+  // Map of ingredientId → Ingredient object, for name resolution + macro calculation.
+  const ingredientById = useMemo<Map<string, Ingredient>>(
+    () => new Map(allIngredients.map(i => [i.id, i])),
+    [allIngredients]
+  )
+
   const steps = getRecipeSteps(fullRecipe, lang)
   const displayName = getRecipeName(fullRecipe, lang) || meal.recipeName
 
@@ -471,6 +484,52 @@ function PlannedMealCard({
                   <p className="text-[10px] text-gray-400 mb-0.5">{t('recipes.detail.cook')}</p>
                   <p className="text-sm font-bold text-[#1A1A1A]">{fullRecipe.cookTimeMinutes}m</p>
                 </div>
+              </div>
+            )}
+            {fullRecipe && (
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  {t('recipes.detail.ingredients')}
+                </p>
+                {fullRecipe.ingredients.length === 0 ? (
+                  <p className="text-sm text-gray-400">{t('recipes.detail.noIngredients')}</p>
+                ) : (
+                  <ul className="space-y-1.5">
+                    {fullRecipe.ingredients.map(ing => {
+                      const ingredient = ingredientById.get(ing.ingredientId)
+                      const name = ingredient
+                        ? (ingredient.translations?.[lang]?.name ?? ingredient.name)
+                        : ing.ingredientId
+                      const unitLabel = ing.unit === 'G' ? 'g' : ing.unit === 'ML' ? 'ml' : t('recipes.detail.piece')
+                      // Per-ingredient kcal + protein: macros are per 100g/ml; PIECE uses gramsPerPiece.
+                      let ingKcal: number | null = null
+                      let ingProtein: number | null = null
+                      if (ingredient?.macros) {
+                        const gramsEquiv =
+                          ing.unit === 'PIECE'
+                            ? ing.amount * (ingredient.gramsPerPiece ?? 100)
+                            : ing.amount
+                        ingKcal = (gramsEquiv / 100) * ingredient.macros.kcal
+                        ingProtein = (gramsEquiv / 100) * ingredient.macros.protein
+                      }
+                      return (
+                        <li key={ing.id} className="flex items-start justify-between gap-2 text-sm">
+                          <div className="flex-1 min-w-0">
+                            <span className="text-[#1A1A1A] leading-snug">{name}</span>
+                            {ingKcal !== null && ingProtein !== null && (
+                              <p className="text-[11px] text-gray-400 mt-0.5 tabular-nums">
+                                {ingKcal.toFixed(0)} kcal · {ingProtein.toFixed(1)}g {t('recipes.detail.protein')}
+                              </p>
+                            )}
+                          </div>
+                          <span className="text-gray-500 tabular-nums shrink-0 mt-0.5">
+                            {ing.amount}{unitLabel}
+                          </span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                )}
               </div>
             )}
             <div>
