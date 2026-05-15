@@ -133,6 +133,25 @@
       "description": "Tervezd meg az első hetedet — 50 pont vár.",
       "cta": "Terv összeállítása"
     },
+    "weeklySummary": {
+      "title": "Heti összefoglaló",
+      "complianceLabel": "a kalóriacélon belül",
+      "emptyState": "Még nincs elég adat a heti elemzéshez.",
+      "emptyStateHint": "Néhány nap rögzítés után itt látod az összesítést.",
+      "avgActual": "Átlag tényleges",
+      "avgTarget": "Átlag cél",
+      "kcalUnit": "kcal",
+      "protein": "Fehérje",
+      "fat": "Zsír",
+      "carbs": "Szénhidrát",
+      "trendUp": "+{{delta}} kcal a múlt héthez képest",
+      "trendDown": "−{{delta}} kcal a múlt héthez képest",
+      "trendFlat": "Stabil a múlt héthez képest",
+      "dayTooltip": "{{date}}: {{actual}} / {{target}} kcal",
+      "legendActual": "Tényleges",
+      "legendTarget": "Cél",
+      "chartAriaLabel": "Napi kalória grafikon — tényleges vs. cél"
+    },
     "replan": {
       "title": "Terv módosítás elérhető",
       "accept": "Elfogadom",

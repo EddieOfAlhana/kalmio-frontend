@@ -133,6 +133,25 @@
       "description": "Plan your first week — 50 points waiting.",
       "cta": "Build a plan"
     },
+    "weeklySummary": {
+      "title": "Weekly summary",
+      "complianceLabel": "within calorie target",
+      "emptyState": "Not enough data for a weekly analysis yet.",
+      "emptyStateHint": "Log a few days and the summary will appear here.",
+      "avgActual": "Avg actual",
+      "avgTarget": "Avg target",
+      "kcalUnit": "kcal",
+      "protein": "Protein",
+      "fat": "Fat",
+      "carbs": "Carbs",
+      "trendUp": "+{{delta}} kcal vs last week",
+      "trendDown": "−{{delta}} kcal vs last week",
+      "trendFlat": "Stable vs. last week",
+      "dayTooltip": "{{date}}: {{actual}} / {{target}} kcal",
+      "legendActual": "Actual",
+      "legendTarget": "Target",
+      "chartAriaLabel": "Daily calorie chart — actual vs target"
+    },
     "replan": {
       "title": "Plan update available",
       "accept": "Accept",

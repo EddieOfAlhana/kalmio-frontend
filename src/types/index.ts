@@ -647,3 +647,40 @@ export interface TimePreferencesDto {
   sleepTime: string       // "HH:mm"
   mealTimePrefs: Record<string, string> | null
 }
+
+// ── Weekly Summary ─────────────────────────────────────────────────────────
+
+export interface WeeklyDayDto {
+  date: string          // "YYYY-MM-DD"
+  kcal: number
+  protein: number
+  fat: number
+  carbs: number
+  target: {
+    kcal: number
+    protein: number
+    fat: number
+    carbs: number
+  }
+}
+
+export interface WeeklySummaryDto {
+  dayCount: number
+  /** null when there are not enough logged days to compute */
+  compliancePct: number | null
+  averageActual: {
+    kcal: number
+    protein: number
+    fat: number
+    carbs: number
+  }
+  averageTarget: {
+    kcal: number
+    protein: number
+    fat: number
+    carbs: number
+  }
+  daily: WeeklyDayDto[]
+  /** null when no prior week data exists */
+  weekOverWeekDeltaKcal: number | null
+}

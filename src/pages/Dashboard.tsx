@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Header } from '@/components/layout/Header'
 import { CalendarStrip } from '@/components/dashboard/CalendarStrip'
 import { DailyTimeline } from '@/components/dashboard/DailyTimeline'
+import { WeeklySummaryModule } from '@/components/dashboard/WeeklySummaryModule'
 import { planService } from '@/services/plans'
 import { usePointsToast } from '@/hooks/usePointsToast'
 import type { CalendarDayDto } from '@/types'
@@ -35,6 +36,9 @@ export function Dashboard() {
         hasShoppingDay={selectedDayData?.hasShoppingDay ?? false}
         activePlanId={activePlan?.id ?? null}
       />
+      <div className="px-4 pb-6">
+        <WeeklySummaryModule />
+      </div>
     </div>
   )
 }
