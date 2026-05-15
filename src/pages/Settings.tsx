@@ -25,6 +25,8 @@ interface FormValues {
   days: string
   kcalTarget: string
   proteinMin: string
+  carbsTargetG: string
+  fatTargetG: string
   budgetMax: string
   prepTimeMax: string
   maxRecipeRepetitions: string
@@ -183,7 +185,7 @@ export function Settings() {
     queryFn: usersService.getMe,
   })
 
-  const { register, handleSubmit, reset, setValue } = useForm<FormValues>()
+  const { register, handleSubmit, reset, setValue, watch } = useForm<FormValues>()
 
   useEffect(() => {
     if (settings) {
@@ -192,6 +194,8 @@ export function Settings() {
         days: settings.mealPlanPreferences?.days?.toString() ?? '',
         kcalTarget: settings.mealPlanPreferences?.kcalTarget?.toString() ?? '',
         proteinMin: settings.mealPlanPreferences?.proteinMin?.toString() ?? '',
+        carbsTargetG: settings.carbsTargetG?.toString() ?? '',
+        fatTargetG: settings.fatTargetG?.toString() ?? '',
         budgetMax: settings.mealPlanPreferences?.budgetMax?.toString() ?? '',
         prepTimeMax: settings.mealPlanPreferences?.prepTimeMax?.toString() ?? '',
         maxRecipeRepetitions: settings.mealPlanPreferences?.maxRecipeRepetitions?.toString() ?? '',
@@ -229,8 +233,63 @@ export function Settings() {
       preferredPrepDayOfWeek: values.preferredPrepDayOfWeek
         ? parseInt(values.preferredPrepDayOfWeek, 10)
         : null,
+      carbsTargetG: values.carbsTargetG ? parseInt(values.carbsTargetG, 10) : null,
+      fatTargetG: values.fatTargetG ? parseInt(values.fatTargetG, 10) : null,
     })
   }
+
+  // ── Implied macro preview ──────────────────────────────────────────────────
+  const watchedKcal = watch('kcalTarget')
+  const watchedProtein = watch('proteinMin')
+  const watchedCarbs = watch('carbsTargetG')
+  const watchedFat = watch('fatTargetG')
+
+  const kcalNum = watchedKcal ? parseFloat(watchedKcal) : null
+  const proteinNum = watchedProtein ? parseFloat(watchedProtein) : null
+  const carbsNum = watchedCarbs ? parseFloat(watchedCarbs) : null
+  const fatNum = watchedFat ? parseFloat(watchedFat) : null
+
+  // Compute implied macros: if kcal + 2 of 3 macros are set, infer the third
+  // protein: 4 kcal/g, carbs: 4 kcal/g, fat: 9 kcal/g
+  let impliedProteinG: number | null = null
+  let impliedProteinPct: number | null = null
+  let impliedCarbsG: number | null = null
+  let impliedCarbsPct: number | null = null
+  let impliedFatG: number | null = null
+  let impliedFatPct: number | null = null
+
+  if (kcalNum != null && kcalNum > 0) {
+    const proteinKcal = proteinNum != null ? proteinNum * 4 : null
+    const carbsKcal = carbsNum != null ? carbsNum * 4 : null
+    const fatKcal = fatNum != null ? fatNum * 9 : null
+
+    const setCount = [proteinKcal, carbsKcal, fatKcal].filter(v => v != null).length
+
+    if (setCount === 2) {
+      // Infer the missing one
+      if (proteinKcal == null && carbsKcal != null && fatKcal != null) {
+        const remaining = kcalNum - carbsKcal - fatKcal
+        if (remaining >= 0) {
+          impliedProteinG = Math.round(remaining / 4)
+          impliedProteinPct = Math.round((remaining / kcalNum) * 100)
+        }
+      } else if (carbsKcal == null && proteinKcal != null && fatKcal != null) {
+        const remaining = kcalNum - proteinKcal - fatKcal
+        if (remaining >= 0) {
+          impliedCarbsG = Math.round(remaining / 4)
+          impliedCarbsPct = Math.round((remaining / kcalNum) * 100)
+        }
+      } else if (fatKcal == null && proteinKcal != null && carbsKcal != null) {
+        const remaining = kcalNum - proteinKcal - carbsKcal
+        if (remaining >= 0) {
+          impliedFatG = Math.round(remaining / 9)
+          impliedFatPct = Math.round((remaining / kcalNum) * 100)
+        }
+      }
+    }
+  }
+
+  const hasImplied = impliedProteinG != null || impliedCarbsG != null || impliedFatG != null
 
   if (isLoading) {
     return <div className="flex justify-center py-12"><Spinner /></div>
@@ -338,10 +397,45 @@ export function Settings() {
                 <Input type="number" min={0} {...register('proteinMin')} className="mt-1" placeholder="150" />
               </div>
               <div>
+                <Label>{t('settings.macroTargets.carbsTargetG')}</Label>
+                <Input type="number" min={0} max={2000} {...register('carbsTargetG')} className="mt-1" placeholder="250" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>{t('settings.macroTargets.fatTargetG')}</Label>
+                <Input type="number" min={0} max={1000} {...register('fatTargetG')} className="mt-1" placeholder="70" />
+              </div>
+              <div>
                 <Label>{t('mealPlan.form.budgetMax')}</Label>
                 <Input type="number" min={0} {...register('budgetMax')} className="mt-1" />
               </div>
             </div>
+
+            {/* Implied macro preview — shown when kcal + exactly 2 of 3 macros are filled */}
+            {hasImplied && (
+              <div className="rounded-lg border border-[#4F7942]/20 bg-[#F3F8F2] px-3 py-2.5 space-y-0.5">
+                <p className="text-[10px] font-semibold text-[#4F7942] uppercase tracking-wide mb-1">
+                  {t('settings.macroTargets.impliedTitle')}
+                </p>
+                {impliedProteinG != null && (
+                  <p className="text-xs text-[#1A1A1A]">
+                    {t('settings.macroTargets.impliedProtein', { g: impliedProteinG, pct: impliedProteinPct })}
+                  </p>
+                )}
+                {impliedCarbsG != null && (
+                  <p className="text-xs text-[#1A1A1A]">
+                    {t('settings.macroTargets.impliedCarbs', { g: impliedCarbsG, pct: impliedCarbsPct })}
+                  </p>
+                )}
+                {impliedFatG != null && (
+                  <p className="text-xs text-[#1A1A1A]">
+                    {t('settings.macroTargets.impliedFat', { g: impliedFatG, pct: impliedFatPct })}
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-3">
               <div>

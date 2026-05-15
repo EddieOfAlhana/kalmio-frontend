@@ -226,7 +226,10 @@
       "prepTime": "{{min}} perc"
     },
     "planSyncError": "Az étrend elmentve, de az irányítópulton nem jelenik meg. Generáld újra a tervet.",
-    "batchCookLeftover": "Korábbi fogás maradéka"
+    "batchCookLeftover": "Korábbi fogás maradéka",
+    "macroSummary": {
+      "target": "cél: {{target}}g"
+    }
   },
   "recipes": {
     "title": "Receptek",
@@ -551,6 +554,14 @@
     "languageLabel": "Felület nyelve",
     "mealPlanDefaults": "Étrendtervezés alapértékek",
     "mealPlanDefaultsHint": "Ezek az értékek előre kitöltik az étrend generáló űrlapot.",
+    "macroTargets": {
+      "carbsTargetG": "Cél szénhidrát (g)",
+      "fatTargetG": "Cél zsír (g)",
+      "impliedTitle": "Kalóriából számítva",
+      "impliedProtein": "Fehérje (számított): {{g}} g ({{pct}}% kcal)",
+      "impliedCarbs": "Szénhidrát (számított): {{g}} g ({{pct}}% kcal)",
+      "impliedFat": "Zsír (számított): {{g}} g ({{pct}}% kcal)"
+    },
     "prepPrefs": {
       "title": "Előkészítési preferenciák",
       "subtitle": "Innen tudjuk, hogyan szervezzük az előkészítést neked.",

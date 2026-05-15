@@ -50,6 +50,8 @@ const schema = z.object({
   days: z.coerce.number().int().min(1).max(14),
   kcalTarget: z.coerce.number().min(500),
   proteinMin: optionalNum,
+  carbsTargetG: optionalInt,
+  fatTargetG: optionalInt,
   budgetMax: optionalNum,
   prepTimeMax: optionalInt,
   maxRecipeRepetitions: z.coerce.number().int().min(1).optional().nullable().transform(v => (v == null || v < 1) ? null : v),
@@ -220,13 +222,15 @@ export function MealPlan() {
     const p = userSettings.mealPlanPreferences
     prefsApplied.current = true
 
-    // Pre-fill kcalTarget and proteinMin from saved settings.
+    // Pre-fill kcalTarget, proteinMin, and macro targets from saved settings.
     // Fall back to hardcoded defaults only when no saved value exists.
     reset(
       {
         days: 7,
         kcalTarget: p.kcalTarget ?? 2000,
         proteinMin: p.proteinMin ?? 150,
+        carbsTargetG: userSettings?.carbsTargetG ?? null,
+        fatTargetG: userSettings?.fatTargetG ?? null,
         maxRecipeRepetitions: 2,
       },
       { keepDefaultValues: false },
@@ -251,6 +255,8 @@ export function MealPlan() {
   const kcalTarget = Number(watch('kcalTarget') ?? 2000)
   const budgetMaxRaw = watch('budgetMax')
   const prepTimeMaxRaw = watch('prepTimeMax')
+  const carbsTargetGRaw = watch('carbsTargetG')
+  const fatTargetGRaw = watch('fatTargetG')
   const budgetEnabled = !!budgetMaxRaw
   const prepTimeEnabled = !!prepTimeMaxRaw
 
@@ -380,6 +386,8 @@ export function MealPlan() {
       constraints: {
         kcalTarget: v.kcalTarget,
         proteinMin: v.proteinMin ?? null,
+        carbsTargetG: v.carbsTargetG ?? null,
+        fatTargetG: v.fatTargetG ?? null,
         budgetMax: v.budgetMax ?? null,
         prepTimeMax: v.prepTimeMax ?? null,
         maxRecipeRepetitions: v.maxRecipeRepetitions ?? null,
@@ -695,30 +703,77 @@ export function MealPlan() {
           )}
 
           {/* Total summary */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-            {[
-              { label: t('mealPlan.summary.totalKcal'), value: formatMacro(totalMacros != null ? totalMacros.kcal / plan.days : undefined, ' kcal'), color: '#F28C28' },
-              { label: t('mealPlan.summary.totalProtein'), value: formatMacro(totalMacros != null ? totalMacros.protein / plan.days : undefined, 'g'), color: '#F28C28' },
-              { label: t('mealPlan.summary.avgCarbs'), value: formatMacro(totalMacros != null ? totalMacros.carbs / plan.days : undefined, 'g'), color: '#F28C28' },
-              { label: t('mealPlan.summary.totalFat'), value: formatMacro(totalMacros != null ? totalMacros.fat / plan.days : undefined, 'g'), color: '#4F7942' },
-            ].map(({ label, value, color }) => (
-              <Card key={label}>
-                <CardContent className="pt-4">
-                  <p className="text-xs text-gray-500 mb-1">{label}</p>
-                  <p className="text-lg font-headline font-bold" style={{ color }}>{value}</p>
-                </CardContent>
-              </Card>
-            ))}
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-xs text-gray-500 mb-1">{t('mealPlan.summary.totalCost')}</p>
-                <p className="text-lg font-headline font-bold" style={{ color: '#4F7942' }}>{formatCurrency(totalCost)}</p>
-                {costPerDay != null && (
-                  <p className="text-xs text-gray-400 mt-0.5">{formatCurrency(costPerDay)} {t('mealPlan.summary.costPerDay')}</p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+          {(() => {
+            const avgKcal = totalMacros != null ? totalMacros.kcal / plan.days : null
+            const avgProtein = totalMacros != null ? totalMacros.protein / plan.days : null
+            const avgCarbs = totalMacros != null ? totalMacros.carbs / plan.days : null
+            const avgFat = totalMacros != null ? totalMacros.fat / plan.days : null
+            const carbsTarget = carbsTargetGRaw ? Number(carbsTargetGRaw) : null
+            const fatTarget = fatTargetGRaw ? Number(fatTargetGRaw) : null
+            return (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-gray-500 mb-1">{t('mealPlan.summary.totalKcal')}</p>
+                    <p className="text-lg font-headline font-bold" style={{ color: '#F28C28' }}>
+                      {formatMacro(avgKcal ?? undefined, ' kcal')}
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-gray-500 mb-1">{t('mealPlan.summary.totalProtein')}</p>
+                    <p className="text-lg font-headline font-bold" style={{ color: '#F28C28' }}>
+                      {formatMacro(avgProtein ?? undefined, 'g')}
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-gray-500 mb-1">{t('mealPlan.summary.avgCarbs')}</p>
+                    <p className="text-lg font-headline font-bold" style={{ color: '#F28C28' }}>
+                      {formatMacro(avgCarbs ?? undefined, 'g')}
+                    </p>
+                    {carbsTarget != null && avgCarbs != null && (
+                      <p className="text-[10px] text-gray-400 mt-0.5">
+                        {t('mealPlan.macroSummary.target', { target: carbsTarget })}
+                        {' · '}
+                        <span className={avgCarbs >= carbsTarget * 0.9 && avgCarbs <= carbsTarget * 1.1 ? 'text-[#4F7942]' : 'text-amber-600'}>
+                          {avgCarbs >= carbsTarget ? '+' : ''}{Math.round(avgCarbs - carbsTarget)}g
+                        </span>
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-gray-500 mb-1">{t('mealPlan.summary.totalFat')}</p>
+                    <p className="text-lg font-headline font-bold" style={{ color: '#4F7942' }}>
+                      {formatMacro(avgFat ?? undefined, 'g')}
+                    </p>
+                    {fatTarget != null && avgFat != null && (
+                      <p className="text-[10px] text-gray-400 mt-0.5">
+                        {t('mealPlan.macroSummary.target', { target: fatTarget })}
+                        {' · '}
+                        <span className={avgFat >= fatTarget * 0.9 && avgFat <= fatTarget * 1.1 ? 'text-[#4F7942]' : 'text-amber-600'}>
+                          {avgFat >= fatTarget ? '+' : ''}{Math.round(avgFat - fatTarget)}g
+                        </span>
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-4">
+                    <p className="text-xs text-gray-500 mb-1">{t('mealPlan.summary.totalCost')}</p>
+                    <p className="text-lg font-headline font-bold" style={{ color: '#4F7942' }}>{formatCurrency(totalCost)}</p>
+                    {costPerDay != null && (
+                      <p className="text-xs text-gray-400 mt-0.5">{formatCurrency(costPerDay)} {t('mealPlan.summary.costPerDay')}</p>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )
+          })()}
 
           {/* Day cards */}
           <div className="space-y-3">

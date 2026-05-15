@@ -261,6 +261,8 @@ export interface GenerateMealPlanRequest {
     mealCalorieTargets?: Record<string, number> | null
     fridgeIngredientIds?: string[] | null
     dietaryRestrictions?: string[] | null
+    carbsTargetG?: number | null
+    fatTargetG?: number | null
   }
   servingConfig?: {
     minMultiplier: number

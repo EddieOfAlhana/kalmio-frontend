@@ -43,6 +43,11 @@ export interface UserSettings {
   suggestedKcalTarget: number | null
   /** 1.8 g/kg protein minimum, null until weight is set. */
   suggestedProteinMin: number | null
+  // ── Macro targets ──────────────────────────────────────────────────────────
+  /** Daily carbohydrate target in grams. Null = no target set. */
+  carbsTargetG: number | null
+  /** Daily fat target in grams. Null = no target set. */
+  fatTargetG: number | null
 }
 
 export interface BodyDataRequest {
@@ -59,6 +64,8 @@ export interface UpdateSettingsRequest {
   dietaryPreferences?: DietaryPreferences | null
   prefersFreezing?: boolean
   preferredPrepDayOfWeek?: number | null
+  carbsTargetG?: number | null
+  fatTargetG?: number | null
 }
 
 export interface UpdateProfileRequest {
