@@ -14,6 +14,8 @@ import { planService } from '@/services/plans'
 import { recipesService } from '@/services/recipes'
 import { ingredientsService } from '@/services/ingredients'
 import { PlanPreferencesForm } from '@/components/PlanPreferencesForm'
+import { FirstPlanReveal } from '@/components/onboarding/FirstPlanReveal'
+import { hasRevealBeenShown } from '@/lib/firstPlanReveal'
 import { formatCurrency, formatLocalDate } from '@/lib/utils'
 import { getRecipeName, getRecipeSteps } from '@/lib/i18nRecipe'
 import type { MealType, Recipe, Ingredient, Plan, PlannedMeal, PlannedMealStatus } from '@/types'
@@ -33,6 +35,9 @@ export function MealPlan() {
   const { t } = useTranslation()
   // Explicit user request to show the preferences form (e.g. "Regenerate" button)
   const [forcePreferencesForm, setForcePreferencesForm] = useState(false)
+  // First-plan reveal: show once after the very first plan is generated.
+  // Gated by localStorage so it never fires more than once across sessions.
+  const [showFirstPlanReveal, setShowFirstPlanReveal] = useState(false)
 
   // Try the new Plan API first
   const { data: activePlan, isLoading: activePlanLoading } = useQuery({
@@ -72,14 +77,29 @@ export function MealPlan() {
           }
         />
         <div className="mt-6">
-          <PlanPreferencesForm onSuccess={() => setForcePreferencesForm(false)} />
+          <PlanPreferencesForm
+            onSuccess={() => {
+              setForcePreferencesForm(false)
+              // Show the first-plan reveal if it has never been seen before.
+              if (!hasRevealBeenShown()) {
+                setShowFirstPlanReveal(true)
+              }
+            }}
+          />
         </div>
       </div>
     )
   }
 
   if (activePlan) {
-    return <PlanCalendarView plan={activePlan} onRegenerate={() => setForcePreferencesForm(true)} />
+    return (
+      <>
+        <PlanCalendarView plan={activePlan} onRegenerate={() => setForcePreferencesForm(true)} />
+        {showFirstPlanReveal && (
+          <FirstPlanReveal onDismiss={() => setShowFirstPlanReveal(false)} />
+        )}
+      </>
+    )
   }
 
   return null

@@ -1175,6 +1175,13 @@
         "9":  "Mag-szakasz kész — a dió a földben van",
         "10": "Csemete — két sziklevél tör elő a föld alól"
       }
+    },
+    "firstPlan": {
+      "ariaLabel": "Első terved elkészült — Csemete-átmenet",
+      "title": "A magod kicsírázott.",
+      "body": "A diód a földben van. Most rajtad a sor — hozd életre. A heted megvan, a következő lépés a tied.",
+      "sproutCaption": "Csemete — a diófa ébredez.",
+      "cta": "Megnézem a hetemet"
     }
   }
 }

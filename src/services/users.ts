@@ -1,5 +1,5 @@
 import { api } from '@/lib/api'
-import type { BiologicalSex, ActivityLevel, DietaryConstraints, TimePreferencesDto } from '@/types'
+import type { BiologicalSex, ActivityLevel, DietaryConstraints, TimePreferencesDto, UserStageResponse, DashboardStateResponse } from '@/types'
 
 export interface UserMealPreferences {
   days?: number
@@ -96,4 +96,10 @@ export const usersService = {
     api.patch<UserSettings>('/api/users/me/body-data', body).then(r => r.data),
   deleteBodyData: (): Promise<UserSettings> =>
     api.delete<UserSettings>('/api/users/me/body-data').then(r => r.data),
+  /** GET /api/users/me/stage — returns current growth stage + transition history. */
+  getMyStage: (): Promise<UserStageResponse> =>
+    api.get<UserStageResponse>('/api/users/me/stage').then(r => r.data),
+  /** GET /api/users/me/dashboard-state — returns current Diófa stage + visible module list. */
+  getMyDashboardState: (): Promise<DashboardStateResponse> =>
+    api.get<DashboardStateResponse>('/api/users/me/dashboard-state').then(r => r.data),
 }

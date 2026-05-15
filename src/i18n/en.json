@@ -1175,6 +1175,13 @@
         "9":  "Mag stage complete — the walnut is in the ground",
         "10": "Csemete — two cotyledon leaves push above the soil"
       }
+    },
+    "firstPlan": {
+      "ariaLabel": "Your first plan is ready — Csemete transition",
+      "title": "Your seed has sprouted.",
+      "body": "Your walnut is in the ground. Now it is your turn — bring it to life. Your week is set; the next step is yours.",
+      "sproutCaption": "Csemete — the walnut tree stirs.",
+      "cta": "See my week"
     }
   }
 }

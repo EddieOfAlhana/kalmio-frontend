@@ -392,6 +392,25 @@ export interface UpdatePlannedMealRequest {
   servingMultiplier?: number
 }
 
+// ── User Stage (E1 / gamification) ───────────────────────────────────────
+
+/** Growth stages for the Diófa progression system. */
+export type UserStageValue = 'MAG' | 'CSEMETE' | 'SUHANG' | 'FIATAL' | 'TERMO'
+
+export interface StageTransition {
+  fromStage: UserStageValue
+  toStage: UserStageValue
+  occurredAt: string   // ISO-8601
+  triggerEvent: string
+}
+
+/** Response from GET /api/users/me/stage */
+export interface UserStageResponse {
+  currentStage: UserStageValue
+  enteredAt: string    // ISO-8601
+  transitions: StageTransition[]
+}
+
 // ── Feedback ──────────────────────────────────────────────────────────────
 
 export type FeedbackType = 'BUG' | 'SUGGESTION' | 'OTHER'
@@ -617,6 +636,33 @@ export interface TasteCard {
   subtitle?: string
   /** Optional image URL. */
   imageUrl?: string | null
+}
+
+// ── Dashboard State (E2 — module gating) ─────────────────────────────────
+
+/**
+ * All possible module identifiers returned by GET /api/users/me/dashboard-state.
+ * 13 identifiers cover all Diófa stages (MAG → TERMO).
+ */
+export type DashboardModuleId =
+  | 'current-plan'
+  | 'shopping-list'
+  | 'fridge-basic'
+  | 'diofa-widget'
+  | 'macro-tracker'
+  | 'prep-tasks'
+  | 'weekly-summary'
+  | 'taste-signals'
+  | 'replan-diff'
+  | 'grooming-prompt'
+  | 'off-plan-meals'
+  | 'points-counter'
+  | 'achievements'
+
+/** Response from GET /api/users/me/dashboard-state */
+export interface DashboardStateResponse {
+  stage: string
+  visibleModules: DashboardModuleId[]
 }
 
 // ── Points ────────────────────────────────────────────────────────────────
