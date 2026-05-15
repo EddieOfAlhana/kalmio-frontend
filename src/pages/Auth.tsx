@@ -27,7 +27,13 @@ export function Auth() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const nextPath = searchParams.get('next') ?? '/app'
+  // `returnTo` comes from the expired-session redirect; `next` is the legacy param.
+  // Guard against open-redirect: only accept same-origin relative paths (must start
+  // with exactly one `/`; `//evil.com` is rejected because it starts with `//`).
+  const returnTo = searchParams.get('returnTo')
+  const raw = returnTo ?? searchParams.get('next')
+  const nextPath = (raw && raw.startsWith('/') && !raw.startsWith('//')) ? raw : '/app'
+  const isExpiredSession = searchParams.get('expired') === '1'
   const setSession = useAuthStore((s) => s.setSession)
 
   const [step, setStep] = useState<Step>({ mode: 'home' })
@@ -224,6 +230,15 @@ export function Auth() {
             />
             <p className="mt-1.5 text-xs text-gray-400 tracking-wide">{t('auth.tagline')}</p>
           </div>
+
+          {isExpiredSession && (
+            <div
+              role="status"
+              className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+            >
+              {t('auth.errors.sessionExpired')}
+            </div>
+          )}
 
           <AnimatePresence mode="wait">
 

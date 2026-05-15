@@ -826,7 +826,7 @@
       "network": "Nem sikerült kapcsolódni. Ellenőrizd az internetkapcsolatod.",
       "generic": "A bejelentkezési kérés nem sikerült. Próbáld újra.",
       "otpInvalid": "Helytelen vagy lejárt kód. Próbáld újra, vagy kérj újat.",
-      "sessionExpired": "Munkamenet lejárt — jelentkezz be újra."
+      "sessionExpired": "A munkamenet lejárt — jelentkezz be újra."
     }
   },
   "shoppingList": {
