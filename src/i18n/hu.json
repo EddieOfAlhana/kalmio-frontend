@@ -242,7 +242,11 @@
       "noSteps": "Nincsenek elkészítési lépések.",
       "ingredients": "Hozzávalók",
       "noPhoto": "Nincs kép",
-      "perServing": "/ adag"
+      "perServing": "/ adag",
+      "kcal": "kcal",
+      "protein": "Fehérje",
+      "fat": "Zsír",
+      "carbs": "Szénhidrát"
     },
     "tags": {
       "QUICK": "Gyors",

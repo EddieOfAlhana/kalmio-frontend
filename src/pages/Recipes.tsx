@@ -356,14 +356,15 @@ export function Recipes() {
                   {r.macros && (
                     <div className="grid grid-cols-4 gap-1 text-center">
                       {[
-                        { label: 'kcal', value: r.macros.kcal },
-                        { label: 'P', value: r.macros.protein },
-                        { label: 'F', value: r.macros.fat },
-                        { label: 'C', value: r.macros.carbs },
-                      ].map(({ label, value }) => (
-                        <div key={label} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
-                          <p className="text-xs font-bold text-[#1A1A1A]">{Number(value).toFixed(0)}</p>
-                          <p className="text-[10px] text-gray-400">{label}</p>
+                        { labelKey: 'recipes.detail.kcal', value: r.macros.kcal },
+                        { labelKey: 'recipes.detail.protein', value: r.macros.protein },
+                        { labelKey: 'recipes.detail.fat', value: r.macros.fat },
+                        { labelKey: 'recipes.detail.carbs', value: r.macros.carbs },
+                      ].map(({ labelKey, value }) => (
+                        <div key={labelKey} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
+                          <span className="sr-only">{t(labelKey)}: {Number(value).toFixed(0)}</span>
+                          <p className="text-xs font-bold text-[#1A1A1A]" aria-hidden="true">{Number(value).toFixed(0)}</p>
+                          <p className="text-[10px] text-gray-400" aria-hidden="true">{t(labelKey)}</p>
                         </div>
                       ))}
                     </div>
@@ -481,14 +482,15 @@ function RecipeDetailDialog({
           {recipe.macros && (
             <div className="grid grid-cols-4 gap-1 text-center">
               {[
-                { label: 'kcal', value: recipe.macros.kcal },
-                { label: 'P', value: recipe.macros.protein },
-                { label: 'F', value: recipe.macros.fat },
-                { label: 'C', value: recipe.macros.carbs },
-              ].map(({ label, value }) => (
-                <div key={label} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
-                  <p className="text-xs font-bold text-[#1A1A1A]">{Number(value).toFixed(0)}</p>
-                  <p className="text-[10px] text-gray-400">{label} {t('recipes.detail.perServing')}</p>
+                { labelKey: 'recipes.detail.kcal', value: recipe.macros.kcal },
+                { labelKey: 'recipes.detail.protein', value: recipe.macros.protein },
+                { labelKey: 'recipes.detail.fat', value: recipe.macros.fat },
+                { labelKey: 'recipes.detail.carbs', value: recipe.macros.carbs },
+              ].map(({ labelKey, value }) => (
+                <div key={labelKey} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
+                  <span className="sr-only">{t(labelKey)}: {Number(value).toFixed(0)} {t('recipes.detail.perServing')}</span>
+                  <p className="text-xs font-bold text-[#1A1A1A]" aria-hidden="true">{Number(value).toFixed(0)}</p>
+                  <p className="text-[10px] text-gray-400" aria-hidden="true">{t(labelKey)} {t('recipes.detail.perServing')}</p>
                 </div>
               ))}
             </div>

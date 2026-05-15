@@ -242,7 +242,11 @@
       "noSteps": "No steps provided.",
       "ingredients": "Ingredients",
       "noPhoto": "No photo",
-      "perServing": "/ serving"
+      "perServing": "/ serving",
+      "kcal": "kcal",
+      "protein": "Protein",
+      "fat": "Fat",
+      "carbs": "Carbs"
     },
     "tags": {
       "QUICK": "Quick",

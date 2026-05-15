@@ -859,9 +859,12 @@ function PlanCalendarView({ plan, onRegenerate }: { plan: Plan; onRegenerate: ()
                       </p>
                       <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-gray-500 mt-0.5">
                         <span>{dayMacros.kcal.toFixed(0)} kcal</span>
-                        <span>{dayMacros.protein.toFixed(0)}g P</span>
-                        <span>{dayMacros.fat.toFixed(0)}g F</span>
-                        <span>{dayMacros.carbs.toFixed(0)}g C</span>
+                        <span aria-hidden="true">{dayMacros.protein.toFixed(0)}g P</span>
+                        <span className="sr-only">{t('mealPlan.protein')}: {dayMacros.protein.toFixed(0)}g</span>
+                        <span aria-hidden="true">{dayMacros.fat.toFixed(0)}g F</span>
+                        <span className="sr-only">{t('mealPlan.fat')}: {dayMacros.fat.toFixed(0)}g</span>
+                        <span aria-hidden="true">{dayMacros.carbs.toFixed(0)}g C</span>
+                        <span className="sr-only">{t('mealPlan.carbs')}: {dayMacros.carbs.toFixed(0)}g</span>
                         {dayCost != null && (
                           <span className="text-[#4F7942] font-semibold">{formatCurrency(dayCost)}</span>
                         )}
@@ -981,9 +984,12 @@ function PlannedMealCard({
           {meal.macros && (
             <div className="flex gap-x-3 text-xs text-gray-500 mt-0.5 flex-wrap">
               <span>{meal.macros.kcal.toFixed(0)} kcal</span>
-              <span>{meal.macros.protein.toFixed(0)}g P</span>
-              <span>{meal.macros.fat.toFixed(0)}g F</span>
-              <span>{meal.macros.carbs.toFixed(0)}g C</span>
+              <span aria-hidden="true">{meal.macros.protein.toFixed(0)}g P</span>
+              <span className="sr-only">{t('mealPlan.protein')}: {meal.macros.protein.toFixed(0)}g</span>
+              <span aria-hidden="true">{meal.macros.fat.toFixed(0)}g F</span>
+              <span className="sr-only">{t('mealPlan.fat')}: {meal.macros.fat.toFixed(0)}g</span>
+              <span aria-hidden="true">{meal.macros.carbs.toFixed(0)}g C</span>
+              <span className="sr-only">{t('mealPlan.carbs')}: {meal.macros.carbs.toFixed(0)}g</span>
             </div>
           )}
           <p className="text-xs text-gray-400 mt-0.5">×{multiplier.toFixed(1)} {t('mealPlan.serving')}</p>
@@ -1105,14 +1111,15 @@ function PlannedMealCard({
             {meal.macros && (
               <div className="grid grid-cols-4 gap-1.5 text-center">
                 {([
-                  { label: 'kcal', value: meal.macros.kcal },
-                  { label: 'P', value: meal.macros.protein },
-                  { label: 'F', value: meal.macros.fat },
-                  { label: 'C', value: meal.macros.carbs },
-                ] as const).map(({ label, value }) => (
-                  <div key={label} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
-                    <p className="text-xs font-bold text-[#1A1A1A]">{Number(value).toFixed(0)}</p>
-                    <p className="text-[10px] text-gray-400">{label}</p>
+                  { labelKey: 'recipes.detail.kcal', value: meal.macros.kcal },
+                  { labelKey: 'recipes.detail.protein', value: meal.macros.protein },
+                  { labelKey: 'recipes.detail.fat', value: meal.macros.fat },
+                  { labelKey: 'recipes.detail.carbs', value: meal.macros.carbs },
+                ] as const).map(({ labelKey, value }) => (
+                  <div key={labelKey} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
+                    <span className="sr-only">{t(labelKey)}: {Number(value).toFixed(0)}</span>
+                    <p className="text-xs font-bold text-[#1A1A1A]" aria-hidden="true">{Number(value).toFixed(0)}</p>
+                    <p className="text-[10px] text-gray-400" aria-hidden="true">{t(labelKey)}</p>
                   </div>
                 ))}
               </div>
@@ -1320,14 +1327,15 @@ function MealDetailDialog({ meal, open, onClose }: { meal: GeneratedMeal; open: 
             {meal.macros && (
               <div className="grid grid-cols-4 gap-1.5 text-center">
                 {[
-                  { label: 'kcal', value: meal.macros.kcal },
-                  { label: 'P', value: meal.macros.protein },
-                  { label: 'F', value: meal.macros.fat },
-                  { label: 'C', value: meal.macros.carbs },
-                ].map(({ label, value }) => (
-                  <div key={label} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
-                    <p className="text-xs font-bold text-[#1A1A1A]">{Number(value).toFixed(0)}</p>
-                    <p className="text-[10px] text-gray-400">{label}</p>
+                  { labelKey: 'recipes.detail.kcal', value: meal.macros.kcal },
+                  { labelKey: 'recipes.detail.protein', value: meal.macros.protein },
+                  { labelKey: 'recipes.detail.fat', value: meal.macros.fat },
+                  { labelKey: 'recipes.detail.carbs', value: meal.macros.carbs },
+                ].map(({ labelKey, value }) => (
+                  <div key={labelKey} className="bg-[#F9F7F2] rounded-[8px] p-1.5">
+                    <span className="sr-only">{t(labelKey)}: {Number(value).toFixed(0)}</span>
+                    <p className="text-xs font-bold text-[#1A1A1A]" aria-hidden="true">{Number(value).toFixed(0)}</p>
+                    <p className="text-[10px] text-gray-400" aria-hidden="true">{t(labelKey)}</p>
                   </div>
                 ))}
               </div>
