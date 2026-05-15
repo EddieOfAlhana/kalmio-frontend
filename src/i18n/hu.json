@@ -225,7 +225,8 @@
       "protein": "{{protein}}g fehérje",
       "prepTime": "{{min}} perc"
     },
-    "planSyncError": "Az étrend elmentve, de az irányítópulton nem jelenik meg. Generáld újra a tervet."
+    "planSyncError": "Az étrend elmentve, de az irányítópulton nem jelenik meg. Generáld újra a tervet.",
+    "batchCookLeftover": "Korábbi fogás maradéka"
   },
   "recipes": {
     "title": "Receptek",

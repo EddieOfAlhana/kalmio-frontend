@@ -274,6 +274,7 @@ export interface GeneratedMeal {
   servingMultiplier: number
   estimatedCost: number | null
   macros: Macros | null
+  isBatchCookLeftover?: boolean
 }
 
 export interface MealPlan {
@@ -359,6 +360,7 @@ export interface PlannedMeal {
   replacedWithRecipeId: string | null
   eatenAt: string | null
   notes: string | null
+  isBatchCookLeftover?: boolean
 }
 
 export interface Plan {

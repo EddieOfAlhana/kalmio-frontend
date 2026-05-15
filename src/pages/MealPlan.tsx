@@ -1009,6 +1009,11 @@ function PlannedMealCard({
                 {t(`plan.mealStatus.${meal.status}`)}
               </Badge>
             )}
+            {meal.isBatchCookLeftover && (
+              <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium text-gray-500 bg-gray-100">
+                {t('mealPlan.batchCookLeftover')}
+              </span>
+            )}
           </div>
           <p className="font-semibold text-sm text-[#1A1A1A] leading-snug">{displayName}</p>
           {meal.macros && (
@@ -1515,13 +1520,18 @@ function MealSlotCard({
     <div className="bg-[#F9F7F2] rounded-[12px] overflow-hidden">
       {/* View row */}
       <div className="flex gap-3 p-3">
-        <div className="shrink-0">
+        <div className="shrink-0 flex flex-col gap-1">
           <span
             className="inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold text-white"
             style={{ background: MEAL_COLOR[meal.mealType], fontFamily: "'Plus Jakarta Sans', sans-serif" }}
           >
             {t(`mealPlan.meals.${meal.mealType}`)}
           </span>
+          {meal.isBatchCookLeftover && (
+            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium text-gray-500 bg-gray-100">
+              {t('mealPlan.batchCookLeftover')}
+            </span>
+          )}
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-sm text-[#1A1A1A] leading-snug truncate">{displayName}</p>
