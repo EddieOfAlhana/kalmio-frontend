@@ -219,7 +219,8 @@
       "kcal": "{{kcal}} kcal",
       "protein": "{{protein}}g protein",
       "prepTime": "{{min}} min"
-    }
+    },
+    "planSyncError": "Plan saved, but it won't appear on the dashboard. Regenerate the plan to fix this."
   },
   "recipes": {
     "title": "Recipes",

@@ -169,10 +169,12 @@ function sumMacros(meals: GeneratedMeal[]): Macros {
 export function MealPlan() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const { plan, setPlan, updateMeal } = useMealPlanStore()
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set([0]))
   const [showPreferencesForm, setShowPreferencesForm] = useState(false)
   const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [planSyncError, setPlanSyncError] = useState<string | null>(null)
 
   // Try the new Plan API first
   const { data: activePlan, isLoading: activePlanLoading } = useQuery({
@@ -327,6 +329,7 @@ export function MealPlan() {
     onSuccess: (result, body) => {
       forceRef.current = false
       setJobProgress(null)
+      setPlanSyncError(null)
       setPlan(result)
       setExpandedDays(new Set([0]))
       capture('plan_generated', { days: result.days, meal_count: result.meals?.length ?? 0, flow: 'async' })
@@ -343,6 +346,18 @@ export function MealPlan() {
           mealCalorieTargets: body.constraints.mealCalorieTargets ?? undefined,
         },
       }).catch(() => {/* non-critical */})
+      // Dual-write: also create a calendar-anchored Plan so the dashboard daily view sees meals.
+      // Legacy save already succeeded at this point — a failure here is surfaced but not rolled back.
+      const today = new Date().toISOString().slice(0, 10)
+      planService.create({
+        startDate: today,
+        cycleDays: body.days,
+        constraints: body,
+      }).then(() => {
+        void queryClient.invalidateQueries({ queryKey: ['plan', 'active'] })
+      }).catch(() => {
+        setPlanSyncError(t('mealPlan.planSyncError'))
+      })
     },
   })
 
@@ -638,6 +653,9 @@ export function MealPlan() {
                 <p className="text-sm text-red-500">
                   {(mutation.error as Error).message ?? t('mealPlan.form.error')}
                 </p>
+              )}
+              {planSyncError && (
+                <p className="text-sm text-amber-600">{planSyncError}</p>
               )}
             </div>
 

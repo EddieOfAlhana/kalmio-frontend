@@ -219,7 +219,8 @@
       "kcal": "{{kcal}} kcal",
       "protein": "{{protein}}g fehérje",
       "prepTime": "{{min}} perc"
-    }
+    },
+    "planSyncError": "Az étrend elmentve, de az irányítópulton nem jelenik meg. Generáld újra a tervet."
   },
   "recipes": {
     "title": "Receptek",
