@@ -14,7 +14,7 @@
     "home": "Home",
     "plans": "Plans",
     "shop": "Shop",
-    "retail": "Retail",
+    "retail": "Retail Products",
     "settings": "Settings",
     "admin": "Admin",
     "ipVault": "IP Vault",
@@ -36,6 +36,10 @@
     "back": "Back",
     "comingSoon": "Coming soon",
     "errorGeneric": "Something went wrong. Please try again.",
+    "moveLabel": "Move",
+    "prevWeek": "Previous week",
+    "nextWeek": "Next week",
+    "cookieConsentRegion": "Cookie consent",
     "weekdays": {
       "monday": "Monday",
       "tuesday": "Tuesday",
@@ -934,7 +938,7 @@
     "investorAccess": "Investor Access Tokens",
     "tokenLabel": "Token label (e.g. Investor A)",
     "copyLink": "Copy Link",
-    "copied": "Copied!",
+    "copied": "Copied",
     "lastUsed": "Last used",
     "neverUsed": "Never used"
   },

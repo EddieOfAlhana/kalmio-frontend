@@ -68,7 +68,7 @@ interface CalendarStripProps {
 }
 
 export function CalendarStrip({ selectedDate, onSelectDate, onDayData }: CalendarStripProps) {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const today = isoDate(new Date())
   const [weekStart, setWeekStart] = useState<Date>(() => weekMonday(new Date()))
 
@@ -97,7 +97,7 @@ export function CalendarStrip({ selectedDate, onSelectDate, onDayData }: Calenda
         {/* Prev week */}
         <button
           type="button"
-          aria-label="Előző hét"
+          aria-label={t('common.prevWeek')}
           onClick={() => setWeekStart(d => addDays(d, -7))}
           className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-[#F9F7F2] transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28]"
         >
@@ -157,7 +157,7 @@ export function CalendarStrip({ selectedDate, onSelectDate, onDayData }: Calenda
         {/* Next week */}
         <button
           type="button"
-          aria-label="Következő hét"
+          aria-label={t('common.nextWeek')}
           onClick={() => setWeekStart(d => addDays(d, 7))}
           className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-[#F9F7F2] transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28]"
         >

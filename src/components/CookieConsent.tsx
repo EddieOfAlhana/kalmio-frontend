@@ -22,7 +22,7 @@ export function CookieConsent() {
   return (
     <div
       role="region"
-      aria-label="Süti hozzájárulás"
+      aria-label={t('common.cookieConsentRegion')}
       className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4 pb-4 pointer-events-none"
     >
       <div className="pointer-events-auto w-full max-w-lg bg-white rounded-t-2xl shadow-xl px-6 py-5">

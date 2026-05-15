@@ -105,6 +105,7 @@ interface TimelineCardData {
 // ── SleepBanner ───────────────────────────────────────────────────────────
 
 function SleepBanner({ from, to }: { from: string; to: string }) {
+  const { t } = useTranslation()
   return (
     <div className="mx-3 my-2 rounded-2xl overflow-hidden">
       <div className="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 px-4 py-3.5 flex items-center gap-3">
@@ -121,7 +122,7 @@ function SleepBanner({ from, to }: { from: string; to: string }) {
           🌙
         </div>
         <div>
-          <p className="text-white/90 text-xs font-semibold tracking-wide">Alvás</p>
+          <p className="text-white/90 text-xs font-semibold tracking-wide">{t('timeline.sleep')}</p>
           <p className="text-indigo-300/70 text-xs">{from} – {to}</p>
         </div>
         <div aria-hidden className="ml-auto text-indigo-300/25 text-sm font-light tracking-[0.3em] select-none">
@@ -144,6 +145,7 @@ interface DraggableRowProps {
 }
 
 function DraggableRow({ card, isFirst, isLast, liveDragMinutes }: DraggableRowProps) {
+  const { t } = useTranslation()
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: card.id })
   const ns = nodeStyle(card.type)
 
@@ -167,7 +169,7 @@ function DraggableRow({ card, isFirst, isLast, liveDragMinutes }: DraggableRowPr
         {!isFirst && <div style={{ width: 1, flex: 1, minHeight: 8, background: '#e5e7eb', alignSelf: 'center' }} />}
         <div
           {...listeners}
-          aria-label="Áthelyezés"
+          aria-label={t('common.moveLabel')}
           className={[
             'relative z-10 w-7 h-7 rounded-full ring-1 flex items-center justify-center text-sm shrink-0 cursor-grab active:cursor-grabbing touch-none',
             ns.ring, ns.bg,
@@ -194,7 +196,7 @@ function DraggableRow({ card, isFirst, isLast, liveDragMinutes }: DraggableRowPr
             <button
               type="button"
               {...listeners}
-              aria-label="Áthelyezés"
+              aria-label={t('common.moveLabel')}
               className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing touch-none shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28] rounded p-0.5"
             >
               <svg width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-hidden>
@@ -659,7 +661,7 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
 
         {cards.length === 0 && (
           <p className="text-center text-sm text-gray-400 py-4">
-            {t('dashboard.noMealsToday', 'Nincs tervezett étkezés erre a napra')}
+            {t('dashboard.meals.noMealsToday')}
           </p>
         )}
       </div>

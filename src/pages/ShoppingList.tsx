@@ -166,7 +166,7 @@ export function ShoppingList() {
   // ── Copy / Email helpers ──────────────────────────────────────────────────
   function buildPlainText(): string {
     if (!shoppingList) return ''
-    const lines: string[] = ['Bevásárlólista\n']
+    const lines: string[] = [t('shoppingList.title') + '\n']
     Object.entries(grouped).forEach(([cat, items]) => {
       lines.push(`\n${cat}`)
       items.forEach(item => {
@@ -190,7 +190,7 @@ export function ShoppingList() {
   function handleEmail() {
     if (!shoppingList) return
     const body = encodeURIComponent(buildPlainText())
-    window.open(`mailto:?subject=${encodeURIComponent('Bevásárlólista')}&body=${body}`)
+    window.open(`mailto:?subject=${encodeURIComponent(t('shoppingList.title'))}&body=${body}`)
   }
 
   // ── No plan guard ─────────────────────────────────────────────────────────

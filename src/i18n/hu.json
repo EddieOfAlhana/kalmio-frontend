@@ -36,6 +36,10 @@
     "back": "Vissza",
     "comingSoon": "Hamarosan",
     "errorGeneric": "Valami hiba történt. Próbáld újra.",
+    "moveLabel": "Áthelyezés",
+    "prevWeek": "Előző hét",
+    "nextWeek": "Következő hét",
+    "cookieConsentRegion": "Süti hozzájárulás",
     "weekdays": {
       "monday": "Hétfő",
       "tuesday": "Kedd",
