@@ -5,9 +5,11 @@
  * Matching strategy:
  *   1. HTTP status 429 → rateLimited
  *   2. HTTP status 400 with "signup" in message → signupsDisabled
- *   3. HTTP status 400 → invalidEmail (the most common 400 is a bad/blocked address)
- *   4. Network failures (no status, or fetch/network error message) → network
- *   5. Everything else → generic
+ *   3. HTTP status 400 with test-domain phrase ("example.com") → testDomainBlocked
+ *   4. HTTP status 400 with "invalid email" / "is invalid" → invalidEmailFormat
+ *   5. HTTP status 400 (fallback) → invalidEmail
+ *   6. Network failures (no status, or fetch/network error message) → network
+ *   7. Everything else → generic
  */
 
 interface AuthLike {
@@ -16,6 +18,9 @@ interface AuthLike {
   message?: string
   name?: string
 }
+
+/** Phrases Supabase emits when a test domain (e.g. example.com) is blocked. */
+const TEST_DOMAIN_PHRASES = ['example.com', 'disposable', 'test domain', 'blocked domain']
 
 export function mapAuthError(error: AuthLike | Error | unknown): string {
   const err = error as AuthLike
@@ -30,6 +35,15 @@ export function mapAuthError(error: AuthLike | Error | unknown): string {
     if (message.includes('signup') || message.includes('sign up') || message.includes('signups')) {
       return 'auth.errors.signupsDisabled'
     }
+
+    if (TEST_DOMAIN_PHRASES.some((phrase) => message.includes(phrase))) {
+      return 'auth.errors.testDomainBlocked'
+    }
+
+    if (message.includes('invalid email') || message.includes('is invalid')) {
+      return 'auth.errors.invalidEmailFormat'
+    }
+
     return 'auth.errors.invalidEmail'
   }
 

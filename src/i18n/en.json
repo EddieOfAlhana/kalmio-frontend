@@ -758,6 +758,8 @@
     "tagline": "Healthy living. Simplified.",
     "errors": {
       "invalidEmail": "This email address is not accepted. Check the format or try a different address.",
+      "invalidEmailFormat": "This doesn't look like a valid email. Check the format.",
+      "testDomainBlocked": "Test addresses are not accepted. Use a real email address.",
       "rateLimited": "Too many attempts — wait a moment before trying again.",
       "signupsDisabled": "Sign-ups are currently paused. Please try again later.",
       "network": "Could not connect. Check your internet connection.",
