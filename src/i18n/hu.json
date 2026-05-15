@@ -19,7 +19,8 @@
     "admin": "Admin",
     "ipVault": "IP Trezor",
     "contentReview": "Tartalom jóváhagyás",
-    "feedback": "Visszajelzés"
+    "feedback": "Visszajelzés",
+    "more": "Több"
   },
   "common": {
     "version": "Táplálkozási Motor v0.1",

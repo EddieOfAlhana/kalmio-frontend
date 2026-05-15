@@ -44,7 +44,7 @@ export function Sidebar() {
   ]
 
   return (
-    <aside className="hidden md:flex flex-col w-64 min-h-screen bg-[#1A1A1A] text-white shrink-0">
+    <aside className="hidden md:flex flex-col w-64 h-full bg-[#1A1A1A] text-white shrink-0">
       {/* Logo */}
       <div className="h-16 flex items-center px-4 border-b border-white/10">
         <Link to="/" className="hover:opacity-80 transition-opacity flex flex-col gap-1">

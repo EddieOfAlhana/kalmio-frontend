@@ -6,7 +6,7 @@ import { ImpersonationBanner } from '@/components/ImpersonationBanner'
 
 export function AppShell() {
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex h-screen overflow-hidden w-full">
       <Sidebar />
       <main className="flex-1 overflow-y-auto bg-[#F9F7F2] pb-20 md:pb-0">
         <ImpersonationBanner />
