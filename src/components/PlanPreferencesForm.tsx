@@ -14,6 +14,7 @@ import { toast } from '@/components/ui/toast'
 import { planService } from '@/services/plans'
 import { usersService } from '@/services/users'
 import { cn } from '@/lib/utils'
+import { ForbiddenIngredientsPicker } from '@/components/ForbiddenIngredientsPicker'
 import type { MealType, ConstraintWeights } from '@/types'
 
 // ── TDEE suggestion banner ────────────────────────────────────────────────────
@@ -117,6 +118,7 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
   const prefillApplied = useRef(false)
   const [carbsTargetG, setCarbsTargetG] = useState('')
   const [fatTargetG, setFatTargetG] = useState('')
+  const [forbiddenIngredientIds, setForbiddenIngredientIds] = useState<string[]>([])
   const [weights, setWeights] = useState<ConstraintWeights>({
     leftovers: 25, budget: 25, prepTime: 25, recipeRepeat: 25,
   })
@@ -148,13 +150,17 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
     }
   }
 
-  // ── Pre-fill macro targets from saved settings (once, when user loads) ────
+  // ── Pre-fill macro targets + forbidden ingredients from saved settings (once) ────
   useEffect(() => {
     if (!user || prefillApplied.current) return
     prefillApplied.current = true
     const updates: Array<() => void> = []
     if (user.carbsTargetG != null) updates.push(() => setCarbsTargetG(String(user.carbsTargetG)))
     if (user.fatTargetG != null) updates.push(() => setFatTargetG(String(user.fatTargetG)))
+    const savedForbidden = user.mealPlanPreferences?.forbiddenIngredientIds
+    if (savedForbidden && savedForbidden.length > 0) {
+      updates.push(() => setForbiddenIngredientIds(savedForbidden))
+    }
     updates.forEach(fn => fn())
   }, [user])
 
@@ -206,6 +212,7 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
           dietaryRestrictions: null,
           carbsTargetG: carbsTargetG.trim() ? Number(carbsTargetG) : null,
           fatTargetG: fatTargetG.trim() ? Number(fatTargetG) : null,
+          forbiddenIngredientIds: forbiddenIngredientIds.length > 0 ? forbiddenIngredientIds : undefined,
         },
       },
     })
@@ -379,6 +386,17 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
                   className="w-32"
                 />
                 <span className="text-sm text-gray-500">g</span>
+              </div>
+            </div>
+
+            {/* Forbidden ingredients */}
+            <div>
+              <Label>{t('plan.forbiddenIngredients.label')}</Label>
+              <div className="mt-2">
+                <ForbiddenIngredientsPicker
+                  value={forbiddenIngredientIds}
+                  onChange={setForbiddenIngredientIds}
+                />
               </div>
             </div>
 

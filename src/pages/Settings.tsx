@@ -14,6 +14,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { toast } from '@/components/ui/toast'
 import { UserAvatar } from '@/components/ui/UserAvatar'
+import { ForbiddenIngredientsPicker } from '@/components/ForbiddenIngredientsPicker'
 import { usersService, type UpdateSettingsRequest } from '@/services/users'
 import { listPasskeys, registerPasskey, deletePasskey, type PasskeyInfo } from '@/services/passkey'
 import { apiKeysService, type ApiKey, type ApiKeyCreated } from '@/services/apiKeys'
@@ -57,6 +58,10 @@ export function Settings() {
   const [removingId, setRemovingId] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<PasskeyInfo | null>(null)
   const [customName, setCustomName] = useState('')
+
+  // ── Forbidden ingredients state ────────────────────────────────────────────
+  const [forbiddenIngredientIds, setForbiddenIngredientIds] = useState<string[]>([])
+  const forbiddenPrefilled = useRef(false)
 
   // ── API Keys state ─────────────────────────────────────────────────────────
   const [confirmRevokeAll, setConfirmRevokeAll] = useState(false)
@@ -202,6 +207,14 @@ export function Settings() {
         prefersFreezing: settings.prefersFreezing,
         preferredPrepDayOfWeek: settings.preferredPrepDayOfWeek?.toString() ?? '',
       })
+      // Pre-fill forbidden ingredients once (on first load)
+      if (!forbiddenPrefilled.current) {
+        forbiddenPrefilled.current = true
+        const saved = settings.mealPlanPreferences?.forbiddenIngredientIds
+        if (saved && saved.length > 0) {
+          setForbiddenIngredientIds(saved)
+        }
+      }
     }
   }, [settings, reset, i18n.resolvedLanguage])
 
@@ -224,6 +237,7 @@ export function Settings() {
       budgetMax: values.budgetMax ? parseFloat(values.budgetMax) : undefined,
       prepTimeMax: values.prepTimeMax ? parseInt(values.prepTimeMax) : undefined,
       maxRecipeRepetitions: values.maxRecipeRepetitions ? parseInt(values.maxRecipeRepetitions) : undefined,
+      forbiddenIngredientIds: forbiddenIngredientIds.length > 0 ? forbiddenIngredientIds : undefined,
     }
     const hasPrefs = Object.values(prefs).some(v => v !== undefined)
     mutation.mutate({
@@ -445,6 +459,17 @@ export function Settings() {
               <div>
                 <Label>{t('mealPlan.form.maxRepeats')}</Label>
                 <Input type="number" min={1} {...register('maxRecipeRepetitions')} className="mt-1" />
+              </div>
+            </div>
+
+            {/* Forbidden ingredients */}
+            <div>
+              <Label>{t('plan.forbiddenIngredients.label')}</Label>
+              <div className="mt-2">
+                <ForbiddenIngredientsPicker
+                  value={forbiddenIngredientIds}
+                  onChange={setForbiddenIngredientIds}
+                />
               </div>
             </div>
           </CardContent>
