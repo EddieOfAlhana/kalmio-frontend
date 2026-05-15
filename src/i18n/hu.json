@@ -785,8 +785,12 @@
     "or": "vagy",
     "noPassword": "Nincs jelszóra szükség — küldünk egy belépési linket.",
     "checkEmail": "Ellenőrizd a postaládád",
-    "checkEmailHint": "Küldtünk egy belépési linket a következő címre: {{email}}. Kattints rá a bejelentkezéshez.",
+    "checkEmailHint": "Küldtünk egy belépési linket és egy 6 jegyű kódot a következő címre: {{email}}.",
     "tryDifferentEmail": "Próbálj más e-mail címet",
+    "orEnterCode": "Vagy írd be a 6 jegyű kódot, amit küldtünk.",
+    "codePlaceholder": "123456",
+    "verifyCode": "Bejelentkezés a kóddal",
+    "requestNewCode": "Kérj új kódot",
     "tagline": "Egészséges élet. Egyszerűen.",
     "errors": {
       "invalidEmail": "Ez az e-mail cím nem fogadható el. Ellenőrizd a begépelést, vagy próbálj másik címet.",
@@ -795,7 +799,8 @@
       "rateLimited": "Túl sok kísérlet — várj egy percet, majd próbáld újra.",
       "signupsDisabled": "A regisztráció jelenleg szünetel. Próbáld újra később.",
       "network": "Nem sikerült kapcsolódni. Ellenőrizd az internetkapcsolatod.",
-      "generic": "A bejelentkezési kérés nem sikerült. Próbáld újra."
+      "generic": "A bejelentkezési kérés nem sikerült. Próbáld újra.",
+      "otpInvalid": "Helytelen vagy lejárt kód. Próbáld újra, vagy kérj újat."
     }
   },
   "shoppingList": {
