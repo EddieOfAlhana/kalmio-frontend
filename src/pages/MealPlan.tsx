@@ -207,11 +207,29 @@ export function MealPlan() {
     staleTime: 60_000,
   })
 
+  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<FormValues>({
+    resolver: zodResolver(schema) as Resolver<FormValues>,
+    defaultValues: { days: 7, kcalTarget: 2000, proteinMin: 150, maxRecipeRepetitions: 2 },
+  })
+
   const prefsApplied = useRef(false)
   useEffect(() => {
     if (prefsApplied.current || !userSettings?.mealPlanPreferences) return
     const p = userSettings.mealPlanPreferences
     prefsApplied.current = true
+
+    // Pre-fill kcalTarget and proteinMin from saved settings.
+    // Fall back to hardcoded defaults only when no saved value exists.
+    reset(
+      {
+        days: 7,
+        kcalTarget: p.kcalTarget ?? 2000,
+        proteinMin: p.proteinMin ?? 150,
+        maxRecipeRepetitions: 2,
+      },
+      { keepDefaultValues: false },
+    )
+
     if (p.selectedMealTypes && p.selectedMealTypes.length > 0) {
       const meals = (p.selectedMealTypes as MealType[]).filter(m => MEAL_ORDER.includes(m))
         .sort((a, b) => MEAL_ORDER.indexOf(a) - MEAL_ORDER.indexOf(b))
@@ -226,12 +244,7 @@ export function MealPlan() {
         }
       }
     }
-  }, [userSettings])
-
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormValues>({
-    resolver: zodResolver(schema) as Resolver<FormValues>,
-    defaultValues: { days: 7, kcalTarget: 2000, proteinMin: 150, maxRecipeRepetitions: 2 },
-  })
+  }, [userSettings, reset])
 
   const kcalTarget = Number(watch('kcalTarget') ?? 2000)
   const budgetMaxRaw = watch('budgetMax')
