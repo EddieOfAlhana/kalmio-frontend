@@ -45,3 +45,27 @@ export const useAuthStore = create<AuthState>((set) => ({
   stopImpersonation: () =>
     set({ impersonationToken: null, impersonatedEmail: null }),
 }))
+
+/**
+ * Returns a Promise that resolves once the auth store has finished its
+ * initial session hydration (i.e. `initialized` is true).
+ *
+ * Resolves immediately if the store is already initialized.
+ * Falls back after `timeoutMs` (default 5 000 ms) so callers are never
+ * permanently blocked when Supabase is slow or unreachable.
+ */
+export function waitForAuthInit(timeoutMs = 5_000): Promise<void> {
+  if (useAuthStore.getState().initialized) return Promise.resolve()
+
+  return new Promise((resolve) => {
+    const timer = setTimeout(resolve, timeoutMs)
+
+    const unsubscribe = useAuthStore.subscribe((state) => {
+      if (state.initialized) {
+        clearTimeout(timer)
+        unsubscribe()
+        resolve()
+      }
+    })
+  })
+}
