@@ -16,6 +16,48 @@ import { usersService } from '@/services/users'
 import { cn } from '@/lib/utils'
 import type { MealType, ConstraintWeights } from '@/types'
 
+// ── TDEE suggestion banner ────────────────────────────────────────────────────
+
+interface TdeeSuggestionBannerProps {
+  suggestedKcal: number | null
+  suggestedProtein: number | null
+  onApply: () => void
+  applying: boolean
+}
+
+function TdeeSuggestionBanner({ suggestedKcal, suggestedProtein, onApply, applying }: TdeeSuggestionBannerProps) {
+  const { t } = useTranslation()
+
+  if (suggestedKcal == null && suggestedProtein == null) return null
+
+  return (
+    <div className="rounded-xl border border-[#4F7942]/30 bg-[#F3F8F2] px-4 py-4 space-y-2">
+      <p className="text-xs font-semibold text-[#4F7942] uppercase tracking-wider">
+        {t('settings.suggestion.title')}
+      </p>
+      {suggestedKcal != null && (
+        <p className="text-sm text-[#1A1A1A]">
+          {t('settings.suggestion.kcal', { n: Math.round(suggestedKcal) })}
+        </p>
+      )}
+      {suggestedProtein != null && (
+        <p className="text-sm text-[#1A1A1A]">
+          {t('settings.suggestion.protein', { n: Math.round(suggestedProtein) })}
+        </p>
+      )}
+      <p className="text-[10px] text-gray-500">{t('settings.suggestion.hint')}</p>
+      <button
+        type="button"
+        disabled={applying}
+        onClick={onApply}
+        className="mt-1 rounded-lg bg-[#4F7942] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#4F7942]/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4F7942]/50 disabled:opacity-60"
+      >
+        {applying ? <Spinner className="h-3 w-3 inline-block" /> : t('settings.suggestion.accept')}
+      </button>
+    </div>
+  )
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type ShoppingCadence = 7 | 14
@@ -78,6 +120,33 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
   const [weights, setWeights] = useState<ConstraintWeights>({
     leftovers: 25, budget: 25, prepTime: 25, recipeRepeat: 25,
   })
+
+  // ── TDEE suggestion apply ─────────────────────────────────────────────────
+  const [tdeeApplying, setTdeeApplying] = useState(false)
+
+  async function applyTdeeSuggestion() {
+    if (!user) return
+    setTdeeApplying(true)
+    try {
+      const updated = await usersService.updateSettings({
+        mealPlanPreferences: {
+          ...user.mealPlanPreferences,
+          kcalTarget: user.suggestedKcalTarget != null
+            ? Math.round(user.suggestedKcalTarget)
+            : user.mealPlanPreferences?.kcalTarget,
+          proteinMin: user.suggestedProteinMin != null
+            ? Math.round(user.suggestedProteinMin)
+            : user.mealPlanPreferences?.proteinMin,
+        },
+      })
+      queryClient.setQueryData(['user-settings'], updated)
+      queryClient.setQueryData(['me'], updated)
+    } catch {
+      // silently ignore — the banner stays visible; user can retry
+    } finally {
+      setTdeeApplying(false)
+    }
+  }
 
   // ── Pre-fill macro targets from saved settings (once, when user loads) ────
   useEffect(() => {
@@ -151,6 +220,16 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-lg mx-auto">
+      {/* TDEE suggestion — shown when backend has computed targets from body data */}
+      {(user?.suggestedKcalTarget != null || user?.suggestedProteinMin != null) && (
+        <TdeeSuggestionBanner
+          suggestedKcal={user.suggestedKcalTarget}
+          suggestedProtein={user.suggestedProteinMin}
+          onApply={applyTdeeSuggestion}
+          applying={tdeeApplying}
+        />
+      )}
+
       {/* Title */}
       <div>
         <h2 className="font-headline font-bold text-xl text-[#1A1A1A]">{t('preferences.title')}</h2>
