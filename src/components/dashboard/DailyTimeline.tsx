@@ -18,6 +18,7 @@ import { dashboardService } from '@/services/dashboard'
 import { usersService } from '@/services/users'
 import { planService } from '@/services/plans'
 import { prepTasksService } from '@/services/prepTasks'
+import { getRecipeNameFromTranslations } from '@/lib/i18nRecipe'
 import type { DashboardDto, TimePreferencesDto } from '@/types'
 import { useEffect } from 'react'
 
@@ -333,7 +334,7 @@ interface PendingFeedback {
 }
 
 export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimelineProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
 
   const { data: dashboard } = useQuery<DashboardDto>({
@@ -387,6 +388,8 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
 
   // ── build card list ──────────────────────────────────────────────────────
 
+  const lang = (i18n.language?.startsWith('hu') ? 'hu' : 'en') as 'hu' | 'en'
+
   const cards: TimelineCardData[] = useMemo(() => {
     const meals = dashboard?.todaysMeals ?? []
     const prepTasks = dashboard?.todaysPrepTasks ?? []
@@ -399,7 +402,7 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
       result.push({
         id: `meal-${meal.mealId}`,
         type: meal.mealType,
-        label: meal.recipeName,
+        label: getRecipeNameFromTranslations(meal.recipeTranslations ?? null, meal.recipeName, lang),
         subtitle: meal.macros ? `${meal.macros.kcal} kcal · ${meal.macros.protein}g ${t('dashboard.macros.protein')}` : undefined,
         startMinutes: hmToMinutes(scheduledTime),
         mealType: meal.mealType,
@@ -413,7 +416,7 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
       result.push({
         id: `prep-${task.id ?? task.recipeId}`,
         type: 'prep',
-        label: task.recipeName,
+        label: getRecipeNameFromTranslations(task.recipeTranslations ?? null, task.recipeName, lang),
         subtitle: task.durationMin ? t('dashboard.prep.durationMin', { count: task.durationMin }) : undefined,
         startMinutes: hmToMinutes(scheduledTime),
         window: task.window,
@@ -431,7 +434,7 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
     }
 
     return result
-  }, [dashboard, timePref, cardTimeOverrides, hasShoppingDay, t])
+  }, [dashboard, timePref, cardTimeOverrides, hasShoppingDay, t, lang])
 
   // ── dnd handlers ─────────────────────────────────────────────────────────
 

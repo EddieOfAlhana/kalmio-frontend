@@ -473,6 +473,8 @@ export interface TodaysMealCard {
   mealId: string
   recipeId: string
   recipeName: string
+  /** Locale-keyed translations from the backend. Present when the backend populates it. */
+  recipeTranslations?: RecipeTranslations | null
   mealType: string
   macros: { kcal: number; protein: number; fat: number; carbs: number } | null
   status: PlannedMealStatusExtended
@@ -491,6 +493,8 @@ export interface PrepTaskCard {
   planId: string
   recipeId: string
   recipeName: string
+  /** Locale-keyed translations from the backend. Present when the backend populates it. */
+  recipeTranslations?: RecipeTranslations | null
   prepType: PrepType
   window: PrepWindow
   scheduledDate: string

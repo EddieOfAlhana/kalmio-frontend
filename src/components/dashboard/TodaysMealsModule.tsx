@@ -7,6 +7,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { toast } from '@/components/ui/toast'
 import { planService } from '@/services/plans'
 import { dashboardService } from '@/services/dashboard'
+import { getRecipeNameFromTranslations } from '@/lib/i18nRecipe'
 import { LogOffPlanMealModal } from './LogOffPlanMealModal'
 import type { TodaysMealCard, OffPlanMealCard, Plan } from '@/types'
 
@@ -61,7 +62,8 @@ function MacroPill({ kcal, protein }: { kcal: number; protein: number }) {
 }
 
 function MealCard({ meal, planId, today }: MealCardProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = (i18n.language?.startsWith('hu') ? 'hu' : 'en') as 'hu' | 'en'
   const queryClient = useQueryClient()
   const [menuOpen, setMenuOpen] = useState(false)
   const [logModalOpen, setLogModalOpen] = useState(false)
@@ -156,7 +158,7 @@ function MealCard({ meal, planId, today }: MealCardProps) {
                 isSkipped ? 'line-through text-gray-400' : '',
               ].join(' ')}
             >
-              {meal.recipeName}
+              {getRecipeNameFromTranslations(meal.recipeTranslations ?? null, meal.recipeName, lang)}
             </p>
             {meal.macros && (
               <MacroPill kcal={meal.macros.kcal} protein={meal.macros.protein} />

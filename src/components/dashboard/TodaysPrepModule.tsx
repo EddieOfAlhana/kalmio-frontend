@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from '@/components/ui/toast'
 import { prepTaskService } from '@/services/dashboard'
+import { getRecipeNameFromTranslations } from '@/lib/i18nRecipe'
 import type { PrepTaskCard, PrepType, PrepWindow } from '@/types'
 
 interface TodaysPrepModuleProps {
@@ -29,7 +30,8 @@ interface PrepTaskRowProps {
 }
 
 function PrepTaskRow({ task, dashboardDate }: PrepTaskRowProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = (i18n.language?.startsWith('hu') ? 'hu' : 'en') as 'hu' | 'en'
   const queryClient = useQueryClient()
 
   const markDone = useMutation({
@@ -60,7 +62,7 @@ function PrepTaskRow({ task, dashboardDate }: PrepTaskRowProps) {
       <div className="flex-1 min-w-0">
         <p className="text-xs text-gray-500 font-medium capitalize">{wLabel}</p>
         <p className={['text-sm font-semibold leading-tight', isDone ? 'line-through text-gray-400' : 'text-[#1A1A1A]'].join(' ')}>
-          {task.recipeName}
+          {getRecipeNameFromTranslations(task.recipeTranslations ?? null, task.recipeName, lang)}
         </p>
         <p className="text-xs text-gray-400">{typeLabel}</p>
         {task.servingsToMake != null && task.servingsToMake > 0 && (

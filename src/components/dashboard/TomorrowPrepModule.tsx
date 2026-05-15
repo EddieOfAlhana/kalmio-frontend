@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Clock } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getRecipeNameFromTranslations } from '@/lib/i18nRecipe'
 import type { PrepTaskCard, PrepType, PrepWindow } from '@/types'
 
 interface TomorrowPrepModuleProps {
@@ -16,7 +17,8 @@ function windowLabel(window: PrepWindow, t: (key: string) => string): string {
 }
 
 export function TomorrowPrepModule({ tasks }: TomorrowPrepModuleProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = (i18n.language?.startsWith('hu') ? 'hu' : 'en') as 'hu' | 'en'
 
   if (tasks.length === 0) return null
 
@@ -37,7 +39,7 @@ export function TomorrowPrepModule({ tasks }: TomorrowPrepModuleProps) {
                 {windowLabel(task.window, t)}
               </p>
               <p className="text-sm font-semibold text-[#1A1A1A] leading-tight">
-                {task.recipeName}
+                {getRecipeNameFromTranslations(task.recipeTranslations ?? null, task.recipeName, lang)}
               </p>
               <p className="text-xs text-gray-400">{prepTypeLabel(task.prepType, t)}</p>
               {task.servingsToMake != null && task.servingsToMake > 0 && (
