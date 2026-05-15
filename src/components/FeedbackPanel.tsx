@@ -7,7 +7,7 @@ import { X, ArrowLeft, Send, MessageSquare, ChevronRight, Trash2 } from 'lucide-
 import { feedbackService } from '@/services/feedback'
 import { useAuthStore } from '@/store/auth'
 import { toast } from '@/components/ui/toast'
-import { cn } from '@/lib/utils'
+import { cn, formatLocalDate } from '@/lib/utils'
 import type { FeedbackSummary, FeedbackType } from '@/types'
 
 type View = { kind: 'list' } | { kind: 'create' } | { kind: 'detail'; id: string; isAdmin: boolean }
@@ -166,7 +166,7 @@ function FeedbackListItem({
   isAdmin: boolean
   onClick: () => void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const updatedAt = new Date(item.updatedAt)
 
   return (
@@ -194,7 +194,7 @@ function FeedbackListItem({
             <p className="text-xs text-white/40 mt-0.5 truncate">{item.userEmail}</p>
           )}
           <p className="text-xs text-white/30 mt-1">
-            {updatedAt.toLocaleDateString()}
+            {formatLocalDate(updatedAt, i18n.language)}
           </p>
         </div>
         <ChevronRight className="h-4 w-4 text-white/20 group-hover:text-white/50 shrink-0 mt-0.5 transition-colors" />
@@ -317,7 +317,7 @@ function DetailView({
   onBack: () => void
   onClose: () => void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const qc = useQueryClient()
   const [reply, setReply] = useState('')
   const [statusNote, setStatusNote] = useState('')
@@ -498,7 +498,7 @@ function DetailView({
             </p>
             <p className="text-sm text-white/90 whitespace-pre-wrap">{msg.body}</p>
             <p className="text-[10px] text-white/25 mt-1">
-              {new Date(msg.createdAt).toLocaleString()}
+              {formatLocalDate(msg.createdAt, i18n.language, { dateStyle: 'short', timeStyle: 'short' })}
             </p>
           </div>
         ))}

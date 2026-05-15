@@ -18,6 +18,7 @@ import { usersService, type UpdateSettingsRequest } from '@/services/users'
 import { listPasskeys, registerPasskey, deletePasskey, type PasskeyInfo } from '@/services/passkey'
 import { apiKeysService, type ApiKey, type ApiKeyCreated } from '@/services/apiKeys'
 import { useAuthStore } from '@/store/auth'
+import { formatLocalDate } from '@/lib/utils'
 
 interface FormValues {
   languagePreference: string
@@ -382,7 +383,7 @@ export function Settings() {
                         <p className="text-sm font-medium truncate">{pk.friendlyName || t('settings.security.unnamedPasskey')}</p>
                         <p className="text-xs text-gray-400">
                           {t('settings.security.registeredOn', {
-                            date: new Date(pk.createdAt).toLocaleDateString(),
+                            date: formatLocalDate(pk.createdAt, i18n.language),
                           })}
                         </p>
                       </div>
@@ -495,12 +496,12 @@ export function Settings() {
                         <p className="text-xs text-gray-400 font-mono">{key.keyPrefix}…</p>
                         <p className="text-xs text-gray-400">
                           {t('settings.apiKeys.createdOn', {
-                            date: new Date(key.createdAt).toLocaleDateString(),
+                            date: formatLocalDate(key.createdAt, i18n.language),
                           })}
                           {' · '}
                           {key.lastUsedAt
                             ? t('settings.apiKeys.lastUsed', {
-                                date: new Date(key.lastUsedAt).toLocaleDateString(),
+                                date: formatLocalDate(key.lastUsedAt, i18n.language),
                               })
                             : t('settings.apiKeys.neverUsed')}
                         </p>

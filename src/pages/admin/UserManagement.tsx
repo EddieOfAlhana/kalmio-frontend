@@ -9,9 +9,10 @@ import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { adminService } from '@/services/admin'
 import { useAuthStore } from '@/store/auth'
+import { formatLocalDate } from '@/lib/utils'
 
 export function UserManagement() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const qc = useQueryClient()
   const navigate = useNavigate()
   const currentUserId = useAuthStore((s) => s.user?.id)
@@ -52,7 +53,7 @@ export function UserManagement() {
               <CardContent className="py-3 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-[#1A1A1A] truncate">{user.email}</p>
-                  <p className="text-xs text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</p>
+                  <p className="text-xs text-gray-400">{formatLocalDate(user.createdAt, i18n.language)}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <Badge variant={user.role === 'ADMIN' ? 'orange' : 'gray'}>

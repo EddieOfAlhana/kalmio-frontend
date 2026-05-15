@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ipVaultService } from '@/services/ipVault'
 import type { IpDocument } from '@/services/ipVault'
+import { formatLocalDate } from '@/lib/utils'
 
 const CATEGORY_COLORS: Record<string, 'orange' | 'gray'> = {
   ALGORITHM: 'orange',
@@ -182,7 +183,7 @@ function DocumentDialog({ open, doc, onClose }: {
 }
 
 function TokenSection() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const qc = useQueryClient()
   const [label, setLabel] = useState('')
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -236,7 +237,7 @@ function TokenSection() {
                   <p className="text-sm font-medium">{tok.label}</p>
                   <p className="text-xs text-gray-400 flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    {tok.lastUsedAt ? `${t('ipVault.lastUsed')}: ${new Date(tok.lastUsedAt).toLocaleDateString()}` : t('ipVault.neverUsed')}
+                    {tok.lastUsedAt ? `${t('ipVault.lastUsed')}: ${formatLocalDate(tok.lastUsedAt, i18n.language)}` : t('ipVault.neverUsed')}
                   </p>
                 </div>
                 <div className="flex gap-2 shrink-0">

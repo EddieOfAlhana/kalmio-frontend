@@ -12,6 +12,7 @@ import { UserAvatar } from '@/components/ui/UserAvatar'
 import { Knob } from '@/components/ui/knob'
 import { toast } from '@/components/ui/toast'
 import { usersService, type UpdateProfileRequest, type DietaryPreferences } from '@/services/users'
+import { formatLocalDate } from '@/lib/utils'
 import type { DietaryRestrictionKey, MealType } from '@/types'
 
 interface FormValues {
@@ -75,7 +76,7 @@ function distributeMealKcal(
 }
 
 export function Profile() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const qc = useQueryClient()
 
   const { data: user, isLoading } = useQuery({
@@ -243,7 +244,7 @@ export function Profile() {
 
   const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email || ''
   const memberSince = user?.createdAt
-    ? new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+    ? formatLocalDate(user.createdAt, i18n.language, { year: 'numeric', month: 'long', day: 'numeric' })
     : null
 
   const markerGroups: MarkerGroup[] = [
