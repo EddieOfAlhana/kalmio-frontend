@@ -37,6 +37,7 @@ import { OfflineBanner } from '@/components/OfflineBanner'
 import { CookieConsent } from '@/components/CookieConsent'
 import { initAnalytics } from '@/lib/analytics'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
+import { PlantingPreview } from '@/pages/_preview/PlantingPreview'
 
 initAnalytics()
 
@@ -110,6 +111,7 @@ export default function App() {
                 <Route path="profile" element={<Profile />} />
                 <Route path="my-recipes" element={<MyRecipes />} />
                 <Route path="my-ingredients" element={<MyIngredients />} />
+                <Route path="_preview/planting" element={<PlantingPreview />} />
                 <Route element={<AdminRoute />}>
                   <Route path="admin/users" element={<UserManagement />} />
                   <Route path="admin/ip-vault" element={<IpVault />} />

@@ -1130,5 +1130,23 @@
       "title": "From the blog",
       "subtitle": "News, roadmap updates, and nutrition insights."
     }
+  },
+  "onboarding": {
+    "planting": {
+      "ariaLabel": "Walnut planting animation — progress through the planting sequence",
+      "steps": {
+        "0":  "Hand visible above the soil, holding a walnut",
+        "1":  "A hole is dug in the soil; the hand lowers",
+        "2":  "The walnut is placed in the hole",
+        "3":  "A first handful of soil covers the walnut",
+        "4":  "The soil mound is formed and patted down",
+        "5":  "A small wooden name stake is placed beside the mound",
+        "6":  "Small details appear around the scene — stones, a leaf, the soil moistens",
+        "7":  "A watering can tips over the mound; first drops fall",
+        "8":  "The soil is dark and moist — the seed is fully planted",
+        "9":  "Mag stage complete — the walnut is in the ground",
+        "10": "Csemete — two cotyledon leaves push above the soil"
+      }
+    }
   }
 }

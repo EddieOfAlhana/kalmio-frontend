@@ -1130,5 +1130,23 @@
       "title": "A blogból",
       "subtitle": "Hírek, fejlesztési frissítések és táplálkozási gondolatok."
     }
+  },
+  "onboarding": {
+    "planting": {
+      "ariaLabel": "Dióültetés animáció — az ültetési folyamat előrehaladása",
+      "steps": {
+        "0":  "Kéz látható a talaj felett, diót tartva",
+        "1":  "Gödör ásódik a talajban, a kéz lejjebb ereszkedik",
+        "2":  "A dió a gödörbe kerül",
+        "3":  "Az első marék föld betakarja a diót",
+        "4":  "A földhalom kiformálódik és lesimul",
+        "5":  "Kis fa-jelölőkaró kerül a halom mellé",
+        "6":  "Apró részletek kerülnek a jelenet köré — kövek, levelek, a talaj nedvesedik",
+        "7":  "Öntöző kanna billen a halom fölé, az első cseppek lehullanak",
+        "8":  "A talaj sötét és nedves — a dió teljesen el van ültetve",
+        "9":  "Mag-szakasz kész — a dió a földben van",
+        "10": "Csemete — két sziklevél tör elő a föld alól"
+      }
+    }
   }
 }
