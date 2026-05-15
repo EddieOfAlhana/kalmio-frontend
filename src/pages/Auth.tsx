@@ -415,15 +415,15 @@ export function Auth() {
                       type="text"
                       inputMode="numeric"
                       autoComplete="one-time-code"
-                      maxLength={6}
+                      maxLength={8}
                       value={otpCode}
                       onChange={(e) => {
                         // Allow only digits
-                        setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))
+                        setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 8))
                         setError(null)
                       }}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' && otpCode.length === 6) verifyOtp()
+                        if (e.key === 'Enter' && otpCode.length === 8) verifyOtp()
                       }}
                       placeholder={t('auth.codePlaceholder')}
                       className="h-11 rounded-xl flex-1 text-center font-mono text-lg tracking-widest"
@@ -432,7 +432,7 @@ export function Auth() {
                     />
                     <Button
                       type="button"
-                      disabled={otpLoading || otpCode.length !== 6}
+                      disabled={otpLoading || otpCode.length !== 8}
                       onClick={verifyOtp}
                       className="h-11 rounded-xl bg-midnight-black hover:bg-midnight-black/90 text-white px-4 text-sm font-medium whitespace-nowrap"
                     >

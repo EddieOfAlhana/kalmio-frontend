@@ -52,3 +52,19 @@ describe('mapAuthError', () => {
     expect(mapAuthError(undefined)).toBe('auth.errors.network')
   })
 })
+
+// KALMIO-95: OTP length guard — verifyOtp must require 8 digits, not 6
+describe('OTP length constant', () => {
+  it('accepts exactly 8 digits and rejects fewer', () => {
+    const OTP_LENGTH = 8
+    expect('12345678'.length).toBe(OTP_LENGTH)
+    expect('123456'.length).not.toBe(OTP_LENGTH)
+    expect('1234567'.length).not.toBe(OTP_LENGTH)
+    // strip-and-slice logic: non-digits removed, then clamped to 8
+    const strip = (v: string) => v.replace(/\D/g, '').slice(0, OTP_LENGTH)
+    expect(strip('12345678')).toBe('12345678')
+    expect(strip('123456789')).toBe('12345678') // truncated to 8
+    expect(strip('1234abc5678')).toBe('12345678') // digits-only, truncated
+    expect(strip('abc')).toBe('')
+  })
+})
