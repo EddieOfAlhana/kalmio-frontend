@@ -739,7 +739,7 @@
       },
       "myth3": {
         "problem": "Nincs időm megtervezni",
-        "solution": "A megoldómotor 1 másodperc alatt összeállítja az egész hetedet."
+        "solution": "A megoldómotor másodpercek alatt összeállítja az egész hetedet."
       }
     },
     "fomo": {
