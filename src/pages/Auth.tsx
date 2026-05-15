@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,6 +21,8 @@ type EmailForm = z.infer<typeof emailSchema>
 
 type Step = { mode: 'home' } | { mode: 'sent'; email: string }
 
+const RESEND_DELAY_S = 30
+
 export function Auth() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -35,6 +37,12 @@ export function Auth() {
   const [showEmailFallback, setShowEmailFallback] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // OTP state
+  const [otpCode, setOtpCode] = useState('')
+  const [otpLoading, setOtpLoading] = useState(false)
+  const [resendCountdown, setResendCountdown] = useState(RESEND_DELAY_S)
+  const resendTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
   const form = useForm<EmailForm>({ resolver: zodResolver(emailSchema) })
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -46,6 +54,25 @@ export function Auth() {
     identify(session.user.id)
     capture('signup_complete', { method: 'passkey' })
   }
+
+  // Start the resend countdown when we are in the sent step.
+  // We do NOT call setResendCountdown here to avoid lint set-state-in-effect;
+  // the countdown is reset to RESEND_DELAY_S by the callers (sendMagicLink / resendCode)
+  // before transitioning to the sent step.
+  useEffect(() => {
+    if (step.mode !== 'sent') return
+    const id = setInterval(() => {
+      setResendCountdown((c) => {
+        if (c <= 1) {
+          clearInterval(id)
+          return 0
+        }
+        return c - 1
+      })
+    }, 1000)
+    resendTimerRef.current = id
+    return () => clearInterval(id)
+  }, [step.mode])
 
   // ── Passkey flows ─────────────────────────────────────────────────────────
 
@@ -114,7 +141,55 @@ export function Auth() {
     })
     setEmailLoading(false)
     if (error) { setError(t(mapAuthError(error))); return }
+    setOtpCode('')
+    setResendCountdown(RESEND_DELAY_S)
     setStep({ mode: 'sent', email })
+  }
+
+  // ── OTP verify ────────────────────────────────────────────────────────────
+
+  const verifyOtp = async () => {
+    if (step.mode !== 'sent') return
+    setOtpLoading(true)
+    setError(null)
+    const { error } = await supabase.auth.verifyOtp({
+      type: 'email',
+      email: step.email,
+      token: otpCode.trim(),
+    })
+    setOtpLoading(false)
+    if (error) {
+      setError(t(mapAuthError(error)))
+      return
+    }
+    // Session is set by the Supabase onAuthStateChange listener that already
+    // exists in the app shell — navigation happens via the existing auth callback.
+    capture('signin_complete', { method: 'otp' })
+    navigate(nextPath, { replace: true })
+  }
+
+  const resendCode = async () => {
+    if (step.mode !== 'sent' || resendCountdown > 0) return
+    setError(null)
+    const { error } = await supabase.auth.signInWithOtp({
+      email: step.email,
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+    })
+    if (error) { setError(t(mapAuthError(error))); return }
+    // Reset the countdown; the running useEffect interval will continue ticking
+    // from the new value once React processes this state update.
+    if (resendTimerRef.current) clearInterval(resendTimerRef.current)
+    setResendCountdown(RESEND_DELAY_S)
+    const id = setInterval(() => {
+      setResendCountdown((c) => {
+        if (c <= 1) {
+          clearInterval(id)
+          return 0
+        }
+        return c - 1
+      })
+    }, 1000)
+    resendTimerRef.current = id
   }
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -304,25 +379,84 @@ export function Auth() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.18 }}
-                className="text-center space-y-5 py-6"
+                className="space-y-5 py-6"
               >
-                <CheckCircle2 className="mx-auto text-vital-green" size={52} />
-                <div>
-                  <h2 className="font-headline text-xl font-bold text-midnight-black">
+                <div className="text-center">
+                  <CheckCircle2 className="mx-auto text-vital-green" size={52} />
+                  <h2 className="mt-4 font-headline text-xl font-bold text-midnight-black">
                     {t('auth.checkEmail')}
                   </h2>
                   <p className="mt-2 text-sm text-gray-500 max-w-xs mx-auto">
                     {t('auth.checkEmailHint', { email: step.email })}
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  onClick={() => { setStep({ mode: 'home' }); setError(null) }}
-                  className="text-sm text-gray-500 gap-2"
-                >
-                  <ArrowLeft size={14} />
-                  {t('auth.tryDifferentEmail')}
-                </Button>
+
+                {/* OTP input section */}
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-600">
+                    {t('auth.orEnterCode')}
+                  </p>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      maxLength={6}
+                      value={otpCode}
+                      onChange={(e) => {
+                        // Allow only digits
+                        setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))
+                        setError(null)
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && otpCode.length === 6) verifyOtp()
+                      }}
+                      placeholder={t('auth.codePlaceholder')}
+                      className="h-11 rounded-xl flex-1 text-center font-mono text-lg tracking-widest"
+                      aria-label={t('auth.orEnterCode')}
+                      autoFocus
+                    />
+                    <Button
+                      type="button"
+                      disabled={otpLoading || otpCode.length !== 6}
+                      onClick={verifyOtp}
+                      className="h-11 rounded-xl bg-midnight-black hover:bg-midnight-black/90 text-white px-4 text-sm font-medium whitespace-nowrap"
+                    >
+                      {otpLoading
+                        ? <Loader2 size={15} className="animate-spin" />
+                        : t('auth.verifyCode')}
+                    </Button>
+                  </div>
+                  {error && <p className="text-xs text-red-500">{error}</p>}
+
+                  {/* Resend link — visible after 30 s */}
+                  <div className="text-center">
+                    {resendCountdown > 0 ? (
+                      <p className="text-xs text-gray-400">
+                        {t('auth.requestNewCode')} ({resendCountdown}s)
+                      </p>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={resendCode}
+                        className="text-xs text-gray-500 hover:text-gray-700 underline underline-offset-2 transition-colors"
+                      >
+                        {t('auth.requestNewCode')}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <Button
+                    variant="ghost"
+                    onClick={() => { setStep({ mode: 'home' }); setError(null); setOtpCode('') }}
+                    className="text-sm text-gray-500 gap-2"
+                  >
+                    <ArrowLeft size={14} />
+                    {t('auth.tryDifferentEmail')}
+                  </Button>
+                </div>
               </motion.div>
             )}
 

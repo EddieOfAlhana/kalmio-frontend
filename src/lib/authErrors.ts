@@ -44,6 +44,17 @@ export function mapAuthError(error: AuthLike | Error | unknown): string {
       return 'auth.errors.invalidEmailFormat'
     }
 
+    // OTP-specific: wrong or expired 6-digit code
+    if (
+      message.includes('otp') ||
+      message.includes('token has expired') ||
+      message.includes('invalid token') ||
+      message.includes('email link is invalid') ||
+      message.includes('token not found')
+    ) {
+      return 'auth.errors.otpInvalid'
+    }
+
     return 'auth.errors.invalidEmail'
   }
 
