@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
-import { Loader2, Fingerprint, Mail, CheckCircle2, ArrowLeft, ChevronDown } from 'lucide-react'
+import { Loader2, Fingerprint, Mail, CheckCircle2, ArrowLeft, ChevronDown, LogIn } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 import { buildSessionFromAccessToken, persistPasskeyToken } from '@/lib/passkeySession'
@@ -30,6 +30,7 @@ export function Auth() {
 
   const [step, setStep] = useState<Step>({ mode: 'home' })
   const [passkeyLoading, setPasskeyLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const [emailLoading, setEmailLoading] = useState(false)
   const [showEmailFallback, setShowEmailFallback] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -82,6 +83,23 @@ export function Auth() {
       setError(t('auth.passkeyError'))
     } finally {
       setPasskeyLoading(false)
+    }
+  }
+
+  // ── Google OAuth ──────────────────────────────────────────────────────────
+
+  const signInWithGoogle = async () => {
+    setGoogleLoading(true)
+    setError(null)
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    })
+    // If signInWithOAuth succeeds, Supabase redirects the browser; this line
+    // is only reached on failure (e.g. provider not configured).
+    if (error) {
+      setError(t(mapAuthError(error)))
+      setGoogleLoading(false)
     }
   }
 
@@ -155,13 +173,26 @@ export function Auth() {
                 <Button
                   type="button"
                   onClick={signInWithPasskeyDiscoverable}
-                  disabled={passkeyLoading || emailLoading}
+                  disabled={passkeyLoading || googleLoading || emailLoading}
                   className="w-full h-12 rounded-2xl bg-midnight-black hover:bg-midnight-black/90 text-white gap-3 text-base font-semibold"
                 >
                   {passkeyLoading
                     ? <Loader2 size={18} className="animate-spin" />
                     : <Fingerprint size={18} />}
                   {passkeyLoading ? t('auth.passkeyVerifying') : t('auth.continueWithPasskey')}
+                </Button>
+
+                {/* Google OAuth */}
+                <Button
+                  type="button"
+                  onClick={signInWithGoogle}
+                  disabled={passkeyLoading || googleLoading || emailLoading}
+                  className="w-full h-12 rounded-2xl bg-white hover:bg-gray-50 border border-gray-200 text-midnight-black gap-3 text-base font-semibold shadow-sm"
+                >
+                  {googleLoading
+                    ? <Loader2 size={18} className="animate-spin" />
+                    : <LogIn size={18} />}
+                  {googleLoading ? t('auth.googleLoading') : t('auth.continueWithGoogle')}
                 </Button>
 
                 {/* "Use email instead" — subtle link, expands the email fallback */}
@@ -173,7 +204,8 @@ export function Auth() {
                       exit={{ opacity: 0, height: 0 }}
                       type="button"
                       onClick={() => setShowEmailFallback(true)}
-                      className="w-full flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors py-1"
+                      disabled={passkeyLoading || googleLoading || emailLoading}
+                      className="w-full flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors py-1 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Mail size={13} />
                       {t('auth.useEmailInstead')}
@@ -222,7 +254,7 @@ export function Auth() {
                           {/* Passkey for this specific email */}
                           <Button
                             type="button"
-                            disabled={passkeyLoading || emailLoading}
+                            disabled={passkeyLoading || googleLoading || emailLoading}
                             onClick={() => {
                               const email = form.getValues('email')
                               if (email && !form.formState.errors.email) {
@@ -242,7 +274,7 @@ export function Auth() {
                           {/* Magic link */}
                           <Button
                             type="submit"
-                            disabled={emailLoading || passkeyLoading}
+                            disabled={emailLoading || passkeyLoading || googleLoading}
                             className="flex-1 h-11 rounded-xl bg-energy-orange hover:bg-energy-orange/90 text-white gap-2 text-sm font-medium"
                           >
                             {emailLoading

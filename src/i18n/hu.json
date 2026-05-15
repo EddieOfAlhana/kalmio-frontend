@@ -752,6 +752,8 @@
     "heroSub": "A céljaid köré épített, optimalizált étrendek.",
     "headline": "Üdvözlünk.",
     "subheadline": "Lépj be vagy hozz létre fiókot — jelszó nélkül.",
+    "continueWithGoogle": "Folytatás Google fiókkal",
+    "googleLoading": "Átirányítás…",
     "continueWithPasskey": "Folytatás jelszókulccsal",
     "passkeyVerifying": "Azonosítás…",
     "passkeyForEmail": "Jelszókulcs",
