@@ -8,7 +8,8 @@ import { WeeklySummaryModule } from '@/components/dashboard/WeeklySummaryModule'
 import { planService } from '@/services/plans'
 import { usersService } from '@/services/users'
 import { usePointsToast } from '@/hooks/usePointsToast'
-import type { CalendarDayDto, DashboardModuleId } from '@/types'
+import type { CalendarDayDto } from '@/types'
+import { isVisible } from '@/lib/dashboardVisibility'
 
 /**
  * Maps each module identifier (from the dashboard-state API) to the
@@ -27,16 +28,6 @@ import type { CalendarDayDto, DashboardModuleId } from '@/types'
  *   DailyTimeline    ← 'current-plan'  (includes today's meals & prep tasks)
  *   WeeklySummaryModule ← 'weekly-summary'
  */
-
-/** Returns true when the module should be shown. Falls back to visible when
- *  visibleModules is undefined (backend not yet deployed / degraded). */
-function isVisible(
-  moduleId: DashboardModuleId,
-  visibleModules: DashboardModuleId[] | undefined,
-): boolean {
-  if (visibleModules === undefined) return true
-  return visibleModules.includes(moduleId)
-}
 
 export function Dashboard() {
   const { t } = useTranslation()
