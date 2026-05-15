@@ -51,7 +51,8 @@ export function MobileNav() {
         ))}
         <button
           onClick={() => setFeedbackOpen(true)}
-          className="relative flex-1 min-w-0 flex flex-col items-center gap-0.5 py-2 rounded-lg text-xs font-medium text-white/60 transition-colors"
+          aria-label={t('nav.feedback')}
+          className="relative flex-1 min-w-0 flex flex-col items-center justify-center py-2 rounded-lg text-white/60 transition-colors"
         >
           <MessageSquarePlus className="h-5 w-5 shrink-0" />
           {unreadCount > 0 && (
@@ -59,7 +60,6 @@ export function MobileNav() {
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
-          <span className="truncate w-full text-center">{t('feedback.buttonTitleShort')}</span>
         </button>
         <LanguageSwitcher mobile />
       </div>

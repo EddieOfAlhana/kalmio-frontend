@@ -18,7 +18,8 @@
     "settings": "Beállítások",
     "admin": "Admin",
     "ipVault": "IP Trezor",
-    "contentReview": "Tartalom jóváhagyás"
+    "contentReview": "Tartalom jóváhagyás",
+    "feedback": "Visszajelzés"
   },
   "common": {
     "version": "Táplálkozási Motor v0.1",
