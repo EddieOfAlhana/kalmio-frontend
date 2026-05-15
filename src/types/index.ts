@@ -1,5 +1,8 @@
 // ── Enums ─────────────────────────────────────────────────────────────────
 
+export type BiologicalSex = 'MALE' | 'FEMALE' | 'PREFER_NOT_TO_SAY'
+export type ActivityLevel = 'SEDENTARY' | 'LIGHT' | 'MODERATE' | 'ACTIVE' | 'VERY_ACTIVE'
+
 export type IngredientCategory = 'PROTEIN' | 'CARB' | 'FAT' | 'VEGGIE' | 'SPICE'
 export type Unit = 'G' | 'ML' | 'PIECE'
 export type MealType = 'BREAKFAST' | 'MORNING_SNACK' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER' | 'SNACK'

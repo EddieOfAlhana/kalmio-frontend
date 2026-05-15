@@ -11,7 +11,8 @@ import { Spinner } from '@/components/ui/spinner'
 import { UserAvatar } from '@/components/ui/UserAvatar'
 import { Knob } from '@/components/ui/knob'
 import { toast } from '@/components/ui/toast'
-import { usersService, type UpdateProfileRequest, type DietaryPreferences } from '@/services/users'
+import { usersService, type UpdateProfileRequest, type DietaryPreferences, type BodyDataRequest } from '@/services/users'
+import type { BiologicalSex, ActivityLevel } from '@/types'
 import { formatLocalDate } from '@/lib/utils'
 import type { DietaryRestrictionKey, MealType } from '@/types'
 
@@ -194,6 +195,66 @@ export function Profile() {
       toast({ title: t('profile.mealPrefError'), variant: 'destructive' })
     } finally {
       setMealPrefSaving(false)
+    }
+  }
+
+  // ── Body data ─────────────────────────────────────────────────────────────
+  const [weightKg, setWeightKg] = useState<string>('')
+  const [heightCm, setHeightCm] = useState<string>('')
+  const [ageYears, setAgeYears] = useState<string>('')
+  const [biologicalSex, setBiologicalSex] = useState<BiologicalSex | ''>('')
+  const [activityLevel, setActivityLevel] = useState<ActivityLevel | ''>('')
+  const [bodyDataSaving, setBodyDataSaving] = useState(false)
+
+  useEffect(() => {
+    if (user) {
+      setWeightKg(user.weightKg != null ? String(user.weightKg) : '')
+      setHeightCm(user.heightCm != null ? String(user.heightCm) : '')
+      setAgeYears(user.ageYears != null ? String(user.ageYears) : '')
+      setBiologicalSex(user.biologicalSex ?? '')
+      setActivityLevel(user.activityLevel ?? '')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id])
+
+  async function saveBodyData() {
+    setBodyDataSaving(true)
+    try {
+      const payload: BodyDataRequest = {
+        weightKg: weightKg.trim() ? Number(weightKg) : null,
+        heightCm: heightCm.trim() ? Number(heightCm) : null,
+        ageYears: ageYears.trim() ? Number(ageYears) : null,
+        biologicalSex: biologicalSex || null,
+        activityLevel: activityLevel || null,
+      }
+      const updated = await usersService.patchBodyData(payload)
+      qc.setQueryData(['me'], updated)
+      toast({ title: t('profile.bodyData.saveSuccess'), variant: 'success' })
+    } catch {
+      toast({ title: t('profile.bodyData.saveError'), variant: 'destructive' })
+    } finally {
+      setBodyDataSaving(false)
+    }
+  }
+
+  async function clearBodyData() {
+    setBodyDataSaving(true)
+    try {
+      const updated = await usersService.patchBodyData({
+        weightKg: null, heightCm: null, ageYears: null,
+        biologicalSex: null, activityLevel: null,
+      })
+      qc.setQueryData(['me'], updated)
+      setWeightKg('')
+      setHeightCm('')
+      setAgeYears('')
+      setBiologicalSex('')
+      setActivityLevel('')
+      toast({ title: t('profile.bodyData.clearSuccess'), variant: 'success' })
+    } catch {
+      toast({ title: t('profile.bodyData.clearError'), variant: 'destructive' })
+    } finally {
+      setBodyDataSaving(false)
     }
   }
 
@@ -604,6 +665,122 @@ export function Profile() {
             <Button type="button" onClick={saveMealPreferences} disabled={mealPrefSaving} className="w-full">
               {mealPrefSaving ? `${t('common.save')}…` : t('profile.mealPrefs.save')}
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Body data */}
+        <Card>
+          <CardContent className="pt-5 space-y-5">
+            <div>
+              <h2 className="font-semibold text-sm text-[#1A1A1A]">{t('profile.bodyData.title')}</h2>
+              <p className="text-xs text-gray-500 mt-1">{t('profile.bodyData.subtitle')}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="body-weight">{t('profile.bodyData.weightKg')}</Label>
+                <Input
+                  id="body-weight"
+                  type="number"
+                  min={20}
+                  max={300}
+                  step={0.1}
+                  value={weightKg}
+                  onChange={e => setWeightKg(e.target.value)}
+                  placeholder={t('common.optional')}
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="body-height">{t('profile.bodyData.heightCm')}</Label>
+                <Input
+                  id="body-height"
+                  type="number"
+                  min={100}
+                  max={250}
+                  value={heightCm}
+                  onChange={e => setHeightCm(e.target.value)}
+                  placeholder={t('common.optional')}
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="body-age">{t('profile.bodyData.ageYears')}</Label>
+              <Input
+                id="body-age"
+                type="number"
+                min={10}
+                max={120}
+                value={ageYears}
+                onChange={e => setAgeYears(e.target.value)}
+                placeholder={t('common.optional')}
+                className="mt-1 w-28"
+              />
+            </div>
+
+            <div>
+              <p className="text-xs font-medium text-[#1A1A1A] mb-2">{t('profile.bodyData.biologicalSex')}</p>
+              <div className="space-y-2">
+                {(['MALE', 'FEMALE', 'PREFER_NOT_TO_SAY'] as BiologicalSex[]).map(sex => (
+                  <label key={sex} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="biological-sex"
+                      value={sex}
+                      checked={biologicalSex === sex}
+                      onChange={() => setBiologicalSex(sex)}
+                      className="h-4 w-4 accent-[#E8956D]"
+                    />
+                    <span className="text-sm text-gray-800">
+                      {t(`profile.bodyData.sex${sex.split('_').map((w, i) => i === 0 ? w.charAt(0) + w.slice(1).toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('')}`)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="activity-level">{t('profile.bodyData.activityLevel')}</Label>
+              <select
+                id="activity-level"
+                value={activityLevel}
+                onChange={e => setActivityLevel(e.target.value as ActivityLevel | '')}
+                className="mt-1 block w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1A1A1A] focus:outline-none focus:ring-2 focus:ring-[#E8956D]/40"
+              >
+                <option value="">{t('common.optional')}</option>
+                <option value="SEDENTARY">{t('profile.bodyData.activitySedentary')}</option>
+                <option value="LIGHT">{t('profile.bodyData.activityLight')}</option>
+                <option value="MODERATE">{t('profile.bodyData.activityModerate')}</option>
+                <option value="ACTIVE">{t('profile.bodyData.activityActive')}</option>
+                <option value="VERY_ACTIVE">{t('profile.bodyData.activityVeryActive')}</option>
+              </select>
+            </div>
+
+            <p className="text-[10px] text-gray-400 leading-relaxed">
+              {t('profile.bodyData.privacy')}
+            </p>
+
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                onClick={saveBodyData}
+                disabled={bodyDataSaving}
+                className="flex-1"
+              >
+                {bodyDataSaving ? t('profile.bodyData.saving') : t('profile.bodyData.save')}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={clearBodyData}
+                disabled={bodyDataSaving}
+                className="text-red-500 hover:text-red-600 hover:bg-red-50 border border-red-200"
+              >
+                {bodyDataSaving ? t('profile.bodyData.clearing') : t('profile.bodyData.clearAll')}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

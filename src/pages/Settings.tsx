@@ -183,7 +183,7 @@ export function Settings() {
     queryFn: usersService.getMe,
   })
 
-  const { register, handleSubmit, reset } = useForm<FormValues>()
+  const { register, handleSubmit, reset, setValue } = useForm<FormValues>()
 
   useEffect(() => {
     if (settings) {
@@ -264,6 +264,40 @@ export function Settings() {
         </div>
         <ChevronRight className="h-4 w-4 text-gray-300 shrink-0" />
       </Link>
+
+      {/* Suggested targets card — only shown when backend has computed values */}
+      {(settings?.suggestedKcalTarget != null || settings?.suggestedProteinMin != null) && (
+        <div className="max-w-lg mb-6 rounded-xl border border-[#4F7942]/30 bg-[#F3F8F2] px-4 py-4 space-y-2">
+          <p className="text-xs font-semibold text-[#4F7942] uppercase tracking-wider">
+            {t('settings.suggestion.title')}
+          </p>
+          {settings.suggestedKcalTarget != null && (
+            <p className="text-sm text-[#1A1A1A]">
+              {t('settings.suggestion.kcal', { n: Math.round(settings.suggestedKcalTarget) })}
+            </p>
+          )}
+          {settings.suggestedProteinMin != null && (
+            <p className="text-sm text-[#1A1A1A]">
+              {t('settings.suggestion.protein', { n: Math.round(settings.suggestedProteinMin) })}
+            </p>
+          )}
+          <p className="text-[10px] text-gray-500">{t('settings.suggestion.hint')}</p>
+          <button
+            type="button"
+            onClick={() => {
+              if (settings.suggestedKcalTarget != null) {
+                setValue('kcalTarget', String(Math.round(settings.suggestedKcalTarget)))
+              }
+              if (settings.suggestedProteinMin != null) {
+                setValue('proteinMin', String(Math.round(settings.suggestedProteinMin)))
+              }
+            }}
+            className="mt-1 rounded-lg bg-[#4F7942] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#4F7942]/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4F7942]/50"
+          >
+            {t('settings.suggestion.accept')}
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-lg">
         {/* Language */}

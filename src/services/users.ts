@@ -1,5 +1,5 @@
 import { api } from '@/lib/api'
-import type { DietaryConstraints, TimePreferencesDto } from '@/types'
+import type { BiologicalSex, ActivityLevel, DietaryConstraints, TimePreferencesDto } from '@/types'
 
 export interface UserMealPreferences {
   days?: number
@@ -33,6 +33,24 @@ export interface UserSettings {
   prefersFreezing: boolean
   /** ISO weekday (1=Mon..7=Sun) the user prefers to do prep on. Null = no preference. */
   preferredPrepDayOfWeek: number | null
+  // ── Body data ──────────────────────────────────────────────────────────────
+  weightKg: number | null
+  heightCm: number | null
+  ageYears: number | null
+  biologicalSex: BiologicalSex | null
+  activityLevel: ActivityLevel | null
+  /** TDEE-derived suggestion, null until body data is set. */
+  suggestedKcalTarget: number | null
+  /** 1.8 g/kg protein minimum, null until weight is set. */
+  suggestedProteinMin: number | null
+}
+
+export interface BodyDataRequest {
+  weightKg?: number | null
+  heightCm?: number | null
+  ageYears?: number | null
+  biologicalSex?: BiologicalSex | null
+  activityLevel?: ActivityLevel | null
 }
 
 export interface UpdateSettingsRequest {
@@ -67,4 +85,6 @@ export const usersService = {
     api.get<TimePreferencesDto>('/api/users/me/time-preferences').then(r => r.data),
   patchTimePreferences: (req: Partial<TimePreferencesDto>): Promise<TimePreferencesDto> =>
     api.patch<TimePreferencesDto>('/api/users/me/time-preferences', req).then(r => r.data),
+  patchBodyData: (body: BodyDataRequest): Promise<UserSettings> =>
+    api.patch<UserSettings>('/api/users/me/body-data', body).then(r => r.data),
 }
