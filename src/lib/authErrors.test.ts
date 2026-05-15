@@ -6,12 +6,12 @@ describe('mapAuthError', () => {
     expect(mapAuthError({ status: 429, message: 'too many requests' })).toBe('auth.errors.rateLimited')
   })
 
-  it('maps HTTP 400 with example.com in message to testDomainBlocked (takes priority over is-invalid)', () => {
-    expect(mapAuthError({ status: 400, message: 'Email address "teszt@example.com" is invalid' })).toBe('auth.errors.testDomainBlocked')
+  it('maps HTTP 400 with example.com address that is invalid to invalidEmailFormat (KALMIO-79: no client-side test-domain blocking)', () => {
+    expect(mapAuthError({ status: 400, message: 'Email address "teszt@example.com" is invalid' })).toBe('auth.errors.invalidEmailFormat')
   })
 
-  it('maps HTTP 400 with bare example.com mention to testDomainBlocked', () => {
-    expect(mapAuthError({ status: 400, message: 'Email domain example.com is not allowed' })).toBe('auth.errors.testDomainBlocked')
+  it('maps HTTP 400 with "not allowed" message (no is-invalid phrase) to invalidEmail fallback (KALMIO-79)', () => {
+    expect(mapAuthError({ status: 400, message: 'Email domain example.com is not allowed' })).toBe('auth.errors.invalidEmail')
   })
 
   it('maps HTTP 400 with "invalid email" phrase to invalidEmailFormat', () => {

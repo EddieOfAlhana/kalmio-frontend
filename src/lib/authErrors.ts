@@ -5,11 +5,15 @@
  * Matching strategy:
  *   1. HTTP status 429 → rateLimited
  *   2. HTTP status 400 with "signup" in message → signupsDisabled
- *   3. HTTP status 400 with test-domain phrase ("example.com") → testDomainBlocked
- *   4. HTTP status 400 with "invalid email" / "is invalid" → invalidEmailFormat
- *   5. HTTP status 400 (fallback) → invalidEmail
- *   6. Network failures (no status, or fetch/network error message) → network
- *   7. Everything else → generic
+ *   3. HTTP status 400 with "invalid email" / "is invalid" → invalidEmailFormat
+ *   4. HTTP status 400 (fallback) → invalidEmail
+ *   5. Network failures (no status, or fetch/network error message) → network
+ *   6. Everything else → generic
+ *
+ * Note: client-side test-domain detection (example.com, disposable, etc.) was
+ * removed in KALMIO-79. IANA-reserved test domains are valid addresses; let
+ * Supabase decide whether to accept them. The `auth.errors.testDomainBlocked`
+ * key is retained in i18n files in case Supabase itself returns such a message.
  */
 
 interface AuthLike {
@@ -18,9 +22,6 @@ interface AuthLike {
   message?: string
   name?: string
 }
-
-/** Phrases Supabase emits when a test domain (e.g. example.com) is blocked. */
-const TEST_DOMAIN_PHRASES = ['example.com', 'disposable', 'test domain', 'blocked domain']
 
 export function mapAuthError(error: AuthLike | Error | unknown): string {
   const err = error as AuthLike
@@ -34,10 +35,6 @@ export function mapAuthError(error: AuthLike | Error | unknown): string {
   if (status === 400) {
     if (message.includes('signup') || message.includes('sign up') || message.includes('signups')) {
       return 'auth.errors.signupsDisabled'
-    }
-
-    if (TEST_DOMAIN_PHRASES.some((phrase) => message.includes(phrase))) {
-      return 'auth.errors.testDomainBlocked'
     }
 
     if (message.includes('invalid email') || message.includes('is invalid')) {
