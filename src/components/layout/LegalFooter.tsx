@@ -33,6 +33,15 @@ export function LegalFooter({ variant = 'light' }: Props) {
             {t('footer.terms')}
           </Link>
           {' · '}
+          <a
+            href="https://status.kalmio.hu"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/50 hover:text-white/80 underline underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-1 rounded"
+          >
+            {t('footer.status')}
+          </a>
+          {' · '}
           <button
             type="button"
             onClick={handleCookieSettings}
@@ -62,6 +71,15 @@ export function LegalFooter({ variant = 'light' }: Props) {
         >
           {t('footer.terms')}
         </Link>
+        {' · '}
+        <a
+          href="https://status.kalmio.hu"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#1A1A1A]/50 hover:text-[#1A1A1A]/80 underline underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1A1A1A]/30 focus-visible:ring-offset-1 rounded"
+        >
+          {t('footer.status')}
+        </a>
         {' · '}
         <button
           type="button"

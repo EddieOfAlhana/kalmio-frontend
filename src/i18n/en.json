@@ -1101,7 +1101,8 @@
   "footer": {
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
-    "cookieSettings": "Cookie settings"
+    "cookieSettings": "Cookie settings",
+    "status": "System status"
   },
   "consent": {
     "body": "This site uses low-calorie cookies, made with lots of love from my mum's recipe.",

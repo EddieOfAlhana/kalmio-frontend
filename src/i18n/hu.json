@@ -1101,7 +1101,8 @@
   "footer": {
     "privacy": "Adatkezelési tájékoztató",
     "terms": "Felhasználási feltételek",
-    "cookieSettings": "Sütibeállítások"
+    "cookieSettings": "Sütibeállítások",
+    "status": "Rendszerállapot"
   },
   "consent": {
     "body": "Ez az oldal alacsony kalóriás sütiket használ, rengeteg szeretettel a mamám receptje alapján.",
