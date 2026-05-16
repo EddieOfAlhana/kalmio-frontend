@@ -178,6 +178,40 @@
       "legendTarget": "Cél",
       "chartAriaLabel": "Napi kalória grafikon — tényleges vs. cél"
     },
+    "lockedModule": {
+      "ariaLabel": "Zárolt modul: {{module}}",
+      "unlockAtStage": "Elérhető: {{stage}} szakasztól",
+      "titles": {
+        "current-plan": "Mai étrend",
+        "shopping-list": "Bevásárlólista",
+        "fridge-basic": "A hűtőm",
+        "diofa-widget": "A diófám",
+        "points-counter": "Pontjaim",
+        "prep-tasks": "Előkészítési feladatok",
+        "grooming-prompt": "Hűtőellenőrzés",
+        "replan-diff": "Terv módosítás",
+        "weekly-summary": "Heti összefoglaló",
+        "off-plan-meals": "Saját étkezések",
+        "macro-tracker": "Tápanyagkövetés",
+        "taste-signals": "Ízlésem",
+        "achievements": "Eredmények"
+      },
+      "descriptions": {
+        "current-plan": "A napi étrendkártyád és az előkészítési tennivalók egy helyen.",
+        "shopping-list": "Az étrended alapján összeállított, kategóriánként csoportosított bevásárlólista.",
+        "fridge-basic": "Vezesd, mi van a hűtőben — a tervező ezeket a hozzávalókat használja fel előbb.",
+        "diofa-widget": "A diófád mutatja, hogyan alakulnak a szokásaid.",
+        "points-counter": "A tevékenységeidért kapott pontok összesítése.",
+        "prep-tasks": "Az előre elkészíthető fogások ütemezése, hogy a főzési napok könnyebbek legyenek.",
+        "grooming-prompt": "Nézd át a hűtő tartalmát a következő terv előtt, és döntsd el, mi marad.",
+        "replan-diff": "Ha az élet közbeszól, a rendszer javaslatot tesz a terv finomítására.",
+        "weekly-summary": "Heti kalória- és makróteljesítményed áttekintése.",
+        "off-plan-meals": "Rögzíts minden étkezést — a tervben nem szereplőket is.",
+        "macro-tracker": "Napi makrókövetés, beleértve a tervezett és a saját étkezéseket egyaránt.",
+        "taste-signals": "Az ízlésedre vonatkozó visszajelzések, amelyek finomítják a jövőbeli terveket.",
+        "achievements": "A mérföldkövek és az elért eredmények nyilvántartása."
+      }
+    },
     "replan": {
       "title": "Terv módosítás elérhető",
       "accept": "Elfogadom",

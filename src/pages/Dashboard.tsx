@@ -10,6 +10,7 @@ import { usersService } from '@/services/users'
 import { usePointsToast } from '@/hooks/usePointsToast'
 import type { CalendarDayDto } from '@/types'
 import { isVisible } from '@/lib/dashboardVisibility'
+import { LockedModulePlaceholder } from '@/components/dashboard/LockedModulePlaceholder'
 
 /**
  * Maps each module identifier (from the dashboard-state API) to the
@@ -61,17 +62,25 @@ export function Dashboard() {
         onSelectDate={setSelectedDate}
         onDayData={setSelectedDayData}
       />
-      {isVisible('current-plan', visibleModules) && (
+      {isVisible('current-plan', visibleModules) ? (
         <DailyTimeline
           date={selectedDate}
           hasShoppingDay={selectedDayData?.hasShoppingDay ?? false}
           activePlanId={activePlan?.id ?? null}
         />
+      ) : (
+        visibleModules !== undefined && (
+          <LockedModulePlaceholder moduleId="current-plan" />
+        )
       )}
-      {isVisible('weekly-summary', visibleModules) && (
+      {isVisible('weekly-summary', visibleModules) ? (
         <div className="px-4 pb-6">
           <WeeklySummaryModule />
         </div>
+      ) : (
+        visibleModules !== undefined && (
+          <LockedModulePlaceholder moduleId="weekly-summary" />
+        )
       )}
     </div>
   )

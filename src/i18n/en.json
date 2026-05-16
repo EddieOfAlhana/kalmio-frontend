@@ -178,6 +178,40 @@
       "legendTarget": "Target",
       "chartAriaLabel": "Daily calorie chart — actual vs target"
     },
+    "lockedModule": {
+      "ariaLabel": "Locked module: {{module}}",
+      "unlockAtStage": "Available from: {{stage}}",
+      "titles": {
+        "current-plan": "Today's plan",
+        "shopping-list": "Shopping list",
+        "fridge-basic": "My fridge",
+        "diofa-widget": "My tree",
+        "points-counter": "My points",
+        "prep-tasks": "Prep tasks",
+        "grooming-prompt": "Fridge review",
+        "replan-diff": "Plan update",
+        "weekly-summary": "Weekly summary",
+        "off-plan-meals": "Off-plan meals",
+        "macro-tracker": "Macro tracking",
+        "taste-signals": "My taste profile",
+        "achievements": "Achievements"
+      },
+      "descriptions": {
+        "current-plan": "Your daily meal cards and prep to-dos in one place.",
+        "shopping-list": "A categorised shopping list built from your meal plan.",
+        "fridge-basic": "Track what you have — the planner uses those ingredients first.",
+        "diofa-widget": "Your walnut tree reflects how your habits are forming.",
+        "points-counter": "Points earned for actions you take in Kalmio.",
+        "prep-tasks": "Schedule batch cooking so that busy days require less effort.",
+        "grooming-prompt": "Review your fridge before the next plan and decide what stays.",
+        "replan-diff": "When life intervenes, the planner suggests how to adapt.",
+        "weekly-summary": "An overview of your calorie and macro performance for the week.",
+        "off-plan-meals": "Log every meal — including ones not in your plan.",
+        "macro-tracker": "Daily macro tracking that combines planned meals and off-plan entries.",
+        "taste-signals": "Your feedback on ingredients and recipes, used to refine future plans.",
+        "achievements": "A record of milestones and accomplishments."
+      }
+    },
     "replan": {
       "title": "Plan update available",
       "accept": "Accept",
