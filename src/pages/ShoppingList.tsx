@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   ShoppingCart, ExternalLink, AlertCircle, Package, Archive,
@@ -16,6 +16,7 @@ import { fridgeService } from '@/services/fridge'
 import { planService } from '@/services/plans'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { formatCurrency } from '@/lib/utils'
+import { capture } from '@/lib/analytics'
 import type { ShoppingListItem, IngredientCategory } from '@/types'
 
 const CATEGORY_COLOR: Record<IngredientCategory, 'green' | 'orange' | 'gray' | 'black'> = {
@@ -82,6 +83,17 @@ export function ShoppingList() {
   const errorMessage = calendarPlan
     ? (calendarErrorObj as Error | null)?.message ?? t('shoppingList.error')
     : (legacyMutation.error as Error | null)?.message ?? t('shoppingList.error')
+
+  // ── Analytics: fire once when the shopping list first loads ──────────────
+  const capturedRef = useRef(false)
+  useEffect(() => {
+    if (!shoppingList || capturedRef.current) return
+    capturedRef.current = true
+    capture('shopping_list_generated', {
+      item_count: shoppingList.items.length,
+      source: calendarPlan ? 'calendar_plan' : 'legacy',
+    })
+  }, [shoppingList, calendarPlan])
 
   // ── "I bought this" state ─────────────────────────────────────────────────
   // Key is per-plan so checks don't bleed across plans. The plan ID is unknown

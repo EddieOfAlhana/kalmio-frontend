@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from '@/components/ui/toast'
+import { capture } from '@/lib/analytics'
 import { dashboardService } from '@/services/dashboard'
 import { planService } from '@/services/plans'
 
@@ -63,6 +64,7 @@ export function LogOffPlanMealModal({
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['dashboard', date] })
       void queryClient.invalidateQueries({ queryKey: ['macros', date] })
+      capture('off_plan_meal_logged')
       toast({ title: t('dashboard.meals.logOtherModal.logged') })
       onOpenChange(false)
       resetForm()

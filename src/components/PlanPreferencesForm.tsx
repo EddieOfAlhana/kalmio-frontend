@@ -66,6 +66,8 @@ type WeightKey = keyof ConstraintWeights
 
 interface PlanPreferencesFormProps {
   onSuccess?: () => void
+  /** When true the form is being used to regenerate an existing plan. */
+  isRegeneration?: boolean
 }
 
 // ── Weight distribution helper ────────────────────────────────────────────────
@@ -98,7 +100,7 @@ function distributeWeights(
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
+export function PlanPreferencesForm({ onSuccess, isRegeneration = false }: PlanPreferencesFormProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
 
@@ -181,7 +183,11 @@ export function PlanPreferencesForm({ onSuccess }: PlanPreferencesFormProps) {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['plan', 'active'] })
       void queryClient.invalidateQueries({ queryKey: ['points'] })
-      capture('plan_generated', { flow: 'new' })
+      if (isRegeneration) {
+        capture('plan_regenerated', { reason: 'user_requested' })
+      } else {
+        capture('plan_created')
+      }
       onSuccess?.()
     },
   })

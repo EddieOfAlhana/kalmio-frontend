@@ -100,6 +100,7 @@ export function MealPlan() {
         />
         <div className="mt-6">
           <PlanPreferencesForm
+            isRegeneration={forcePreferencesForm}
             onSuccess={() => {
               setForcePreferencesForm(false)
               // Show the first-plan reveal if it has never been seen before.

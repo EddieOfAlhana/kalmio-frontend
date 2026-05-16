@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuthStore } from '@/store/auth'
-import { capture, identify } from '@/lib/analytics'
+import { capture, identify, alias } from '@/lib/analytics'
 
 export function AuthCallback() {
   const navigate = useNavigate()
@@ -15,7 +15,7 @@ export function AuthCallback() {
       const code = searchParams.get('code')
 
       // Exchange PKCE code for session
-      let session = null
+      let session
       if (code) {
         const { data, error } = await supabase.auth.exchangeCodeForSession(code)
         if (error || !data.session) {
@@ -35,8 +35,9 @@ export function AuthCallback() {
       }
 
       setSession(session)
+      alias(session.user.id)
       identify(session.user.id)
-      capture('signup_complete', { method: 'email' })
+      capture('signup_completed', { method: 'email' })
       const next = new URLSearchParams(window.location.search).get('next') ?? '/app'
       navigate(next, { replace: true })
     }

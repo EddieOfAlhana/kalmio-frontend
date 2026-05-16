@@ -15,7 +15,7 @@ import { authenticateWithPasskeyDiscoverable, authenticateWithPasskey } from '@/
 import { GoogleLogo } from '@/assets/GoogleLogo'
 import { ProviderButton } from '@/components/auth/ProviderButton'
 import { useAuthStore } from '@/store/auth'
-import { capture, identify } from '@/lib/analytics'
+import { capture, identify, alias } from '@/lib/analytics'
 import { mapAuthError } from '@/lib/authErrors'
 
 const emailSchema = z.object({ email: z.string().email() })
@@ -59,8 +59,9 @@ export function Auth() {
     persistPasskeyToken(accessToken)
     const session = buildSessionFromAccessToken(accessToken)
     setSession(session)
+    alias(session.user.id)
     identify(session.user.id)
-    capture('signup_complete', { method: 'passkey' })
+    capture('signup_completed', { method: 'passkey' })
   }
 
   // Start the resend countdown when we are in the sent step.
@@ -88,6 +89,7 @@ export function Auth() {
   const signInWithPasskeyDiscoverable = async () => {
     setPasskeyLoading(true)
     setError(null)
+    capture('signup_started', { method: 'passkey' })
     try {
       const result = await authenticateWithPasskeyDiscoverable()
       storeSessionFromToken(result.accessToken)
@@ -126,6 +128,7 @@ export function Auth() {
   const signInWithGoogle = async () => {
     setGoogleLoading(true)
     setError(null)
+    capture('signup_started', { method: 'google' })
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/auth/callback` },
@@ -143,6 +146,7 @@ export function Auth() {
   const sendMagicLink = async ({ email }: EmailForm) => {
     setEmailLoading(true)
     setError(null)
+    capture('signup_started', { method: 'email' })
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
@@ -172,7 +176,7 @@ export function Auth() {
     }
     // Session is set by the Supabase onAuthStateChange listener that already
     // exists in the app shell — navigation happens via the existing auth callback.
-    capture('signin_complete', { method: 'otp' })
+    capture('signin_completed', { method: 'otp' })
     navigate(nextPath, { replace: true })
   }
 

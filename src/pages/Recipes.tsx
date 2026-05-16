@@ -22,6 +22,7 @@ import { ingredientsService } from '@/services/ingredients'
 import { usersService } from '@/services/users'
 import { formatCurrency, recipePhotoUrl } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth'
+import { capture } from '@/lib/analytics'
 import type { Recipe, RecipeTag, Unit, RecipeTranslations, DietaryRestrictionKey } from '@/types'
 
 const IMAGE_ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -272,7 +273,10 @@ export function Recipes() {
               <Card
                 key={r.id}
                 className="relative hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
-                onClick={() => setDetailTarget(r)}
+                onClick={() => {
+                  setDetailTarget(r)
+                  capture('recipe_viewed', { recipe_id: r.id })
+                }}
               >
                 <div
                   className="absolute inset-0 bg-cover bg-center"

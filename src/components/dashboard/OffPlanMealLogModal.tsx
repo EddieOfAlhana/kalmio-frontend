@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { capture } from '@/lib/analytics'
 import { offPlanMealsService } from '@/services/offPlanMeals'
 import type { LogOffPlanMealRequest } from '@/types'
 
@@ -47,6 +48,7 @@ export function OffPlanMealLogModal({ date, onClose }: OffPlanMealLogModalProps)
     mutationFn: (req: LogOffPlanMealRequest) => offPlanMealsService.log(req),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['dashboard', date] })
+      capture('off_plan_meal_logged')
       onClose()
     },
     onError: () => {

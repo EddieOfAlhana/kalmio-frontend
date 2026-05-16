@@ -204,7 +204,7 @@ export function Grooming() {
       void queryClient.invalidateQueries({ queryKey: ['points'] })
       const kept = Object.values(decisions).filter(d => d.action === 'KEEP' || d.action === 'ADJUST_QUANTITY').length
       const discarded = Object.values(decisions).filter(d => d.action === 'DISCARD').length
-      capture('grooming_completed', { items_kept: kept, items_discarded: discarded })
+      capture('grooming_session_completed', { items_kept: kept, items_discarded: discarded })
       navigate('/app/meal-plans')
     },
   })

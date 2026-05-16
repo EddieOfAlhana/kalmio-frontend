@@ -20,6 +20,7 @@ import { listPasskeys, registerPasskey, deletePasskey, type PasskeyInfo } from '
 import { apiKeysService, type ApiKey, type ApiKeyCreated } from '@/services/apiKeys'
 import { useAuthStore } from '@/store/auth'
 import { formatLocalDate } from '@/lib/utils'
+import { capture } from '@/lib/analytics'
 
 interface FormValues {
   languagePreference: string
@@ -157,6 +158,7 @@ export function Settings() {
       await registerPasskey(name)
       setCustomName('')
       await loadPasskeys()
+      capture('passkey_registered')
       toast({ title: t('settings.security.addSuccess'), variant: 'success' })
     } catch (err) {
       console.error('[passkey] registration failed:', err)

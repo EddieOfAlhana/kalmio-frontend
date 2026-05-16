@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Label } from '@/components/ui/label'
 import { IngredientSearchDialog } from '@/components/IngredientSearchDialog'
 import { fridgeService } from '@/services/fridge'
+import { capture } from '@/lib/analytics'
 import type { FridgeItem, Ingredient, IngredientCategory, Unit } from '@/types'
 
 const CATEGORY_COLOR: Record<IngredientCategory, 'green' | 'orange' | 'gray' | 'black'> = {
@@ -82,6 +83,7 @@ export function Fridge() {
     mutationFn: fridgeService.add,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fridge'] })
+      capture('fridge_item_added')
       setAddDialogOpen(false)
       setSelectedIngredient(null)
       setAmount('')
@@ -92,7 +94,10 @@ export function Fridge() {
 
   const deleteMutation = useMutation({
     mutationFn: fridgeService.delete,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['fridge'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fridge'] })
+      capture('fridge_item_marked_used')
+    },
   })
 
   const updateMutation = useMutation({

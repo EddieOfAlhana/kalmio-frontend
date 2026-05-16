@@ -8,6 +8,7 @@ import { feedbackService } from '@/services/feedback'
 import { useAuthStore } from '@/store/auth'
 import { toast } from '@/components/ui/toast'
 import { cn, formatLocalDate } from '@/lib/utils'
+import { capture } from '@/lib/analytics'
 import type { FeedbackSummary, FeedbackType } from '@/types'
 
 type View = { kind: 'list' } | { kind: 'create' } | { kind: 'detail'; id: string; isAdmin: boolean }
@@ -222,6 +223,7 @@ function CreateView({ onBack, onClose }: { onBack: () => void; onClose: () => vo
     }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['feedback'] })
+      capture('feedback_submitted', { feedback_type: type, page: location.pathname })
       toast({ title: t('feedback.sent'), variant: 'success' })
       onBack()
     },
