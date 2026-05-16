@@ -1228,6 +1228,16 @@
       "body": "Your walnut is in the ground. Now it is your turn — bring it to life. Your week is set; the next step is yours.",
       "sproutCaption": "Csemete — the walnut tree stirs.",
       "cta": "See my week"
+    },
+    "graduation": {
+      "ariaLabel": "Congratulations — you have reached the Termőfa stage",
+      "title": "Your tree has come to fruit.",
+      "body": "You have earned a real one — in Hungary. Your tree will be planted in the Kalmio grove.",
+      "treeCaption": "Termőfa — the walnut tree bears fruit.",
+      "downloadCertificate": "Download certificate",
+      "viewGrove": "View my grove",
+      "viewGroveAriaLabel": "View grove map",
+      "dismiss": "Close"
     }
   }
 }

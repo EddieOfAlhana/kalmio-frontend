@@ -1228,6 +1228,16 @@
       "body": "A diód a földben van. Most rajtad a sor — hozd életre. A heted megvan, a következő lépés a tied.",
       "sproutCaption": "Csemete — a diófa ébredez.",
       "cta": "Megnézem a hetemet"
+    },
+    "graduation": {
+      "ariaLabel": "Gratulálunk — elérted a Termőfa szintet",
+      "title": "Termőre fordult.",
+      "body": "Kiérdemeltél egy igazit is — Magyarországon. A Kalmio-ligetbe kerül a te fád.",
+      "treeCaption": "Termőfa — a diófa gyümölcsöt érlel.",
+      "downloadCertificate": "Oklevél letöltése",
+      "viewGrove": "A ligetem megtekintése",
+      "viewGroveAriaLabel": "Liget térkép megtekintése",
+      "dismiss": "Bezárás"
     }
   }
 }

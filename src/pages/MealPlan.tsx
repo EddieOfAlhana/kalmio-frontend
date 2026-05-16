@@ -15,7 +15,9 @@ import { recipesService } from '@/services/recipes'
 import { ingredientsService } from '@/services/ingredients'
 import { PlanPreferencesForm } from '@/components/PlanPreferencesForm'
 import { FirstPlanReveal } from '@/components/onboarding/FirstPlanReveal'
-import { hasRevealBeenShown } from '@/lib/firstPlanReveal'
+import { GraduationReveal } from '@/components/onboarding/GraduationReveal'
+import { hasRevealBeenShown, hasGraduationRevealBeenShown } from '@/lib/firstPlanReveal'
+import { usersService } from '@/services/users'
 import { formatCurrency, formatLocalDate } from '@/lib/utils'
 import { getRecipeName, getRecipeSteps } from '@/lib/i18nRecipe'
 import type { MealType, Recipe, Ingredient, Plan, PlannedMeal, PlannedMealStatus } from '@/types'
@@ -38,6 +40,26 @@ export function MealPlan() {
   // First-plan reveal: show once after the very first plan is generated.
   // Gated by localStorage so it never fires more than once across sessions.
   const [showFirstPlanReveal, setShowFirstPlanReveal] = useState(false)
+
+  // Graduation reveal: show once when the user stage reaches TERMO.
+  // Gated by localStorage key `kalmio:graduationRevealShown`.
+  // `dismissedGraduation` is the session-level flag set when the user explicitly
+  // closes the modal; the localStorage guard prevents it re-appearing on reload.
+  const [dismissedGraduation, setDismissedGraduation] = useState(false)
+
+  // Poll stage to detect TERMO transition. staleTime matches site default (30s).
+  const { data: stageData } = useQuery({
+    queryKey: ['users', 'stage'],
+    queryFn: usersService.getMyStage,
+    staleTime: 30_000,
+    retry: 1,
+  })
+
+  // Derived — no state setter called inside an effect.
+  const showGraduationReveal =
+    stageData?.currentStage === 'TERMO' &&
+    !hasGraduationRevealBeenShown() &&
+    !dismissedGraduation
 
   // Try the new Plan API first
   const { data: activePlan, isLoading: activePlanLoading } = useQuery({
@@ -97,6 +119,9 @@ export function MealPlan() {
         <PlanCalendarView plan={activePlan} onRegenerate={() => setForcePreferencesForm(true)} />
         {showFirstPlanReveal && (
           <FirstPlanReveal onDismiss={() => setShowFirstPlanReveal(false)} />
+        )}
+        {showGraduationReveal && (
+          <GraduationReveal onDismiss={() => setDismissedGraduation(true)} />
         )}
       </>
     )
