@@ -15,6 +15,8 @@ import type { CalendarDayDto, MoistureBand } from '@/types'
 import type { DiofaStage, DiofaMoisture } from '@/components/diofa/DiofaWidget'
 import { isVisible } from '@/lib/dashboardVisibility'
 import { LockedModulePlaceholder } from '@/components/dashboard/LockedModulePlaceholder'
+import { TeachOnReturnHint } from '@/components/dashboard/TeachOnReturnHint'
+import { useEngagementGap } from '@/hooks/useEngagementGap'
 
 // Maps the 4-value MoistureBand from the backend to the 3-value DiofaMoisture used by the widget.
 function toWidgetMoisture(band: MoistureBand): DiofaMoisture {
@@ -48,6 +50,10 @@ export function Dashboard() {
   const [selectedDayData, setSelectedDayData] = useState<CalendarDayDto | undefined>()
 
   usePointsToast()
+
+  // Computes the engagement gap bucket once on mount; also writes today's date
+  // to localStorage so future sessions can compute their own gap.
+  const engagementGapBucket = useEngagementGap()
 
   const { data: activePlan } = useQuery({
     queryKey: ['plan', 'active'],
@@ -101,6 +107,7 @@ export function Dashboard() {
       )}
       {isVisible('diofa-widget', visibleModules) ? (
         <section aria-label={t('diofa.sectionLabel')} className="px-4 pb-4 space-y-3">
+          <TeachOnReturnHint bucket={engagementGapBucket} />
           <DiofaWidget stage={diofaStage} moisture={diofaMoisture} />
           <MoistureHistoryStrip />
         </section>

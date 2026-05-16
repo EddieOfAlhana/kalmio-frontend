@@ -1144,6 +1144,13 @@
     "decline": "Elutasítom",
     "learnMore": "Adatkezelési tájékoztató"
   },
+  "teachOnReturn": {
+    "subtle": "Pár nap kimaradt — a talajod alig változott.",
+    "context": "Egy hét kimaradt. A talaj kicsit száradt — pár nap, és visszaáll.",
+    "extended": "Hosszabb szünet volt. A talaj jól kiszáradt, de visszatöltődik.",
+    "returning": "Itt vagy újra. Folytassuk ott, ahol abbahagytuk.",
+    "dismiss": "Bezárás"
+  },
   "diofa": {
     "sectionLabel": "Diófa",
     "ariaLabel": "Diófa — {{stage}} stádium, talaj: {{moisture}}",

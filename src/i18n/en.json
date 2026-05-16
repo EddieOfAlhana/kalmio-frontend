@@ -1144,6 +1144,13 @@
     "decline": "Decline",
     "learnMore": "Privacy policy"
   },
+  "teachOnReturn": {
+    "subtle": "A couple of days passed — your soil has barely changed.",
+    "context": "A week went by. The soil dried a little — a few days back and it recovers.",
+    "extended": "A longer break. The soil is quite dry now, but it recovers.",
+    "returning": "You are here again. Let's pick up where we left off.",
+    "dismiss": "Dismiss"
+  },
   "diofa": {
     "sectionLabel": "Diófa",
     "ariaLabel": "Walnut tree — {{stage}} stage, soil: {{moisture}}",
