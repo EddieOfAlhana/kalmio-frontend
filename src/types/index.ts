@@ -732,6 +732,48 @@ export interface TimePreferencesDto {
   mealTimePrefs: Record<string, string> | null
 }
 
+// ── Momentum / Moisture History ───────────────────────────────────────────────
+
+/**
+ * Named moisture band returned by the backend MomentumService.
+ * Maps to MomentumService.MoistureBand enum on the backend.
+ */
+export type MoistureBand = 'DRY' | 'DRYING' | 'MOIST' | 'SATURATED'
+
+/**
+ * One entry in GET /api/users/me/momentum/history response.
+ * Ordered oldest-first (index 0 = N-1 days ago, last index = today).
+ */
+export interface MomentumHistoryEntry {
+  date: string        // ISO-8601 "YYYY-MM-DD"
+  current: number     // moisture score 0–100
+  band: MoistureBand
+}
+
+// ── Grove (E6.5 — KALMIO-144) ─────────────────────────────────────────────
+
+/**
+ * A single graduated user's tree pin on the grove map.
+ * x/y are percentages (0–100) within the SVG viewBox.
+ */
+export interface GrovePin {
+  /** Backend user ID — used as the React key. */
+  userId: string
+  /** Short display name (e.g. initials or first name). */
+  displayName: string
+  /** Horizontal position, 0–100 (% of SVG viewBox width). */
+  x: number
+  /** Vertical position, 0–100 (% of SVG viewBox height). */
+  y: number
+  /** Certificate ID if the user has one; null until the backend populates it. */
+  certificateId: string | null
+}
+
+/** Response from GET /api/grove/pins */
+export interface GrovePinsResponse {
+  pins: GrovePin[]
+}
+
 // ── Weekly Summary ─────────────────────────────────────────────────────────
 
 export interface WeeklyDayDto {

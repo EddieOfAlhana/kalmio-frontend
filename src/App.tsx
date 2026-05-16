@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AppShell } from '@/components/layout/AppShell'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
@@ -35,13 +36,21 @@ import { usersService } from '@/services/users'
 import { Toaster } from '@/components/ui/toast'
 import { OfflineBanner } from '@/components/OfflineBanner'
 import { CookieConsent } from '@/components/CookieConsent'
-import { initAnalytics } from '@/lib/analytics'
+import { initAnalytics, identify, resetIdentity, registerSuperProperties, pageView } from '@/lib/analytics'
 import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { PlantingPreview } from '@/pages/_preview/PlantingPreview'
 import { DiofaPreview } from '@/pages/_preview/DiofaPreview'
 import { TasteSwipePreview } from '@/pages/_preview/TasteSwipePreview'
+import { Grove } from '@/pages/Grove'
 
 initAnalytics()
+
+// Register ?_test_source=... as a sticky super-property so test sessions
+// are flagged on every event throughout the browser session.
+const _testSource = new URLSearchParams(window.location.search).get('_test_source')
+if (_testSource) {
+  registerSuperProperties({ test_source: _testSource })
+}
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
@@ -58,12 +67,19 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session) {
         clearPasskeyToken()
         setSession(session)
+        // Associate the PostHog anonymous profile with the authenticated user.
+        identify(session.user.id)
       } else if (event === 'INITIAL_SESSION') {
         const restored = restorePasskeySession()
         setSession(restored)
+        if (restored) {
+          identify(restored.user.id)
+        }
       } else {
         clearPasskeyToken()
         setSession(null)
+        // Reset PostHog so the next anonymous session starts fresh.
+        resetIdentity()
       }
     })
 
@@ -83,6 +99,24 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+/**
+ * Fires a manual `$pageview` event on every route change.
+ * Must be rendered inside BrowserRouter so useLocation() is available.
+ * capture_pageview is disabled in PostHog init — we own all page view tracking.
+ */
+function PageViewTracker() {
+  const location = useLocation()
+  const { i18n } = useTranslation()
+  const session = useAuthStore((s) => s.session)
+
+  useEffect(() => {
+    pageView(location.pathname, i18n.resolvedLanguage ?? i18n.language, !!session)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname])
+
+  return null
+}
+
 export default function App() {
   useDocumentTitle()
 
@@ -91,6 +125,7 @@ export default function App() {
       <Toaster />
       <OfflineBanner />
       <BrowserRouter>
+        <PageViewTracker />
         <CookieConsent />
         <AuthProvider>
           <Routes>
@@ -113,6 +148,7 @@ export default function App() {
                 <Route path="profile" element={<Profile />} />
                 <Route path="my-recipes" element={<MyRecipes />} />
                 <Route path="my-ingredients" element={<MyIngredients />} />
+                <Route path="grove" element={<Grove />} />
                 <Route path="_preview/planting" element={<PlantingPreview />} />
                 <Route path="_preview/diofa" element={<DiofaPreview />} />
                 <Route path="_preview/taste-swipe" element={<TasteSwipePreview />} />

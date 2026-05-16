@@ -1205,6 +1205,39 @@
     "doneSubtitle": "We will factor these into your plan — nothing else to do.",
     "errorSubmit": "Could not save your response. Please try again."
   },
+  "grove": {
+    "title": "The Kalmio Grove",
+    "subtitle": "Every graduated Kalmio user has a tree here — yours included.",
+    "youLabel": "You",
+    "yourTree": "Your tree",
+    "otherTrees": "Other trees",
+    "treeCount_one": "{{count}} tree in the grove",
+    "treeCount_other": "{{count}} trees in the grove",
+    "loadingError": "The grove map could not be loaded. Please try again.",
+    "empty": "No trees in the grove yet — yours will be the first.",
+    "backToDashboard": "Back to dashboard",
+    "pinAriaLabel": "{{name}}'s tree",
+    "yourPinAriaLabel": "Your tree in the grove",
+    "celebration": {
+      "sectionLabel": "You have graduated"
+    },
+    "certificate": {
+      "title": "Graduation certificate",
+      "description": "Download your graduation certificate — a record that your tree has been planted in the Kalmio grove.",
+      "downloadHu": "Download — Hungarian",
+      "downloadEn": "Download — English",
+      "downloadingHu": "Downloading…",
+      "downloadingEn": "Downloading…",
+      "downloadError": "Certificate download failed. Please try again."
+    },
+    "premiumTrial": {
+      "durationBadge": "14-day trial",
+      "title": "Try premium features",
+      "description": "Reaching the Termőfa stage earns you a free two-week premium period. No registration, no payment card required.",
+      "noBilling": "The trial ends automatically after 14 days — no surprises.",
+      "cta": "Activate premium trial"
+    }
+  },
   "onboarding": {
     "planting": {
       "ariaLabel": "Walnut planting animation — progress through the planting sequence",

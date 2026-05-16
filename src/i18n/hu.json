@@ -1205,6 +1205,39 @@
     "doneSubtitle": "Felhasználjuk a hetedben — nincs más dolgod.",
     "errorSubmit": "Nem sikerült rögzíteni. Próbáld újra."
   },
+  "grove": {
+    "title": "A Kalmio-liget",
+    "subtitle": "Minden végzett Kalmio-felhasználónak itt nő a fája — köztük a tiéd is.",
+    "youLabel": "Te",
+    "yourTree": "A te fád",
+    "otherTrees": "Mások fái",
+    "treeCount_one": "{{count}} fa a ligetben",
+    "treeCount_other": "{{count}} fa a ligetben",
+    "loadingError": "A liget térképe nem töltődött be. Próbáld újra.",
+    "empty": "Még nincs fa a ligetben — a tiéd lesz az első.",
+    "backToDashboard": "Vissza az irányítópultra",
+    "pinAriaLabel": "{{name}} fája",
+    "yourPinAriaLabel": "A te fád a ligetben",
+    "celebration": {
+      "sectionLabel": "Termővé érettél"
+    },
+    "certificate": {
+      "title": "Oklevelek",
+      "description": "Töltsd le a végzettségi okleveledet — egy igazolás arról, hogy a diófád a Kalmio-ligetbe kerül.",
+      "downloadHu": "Letöltés — magyarul",
+      "downloadEn": "Letöltés — angolul",
+      "downloadingHu": "Letöltés…",
+      "downloadingEn": "Letöltés…",
+      "downloadError": "Az oklevél letöltése nem sikerült. Próbáld újra."
+    },
+    "premiumTrial": {
+      "durationBadge": "14 napos próbaidő",
+      "title": "Próbáld ki a prémium funkciókat",
+      "description": "A Termőfa-szint elérésével jár egy ingyenes kéthetes prémium időszak. Nincs regisztráció, nincs bankkártya.",
+      "noBilling": "A próbaidő 14 nap elteltével automatikusan véget ér — meglepetés nélkül.",
+      "cta": "Prémium próbaidő aktiválása"
+    }
+  },
   "onboarding": {
     "planting": {
       "ariaLabel": "Dióültetés animáció — az ültetési folyamat előrehaladása",
