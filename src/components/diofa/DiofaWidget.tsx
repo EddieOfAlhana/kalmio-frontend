@@ -30,6 +30,7 @@
  */
 
 import { useTranslation } from 'react-i18next'
+import { getMoistureClass } from './diofaUtils'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -65,9 +66,9 @@ function SoilStrip({ moisture }: { moisture: DiofaMoisture }) {
       <rect x="0" y="220" width="360" height="50" fill={fill} />
       {/* Soil surface edge */}
       <rect x="0" y="218" width="360" height="4" fill={stroke} />
-      {/* Dry cracks — visible only in DRY band */}
+      {/* Dry cracks — visible only in DRY band; .diofa-cracks drives pulse animation */}
       {moisture === 'DRY' && (
-        <g stroke="#a07748" strokeWidth="1.5" opacity="0.7">
+        <g className="diofa-cracks" stroke="#a07748" strokeWidth="1.5" opacity="0.7">
           <line x1="60"  y1="222" x2="80"  y2="240" />
           <line x1="80"  y1="240" x2="70"  y2="255" />
           <line x1="140" y1="224" x2="155" y2="238" />
@@ -76,13 +77,13 @@ function SoilStrip({ moisture }: { moisture: DiofaMoisture }) {
           <line x1="310" y1="237" x2="305" y2="252" />
         </g>
       )}
-      {/* Water drops — visible only in WET band */}
+      {/* Water drops — visible only in WET band; each ellipse gets .diofa-drop for fall animation */}
       {moisture === 'WET' && (
         <g fill="#4a90d9" opacity="0.8">
-          <ellipse cx="80"  cy="215" rx="3" ry="5" />
-          <ellipse cx="160" cy="213" rx="3" ry="5" />
-          <ellipse cx="240" cy="216" rx="3" ry="5" />
-          <ellipse cx="300" cy="214" rx="3" ry="5" />
+          <ellipse className="diofa-drop" cx="80"  cy="215" rx="3" ry="5" />
+          <ellipse className="diofa-drop" cx="160" cy="213" rx="3" ry="5" />
+          <ellipse className="diofa-drop" cx="240" cy="216" rx="3" ry="5" />
+          <ellipse className="diofa-drop" cx="300" cy="214" rx="3" ry="5" />
         </g>
       )}
     </g>
@@ -137,10 +138,10 @@ function CsemeteFrame({ moisture }: { moisture: DiofaMoisture }) {
       <SoilStrip moisture={moisture} />
       {/* Stem */}
       <rect x="178" y="175" width="4" height="46" fill="#6b8c3a" rx="2" />
-      {/* Left cotyledon */}
-      <ellipse cx="166" cy="178" rx="14" ry="8" fill="#7ab34a" transform="rotate(-20 166 178)" />
+      {/* Left cotyledon — .diofa-leaf-rustle enables the leaf animation when .diofa-wet is on the wrapper */}
+      <ellipse className="diofa-leaf-rustle" cx="166" cy="178" rx="14" ry="8" fill="#7ab34a" transform="rotate(-20 166 178)" />
       {/* Right cotyledon */}
-      <ellipse cx="194" cy="178" rx="14" ry="8" fill="#7ab34a" transform="rotate(20 194 178)" />
+      <ellipse className="diofa-leaf-rustle" cx="194" cy="178" rx="14" ry="8" fill="#7ab34a" transform="rotate(20 194 178)" />
     </g>
   )
 }
@@ -160,10 +161,10 @@ function SuhangFrame({ moisture }: { moisture: DiofaMoisture }) {
       <SoilStrip moisture={moisture} />
       {/* Trunk */}
       <rect x="176" y="140" width="8" height="80" fill="#8b6040" rx="3" />
-      {/* Crown */}
-      <ellipse cx="180" cy="130" rx="35" ry="28" fill="#5a9632" />
+      {/* Crown — .diofa-leaf-rustle enables leaf animation in WET state */}
+      <ellipse className="diofa-leaf-rustle" cx="180" cy="130" rx="35" ry="28" fill="#5a9632" />
       {/* Crown highlight */}
-      <ellipse cx="172" cy="120" rx="18" ry="14" fill="#6ab83c" opacity="0.6" />
+      <ellipse className="diofa-leaf-rustle" cx="172" cy="120" rx="18" ry="14" fill="#6ab83c" opacity="0.6" />
     </g>
   )
 }
@@ -187,14 +188,14 @@ function FiatalFrame({ moisture }: { moisture: DiofaMoisture }) {
       <line x1="180" y1="175" x2="140" y2="148" stroke="#7a5030" strokeWidth="6" strokeLinecap="round" />
       {/* Right branch */}
       <line x1="180" y1="175" x2="220" y2="148" stroke="#7a5030" strokeWidth="6" strokeLinecap="round" />
-      {/* Main canopy */}
-      <ellipse cx="180" cy="110" rx="65" ry="50" fill="#4a8828" />
+      {/* Main canopy — .diofa-leaf-rustle triggers animation on .diofa-wet wrapper */}
+      <ellipse className="diofa-leaf-rustle" cx="180" cy="110" rx="65" ry="50" fill="#4a8828" />
       {/* Left canopy cluster */}
-      <ellipse cx="138" cy="130" rx="30" ry="24" fill="#5a9632" />
+      <ellipse className="diofa-leaf-rustle" cx="138" cy="130" rx="30" ry="24" fill="#5a9632" />
       {/* Right canopy cluster */}
-      <ellipse cx="222" cy="130" rx="30" ry="24" fill="#5a9632" />
+      <ellipse className="diofa-leaf-rustle" cx="222" cy="130" rx="30" ry="24" fill="#5a9632" />
       {/* Top highlight */}
-      <ellipse cx="168" cy="96" rx="34" ry="26" fill="#6ab83c" opacity="0.5" />
+      <ellipse className="diofa-leaf-rustle" cx="168" cy="96" rx="34" ry="26" fill="#6ab83c" opacity="0.5" />
     </g>
   )
 }
@@ -221,14 +222,14 @@ function TermoFrame({ moisture }: { moisture: DiofaMoisture }) {
       <line x1="180" y1="170" x2="118" y2="138" stroke="#6b4020" strokeWidth="8" strokeLinecap="round" />
       <line x1="180" y1="170" x2="242" y2="138" stroke="#6b4020" strokeWidth="8" strokeLinecap="round" />
       <line x1="180" y1="158" x2="180" y2="118" stroke="#6b4020" strokeWidth="7" strokeLinecap="round" />
-      {/* Full canopy — deep layered green */}
-      <ellipse cx="180" cy="95"  rx="90" ry="65" fill="#3a7820" />
-      <ellipse cx="120" cy="120" rx="40" ry="32" fill="#4a8828" />
-      <ellipse cx="240" cy="120" rx="40" ry="32" fill="#4a8828" />
-      <ellipse cx="180" cy="75"  rx="60" ry="42" fill="#4a8828" />
+      {/* Full canopy — deep layered green; .diofa-leaf-rustle triggers animation on .diofa-wet wrapper */}
+      <ellipse className="diofa-leaf-rustle" cx="180" cy="95"  rx="90" ry="65" fill="#3a7820" />
+      <ellipse className="diofa-leaf-rustle" cx="120" cy="120" rx="40" ry="32" fill="#4a8828" />
+      <ellipse className="diofa-leaf-rustle" cx="240" cy="120" rx="40" ry="32" fill="#4a8828" />
+      <ellipse className="diofa-leaf-rustle" cx="180" cy="75"  rx="60" ry="42" fill="#4a8828" />
       {/* Canopy highlights */}
-      <ellipse cx="158" cy="82"  rx="38" ry="28" fill="#5ea030" opacity="0.55" />
-      <ellipse cx="205" cy="100" rx="28" ry="22" fill="#5ea030" opacity="0.45" />
+      <ellipse className="diofa-leaf-rustle" cx="158" cy="82"  rx="38" ry="28" fill="#5ea030" opacity="0.55" />
+      <ellipse className="diofa-leaf-rustle" cx="205" cy="100" rx="28" ry="22" fill="#5ea030" opacity="0.45" />
       {/* Walnut fruits — small olive-green rounds */}
       <circle cx="148" cy="118" r="7" fill="#6b8c40" stroke="#4a6820" strokeWidth="1" />
       <circle cx="165" cy="110" r="7" fill="#6b8c40" stroke="#4a6820" strokeWidth="1" />
@@ -288,10 +289,7 @@ export function DiofaWidget({ stage, moisture, className = '' }: DiofaWidgetProp
 
   // Moisture-band CSS class drives CSS animations (leaf rustle, etc.)
   // Defined in kalmio-frontend/src/styles/diofa.css (see KALMIO-130 comment there)
-  const moistureClass =
-    moisture === 'WET' ? 'diofa-wet' :
-    moisture === 'DRY' ? 'diofa-dry' :
-    'diofa-ok'
+  const moistureClass = getMoistureClass(moisture)
 
   return (
     <div

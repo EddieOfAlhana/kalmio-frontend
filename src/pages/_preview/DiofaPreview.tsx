@@ -1,5 +1,5 @@
 /**
- * DiofaPreview — KALMIO-130
+ * DiofaPreview — KALMIO-130 / KALMIO-134
  *
  * Dev-only visual preview for <DiofaWidget />.
  * Route: /app/_preview/diofa  (ProtectedRoute only — not publicly linked)
@@ -7,6 +7,11 @@
  * Renders all 15 stage×moisture combinations (5 stages × 3 moisture bands)
  * in a single scrollable grid so placeholder visuals can be verified
  * without Storybook.
+ *
+ * KALMIO-134 addition: an "Animáció demo" section at the top renders a single
+ * widget whose moisture cycles automatically (DRY → OK → WET → DRY …) so
+ * reviewers can evaluate the leaf-rustle, drop-fall, and crack-pulse animations
+ * without manual interaction.
  *
  * Satisfies the "visual verification" AC from KALMIO-130 (AC narrowed from
  * Storybook requirement — see Jira comment on ticket).
@@ -16,7 +21,7 @@
  *   comment in that file. This preview page requires no further changes.
  */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { DiofaWidget } from '@/components/diofa/DiofaWidget'
 import type { DiofaStage, DiofaMoisture } from '@/components/diofa/DiofaWidget'
 
@@ -43,9 +48,25 @@ const MOISTURE_BADGE_CLASSES: Record<DiofaMoisture, string> = {
   WET: 'bg-blue-100 text-blue-800',
 }
 
+const MOISTURE_CYCLE: DiofaMoisture[] = ['DRY', 'OK', 'WET']
+const CYCLE_DURATION_MS = 3000
+
 export function DiofaPreview() {
   const [highlightStage, setHighlightStage] = useState<DiofaStage | 'ALL'>('ALL')
   const [highlightMoisture, setHighlightMoisture] = useState<DiofaMoisture | 'ALL'>('ALL')
+
+  // Animation demo — cycles through DRY → OK → WET automatically
+  const [demoStage, setDemoStage] = useState<DiofaStage>('TERMO')
+  const [demoMoistureIdx, setDemoMoistureIdx] = useState(0)
+  const [demoPaused, setDemoPaused] = useState(false)
+
+  useEffect(() => {
+    if (demoPaused) return
+    const id = setInterval(() => {
+      setDemoMoistureIdx((prev) => (prev + 1) % MOISTURE_CYCLE.length)
+    }, CYCLE_DURATION_MS)
+    return () => clearInterval(id)
+  }, [demoPaused])
 
   const visibleStages = highlightStage === 'ALL' ? STAGES : [highlightStage]
   const visibleMoistures = highlightMoisture === 'ALL' ? MOISTURES : [highlightMoisture]
@@ -57,7 +78,7 @@ export function DiofaPreview() {
         {/* Header */}
         <div className="space-y-1">
           <p className="text-xs font-mono text-stone-400 uppercase tracking-widest">
-            KALMIO-130 — dev preview
+            KALMIO-130 / KALMIO-134 — dev preview
           </p>
           <h1 className="text-xl font-semibold text-stone-800">
             DiofaWidget — 15 stage×moisture kombináció
@@ -66,6 +87,67 @@ export function DiofaPreview() {
             Placeholder vizuálok. Végleges illusztrációk: KALMIO-128 / KALMIO-129.
           </p>
         </div>
+
+        {/* Animation demo — KALMIO-134 */}
+        <section
+          className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 space-y-4"
+          aria-label="Animáció demo"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-0.5">
+              <p className="text-xs font-mono text-blue-400 uppercase tracking-widest">
+                KALMIO-134 — animáció demo
+              </p>
+              <p className="text-sm font-medium text-stone-700">
+                Nedvességszint automatikus váltás
+              </p>
+              <p className="text-xs text-stone-500">
+                DRY → OK → WET ciklus {CYCLE_DURATION_MS / 1000}s-enként.
+                Leaf-rustle (WET), drop-fall (WET), crack-pulse (DRY).
+              </p>
+            </div>
+            <div className="shrink-0 flex flex-col items-end gap-2">
+              <button
+                onClick={() => setDemoPaused((p) => !p)}
+                className="text-xs font-mono rounded bg-white border border-stone-200 px-3 py-1 text-stone-600 hover:bg-stone-50 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-stone-400"
+              >
+                {demoPaused ? 'Folytatás' : 'Szünet'}
+              </button>
+              <span className={[
+                'inline-flex items-center rounded-full text-xs font-medium px-2.5 py-0.5',
+                MOISTURE_BADGE_CLASSES[MOISTURE_CYCLE[demoMoistureIdx]],
+              ].join(' ')}>
+                {MOISTURE_CYCLE[demoMoistureIdx]}
+              </span>
+            </div>
+          </div>
+
+          {/* Stage picker for the demo widget */}
+          <div className="flex flex-wrap gap-1.5">
+            {STAGES.map((s) => (
+              <button
+                key={s}
+                onClick={() => setDemoStage(s)}
+                className={[
+                  'rounded text-xs font-mono py-1 px-2.5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-stone-500',
+                  demoStage === s
+                    ? 'bg-amber-700 text-white'
+                    : 'bg-white text-stone-500 border border-stone-200 hover:bg-stone-50',
+                ].join(' ')}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+
+          <div className="max-w-[360px]">
+            <DiofaWidget stage={demoStage} moisture={MOISTURE_CYCLE[demoMoistureIdx]} />
+          </div>
+
+          <p className="text-[11px] text-stone-400 font-mono">
+            prefers-reduced-motion: animáció le van tiltva, ha a felhasználó OS-szinten kérte.
+          </p>
+        </section>
 
         {/* Filter controls */}
         <div className="space-y-3 rounded-xl border border-stone-200 bg-white p-4 shadow-sm">

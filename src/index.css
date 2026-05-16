@@ -216,3 +216,111 @@ h1, h2, h3 {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+/* ─── DiofaWidget animations (KALMIO-134) ────────────────────────────────────
+ *
+ * Three animation layers:
+ *   1. diofa-leaf-rustle  — subtle rotate+translate on canopy SVG paths
+ *                           triggered when the outer wrapper has .diofa-wet
+ *   2. diofa-drop-fall    — vertical fall + fade-out on water-drop ellipses
+ *                           triggered when outer wrapper has .diofa-wet
+ *   3. diofa-crack-pulse  — slow opacity pulse on the soil-crack group
+ *                           triggered when outer wrapper has .diofa-dry
+ *
+ * prefers-reduced-motion: all three animations are disabled for users who
+ * have requested reduced motion in their OS settings.
+ *
+ * Soil-color transitions: handled via CSS transition on fill/stroke (SVG
+ * uses inline presentation attributes, so we animate opacity of colored
+ * overlay rects instead — see .diofa-wet .diofa-soil-overlay-wet and
+ * .diofa-dry .diofa-soil-overlay-dry).
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+/* Keyframes ---------------------------------------------------------------- */
+
+@keyframes diofa-leaf-rustle {
+  0%   { transform: rotate(0deg)   translate(0px, 0px); }
+  20%  { transform: rotate(1.5deg) translate(1px, -1px); }
+  40%  { transform: rotate(-1deg)  translate(-1px, 0px); }
+  60%  { transform: rotate(2deg)   translate(1px, -2px); }
+  80%  { transform: rotate(-0.5deg) translate(0px, 1px); }
+  100% { transform: rotate(0deg)   translate(0px, 0px); }
+}
+
+@keyframes diofa-drop-fall {
+  0%   { transform: translateY(0px);   opacity: 0.8; }
+  70%  { transform: translateY(6px);   opacity: 0.5; }
+  100% { transform: translateY(10px);  opacity: 0; }
+}
+
+@keyframes diofa-crack-pulse {
+  0%   { opacity: 0.55; }
+  50%  { opacity: 0.85; }
+  100% { opacity: 0.55; }
+}
+
+/* Leaf-rustle — active on .diofa-wet wrapper -------------------------------- */
+
+.diofa-wet .diofa-leaf-rustle {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: diofa-leaf-rustle 3.2s ease-in-out infinite;
+}
+
+/* Stagger sibling rustle elements so they don't all move identically */
+.diofa-wet .diofa-leaf-rustle:nth-child(2) {
+  animation-delay: 0.4s;
+  animation-duration: 3.6s;
+}
+.diofa-wet .diofa-leaf-rustle:nth-child(3) {
+  animation-delay: 0.9s;
+  animation-duration: 2.8s;
+}
+.diofa-wet .diofa-leaf-rustle:nth-child(4) {
+  animation-delay: 1.4s;
+  animation-duration: 3.9s;
+}
+.diofa-wet .diofa-leaf-rustle:nth-child(5) {
+  animation-delay: 0.2s;
+  animation-duration: 3.1s;
+}
+
+/* Water drops — falling animation on .diofa-wet ----------------------------- */
+
+.diofa-wet .diofa-drop {
+  animation: diofa-drop-fall 2s ease-in infinite;
+}
+
+.diofa-wet .diofa-drop:nth-child(2) {
+  animation-delay: 0.5s;
+}
+.diofa-wet .diofa-drop:nth-child(3) {
+  animation-delay: 1.0s;
+}
+.diofa-wet .diofa-drop:nth-child(4) {
+  animation-delay: 1.5s;
+}
+
+/* Soil-crack pulse — active on .diofa-dry wrapper --------------------------- */
+
+.diofa-dry .diofa-cracks {
+  animation: diofa-crack-pulse 4s ease-in-out infinite;
+}
+
+/* Soil-color transition — smooth cross-fade between moisture states --------- */
+
+.diofa-wet .diofa-soil-base,
+.diofa-ok  .diofa-soil-base,
+.diofa-dry .diofa-soil-base {
+  transition: fill 0.6s ease, stroke 0.6s ease;
+}
+
+/* Reduced-motion override — disable ALL diofa animations ------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .diofa-wet .diofa-leaf-rustle,
+  .diofa-wet .diofa-drop,
+  .diofa-dry .diofa-cracks {
+    animation: none;
+  }
+}
