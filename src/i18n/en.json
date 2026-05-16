@@ -1145,6 +1145,7 @@
     "learnMore": "Privacy policy"
   },
   "diofa": {
+    "sectionLabel": "Diófa",
     "ariaLabel": "Walnut tree — {{stage}} stage, soil: {{moisture}}",
     "stages": {
       "MAG": "Seed",
@@ -1157,6 +1158,16 @@
       "DRY": "dry soil",
       "OK": "adequate moisture",
       "WET": "wet soil"
+    },
+    "history": {
+      "ariaLabel": "Soil moisture for the past {{days}} days",
+      "error": "History could not be loaded.",
+      "bands": {
+        "DRY": "dry",
+        "DRYING": "drying",
+        "MOIST": "moist",
+        "SATURATED": "saturated"
+      }
     }
   },
   "blog": {

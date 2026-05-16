@@ -1145,6 +1145,7 @@
     "learnMore": "Adatkezelési tájékoztató"
   },
   "diofa": {
+    "sectionLabel": "Diófa",
     "ariaLabel": "Diófa — {{stage}} stádium, talaj: {{moisture}}",
     "stages": {
       "MAG": "Mag",
@@ -1157,6 +1158,16 @@
       "DRY": "száraz talaj",
       "OK": "megfelelő talajnedvesség",
       "WET": "nedves talaj"
+    },
+    "history": {
+      "ariaLabel": "Talajnedvesség az elmúlt {{days}} napban",
+      "error": "Az előzmények nem tölthetők be.",
+      "bands": {
+        "DRY": "száraz",
+        "DRYING": "száradó",
+        "MOIST": "nedves",
+        "SATURATED": "telített"
+      }
     }
   },
   "blog": {

@@ -5,12 +5,23 @@ import { Header } from '@/components/layout/Header'
 import { CalendarStrip } from '@/components/dashboard/CalendarStrip'
 import { DailyTimeline } from '@/components/dashboard/DailyTimeline'
 import { WeeklySummaryModule } from '@/components/dashboard/WeeklySummaryModule'
+import { DiofaWidget } from '@/components/diofa/DiofaWidget'
+import { MoistureHistoryStrip } from '@/components/diofa/MoistureHistoryStrip'
 import { planService } from '@/services/plans'
 import { usersService } from '@/services/users'
+import { momentumService } from '@/services/momentum'
 import { usePointsToast } from '@/hooks/usePointsToast'
-import type { CalendarDayDto } from '@/types'
+import type { CalendarDayDto, MoistureBand } from '@/types'
+import type { DiofaStage, DiofaMoisture } from '@/components/diofa/DiofaWidget'
 import { isVisible } from '@/lib/dashboardVisibility'
 import { LockedModulePlaceholder } from '@/components/dashboard/LockedModulePlaceholder'
+
+// Maps the 4-value MoistureBand from the backend to the 3-value DiofaMoisture used by the widget.
+function toWidgetMoisture(band: MoistureBand): DiofaMoisture {
+  if (band === 'SATURATED') return 'WET'
+  if (band === 'MOIST') return 'OK'
+  return 'DRY' // DRY | DRYING
+}
 
 /**
  * Maps each module identifier (from the dashboard-state API) to the
@@ -54,6 +65,21 @@ export function Dashboard() {
 
   const visibleModules = dashboardState?.visibleModules
 
+  // Fetch recent moisture history to derive the widget's current moisture band.
+  // Only one day is needed (today), but the service minimum is the history window.
+  // Re-use the same key shape TanStack Query uses elsewhere for momentum history.
+  const { data: moistureHistory } = useQuery({
+    queryKey: ['momentum', 'history', 1],
+    queryFn: () => momentumService.getHistory(1),
+    staleTime: 30_000,
+    retry: false,
+    enabled: isVisible('diofa-widget', visibleModules),
+  })
+
+  const diofaStage = (dashboardState?.stage as DiofaStage | undefined) ?? 'MAG'
+  const todayBand = moistureHistory?.[moistureHistory.length - 1]?.band
+  const diofaMoisture: DiofaMoisture = todayBand ? toWidgetMoisture(todayBand) : 'OK'
+
   return (
     <div className="flex flex-col">
       <Header title={t('dashboard.title')} subtitle={t('dashboard.subtitle')} />
@@ -71,6 +97,16 @@ export function Dashboard() {
       ) : (
         visibleModules !== undefined && (
           <LockedModulePlaceholder moduleId="current-plan" />
+        )
+      )}
+      {isVisible('diofa-widget', visibleModules) ? (
+        <section aria-label={t('diofa.sectionLabel')} className="px-4 pb-4 space-y-3">
+          <DiofaWidget stage={diofaStage} moisture={diofaMoisture} />
+          <MoistureHistoryStrip />
+        </section>
+      ) : (
+        visibleModules !== undefined && (
+          <LockedModulePlaceholder moduleId="diofa-widget" />
         )
       )}
       {isVisible('weekly-summary', visibleModules) ? (
