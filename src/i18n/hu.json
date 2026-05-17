@@ -902,12 +902,13 @@
       "addingToFridge": "Hozzáadás…",
       "addedToFridge": "Maradékok hozzáadva a hűtőhöz"
     },
+    "openInTesco": "Tovább a Tesco kosaramba",
+    "tescoMappingWeak": "A tételek több mint felének nincs Tesco-hivatkozása — a találatok eltérhetnek.",
     "actions": {
       "print": "Nyomtatás",
       "copy": "Másolás",
       "copied": "Másolva",
-      "email": "E-mail",
-      "tescoSoon": "Tesco — Hamarosan"
+      "email": "E-mail"
     },
     "bought": "Megvettem",
     "allInFridge": {

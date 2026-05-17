@@ -31,6 +31,7 @@ export function ShoppingList() {
   const legacyPlan = useMealPlanStore(s => s.plan)
   const [leftoversAdded, setLeftoversAdded] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [tescoMappingWeak, setTescoMappingWeak] = useState(false)
 
   // New calendar plan takes priority
   const { data: calendarPlan } = useQuery({
@@ -220,6 +221,39 @@ export function ShoppingList() {
     if (!shoppingList) return
     const body = encodeURIComponent(buildPlainText())
     window.open(`mailto:?subject=${encodeURIComponent(t('shoppingList.title'))}&body=${body}`)
+  }
+
+  function handleOpenInTesco() {
+    if (!shoppingList) return
+    const items = shoppingList.items
+
+    // AC-5: warn if more than half of items lack a usable URL
+    const resolvedCount = items.filter(
+      item => item.retailProduct?.remoteUrl || item.ingredientName
+    ).length
+    const mappedCount = items.filter(item => item.retailProduct?.remoteUrl).length
+    const failurePct = items.length > 0 ? (items.length - mappedCount) / items.length : 0
+    if (failurePct > 0.5) {
+      console.warn(
+        `[ShoppingList] Tesco handoff: ${items.length - mappedCount}/${items.length} items have no RetailProduct URL — falling back to search`
+      )
+    }
+    setTescoMappingWeak(failurePct > 0.5)
+
+    capture('shopping-list-handoff-clicked', {
+      provider: 'tesco',
+      item_count: items.length,
+      mapped_count: mappedCount,
+      resolved_count: resolvedCount,
+    })
+
+    // Use RetailProductIngredientMapping remoteUrl when available; fall back to
+    // ingredient-name search on www.tesco.hu
+    items.forEach(item => {
+      const url = item.retailProduct?.remoteUrl
+        ?? `https://www.tesco.hu/groceries/hu-HU/search?query=${encodeURIComponent(item.ingredientName)}`
+      window.open(url, '_blank', 'noopener,noreferrer')
+    })
   }
 
   // ── No plan guard ─────────────────────────────────────────────────────────
@@ -439,6 +473,14 @@ export function ShoppingList() {
             </CardContent>
           </Card>
 
+          {/* AC-5: >50% no-mapping warning banner */}
+          {tescoMappingWeak && (
+            <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-[12px] px-4 py-3 mt-4 text-sm text-amber-700">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {t('shoppingList.tescoMappingWeak')}
+            </div>
+          )}
+
           {/* Footer action bar */}
           <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-200">
             <Button variant="secondary" size="sm" onClick={() => window.print()}>
@@ -455,8 +497,9 @@ export function ShoppingList() {
               <Mail className="h-4 w-4 mr-1.5" />
               {t('shoppingList.actions.email')}
             </Button>
-            <Button variant="secondary" size="sm" disabled className="opacity-50 cursor-not-allowed">
-              {t('shoppingList.actions.tescoSoon')}
+            <Button variant="secondary" size="sm" onClick={handleOpenInTesco}>
+              <ExternalLink className="h-4 w-4 mr-1.5" />
+              {t('shoppingList.openInTesco')}
             </Button>
           </div>
         </div>

@@ -939,12 +939,13 @@
       "addingToFridge": "Adding to fridge…",
       "addedToFridge": "Leftovers added to your fridge"
     },
+    "openInTesco": "Add to my Tesco basket",
+    "tescoMappingWeak": "More than half of the items have no Tesco link — search results may vary.",
     "actions": {
       "print": "Print",
       "copy": "Copy",
       "copied": "Copied",
-      "email": "Email",
-      "tescoSoon": "Tesco — Coming soon"
+      "email": "Email"
     },
     "bought": "I bought this",
     "allInFridge": {
