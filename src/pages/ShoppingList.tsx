@@ -16,7 +16,8 @@ import { fridgeService } from '@/services/fridge'
 import { planService } from '@/services/plans'
 import { useMealPlanStore } from '@/store/mealPlan'
 import { formatCurrency } from '@/lib/utils'
-import { capture } from '@/lib/analytics'
+import { capture, buildCohortProperties } from '@/lib/analytics'
+import { usersService } from '@/services/users'
 import type { ShoppingListItem, IngredientCategory } from '@/types'
 
 const CATEGORY_COLOR: Record<IngredientCategory, 'green' | 'orange' | 'gray' | 'black'> = {
@@ -44,6 +45,13 @@ export function ShoppingList() {
   const { data: fridgeItems = [] } = useQuery({
     queryKey: ['fridge'],
     queryFn: fridgeService.list,
+  })
+
+  // ── User profile — needed for cohort analytics properties ─────────────────
+  const { data: userProfile } = useQuery({
+    queryKey: ['users', 'me'],
+    queryFn: usersService.getMe,
+    staleTime: 300_000,
   })
 
   // ── Calendar-plan path: GET endpoint ─────────────────────────────────────
@@ -89,11 +97,20 @@ export function ShoppingList() {
   useEffect(() => {
     if (!shoppingList || capturedRef.current) return
     capturedRef.current = true
+    const cohort = buildCohortProperties({
+      createdAt: userProfile?.createdAt,
+      dietaryPreferences: userProfile?.dietaryPreferences,
+      mealPlanPreferences: userProfile?.mealPlanPreferences,
+      planLengthDays: calendarPlan?.shoppingCycleDays ?? null,
+    })
     capture('shopping_list_generated', {
       item_count: shoppingList.items.length,
       source: calendarPlan ? 'calendar_plan' : 'legacy',
+      // user UUID only — no PII (no email, no name)
+      user_id: userProfile?.id ?? null,
+      ...cohort,
     })
-  }, [shoppingList, calendarPlan])
+  }, [shoppingList, calendarPlan, userProfile])
 
   // ── "I bought this" state ─────────────────────────────────────────────────
   // Key is per-plan so checks don't bleed across plans. The plan ID is unknown

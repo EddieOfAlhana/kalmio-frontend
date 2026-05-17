@@ -1,4 +1,6 @@
 import posthog from 'posthog-js'
+import type { DietaryConstraints } from '@/types'
+import type { UserMealPreferences } from '@/services/users'
 
 const CONSENT_KEY = 'kalmio-analytics-consent'
 const PH_KEY = import.meta.env.VITE_POSTHOG_KEY as string | undefined
@@ -91,4 +93,66 @@ export function pageView(path: string, locale: string, isAuthenticated: boolean)
 
 export function resetConsent(): void {
   localStorage.removeItem(CONSENT_KEY)
+}
+
+// ── Cohort helpers ────────────────────────────────────────────────────────────
+
+type HouseholdSizeBucket = '1' | '2' | '3-4' | '5+' | 'unknown'
+type DietaryProfile = 'vegetarian' | 'vegan' | 'gluten-free' | 'lactose-free' | 'none'
+
+/**
+ * Derives the first matching dietary profile label from a user's dietary
+ * constraints object. Priority order mirrors the AC: vegan > vegetarian >
+ * gluten-free > lactose-free > none.
+ */
+function deriveDietaryProfile(prefs: DietaryConstraints | null | undefined): DietaryProfile {
+  if (!prefs) return 'none'
+  if (prefs.vegan) return 'vegan'
+  if (prefs.vegetarian) return 'vegetarian'
+  if (prefs.glutenFree) return 'gluten-free'
+  if (prefs.lactoseFree) return 'lactose-free'
+  return 'none'
+}
+
+/**
+ * Derives a household-size bucket from the user's serving config.
+ * `maxMultiplier` is the largest serving multiplier the user plans for,
+ * which is the closest available proxy for household size.
+ */
+function deriveHouseholdSizeBucket(mealPrefs: UserMealPreferences | null | undefined): HouseholdSizeBucket {
+  const max = mealPrefs?.servingConfig?.maxMultiplier
+  if (max == null) return 'unknown'
+  if (max <= 1) return '1'
+  if (max <= 2) return '2'
+  if (max <= 4) return '3-4'
+  return '5+'
+}
+
+export interface CohortProperties {
+  'cohort.signupMonth': string | null    // "YYYY-MM", null if unavailable
+  'cohort.dietaryProfile': DietaryProfile
+  'cohort.householdSizeBucket': HouseholdSizeBucket
+  'cohort.planLengthDays': number | null
+}
+
+/**
+ * Builds the cohort properties object to attach to analytics events.
+ * No PII — userId is the UUID only and must be passed separately if needed.
+ */
+export function buildCohortProperties(opts: {
+  createdAt: string | null | undefined
+  dietaryPreferences: DietaryConstraints | null | undefined
+  mealPlanPreferences: UserMealPreferences | null | undefined
+  planLengthDays: number | null | undefined
+}): CohortProperties {
+  const signupMonth = opts.createdAt
+    ? opts.createdAt.slice(0, 7)   // "YYYY-MM-DDTHH:..." → "YYYY-MM"
+    : null
+
+  return {
+    'cohort.signupMonth': signupMonth,
+    'cohort.dietaryProfile': deriveDietaryProfile(opts.dietaryPreferences),
+    'cohort.householdSizeBucket': deriveHouseholdSizeBucket(opts.mealPlanPreferences),
+    'cohort.planLengthDays': opts.planLengthDays ?? null,
+  }
 }
