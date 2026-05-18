@@ -1316,6 +1316,14 @@
       "sproutCaption": "Csemete — a diófa ébredez.",
       "cta": "Megnézem a hetemet"
     },
+    "csemeteWelcome": {
+      "ariaLabel": "Csemete köszöntő — személyes üzenet az alapítótól",
+      "title": "Köszönjük, hogy itt vagy.",
+      "founderLine": "Sokat köszönhetünk a Csemetéknek, akik az első sorban állnak. Ha lesz egy perced, válaszolj erre az emailre — kíváncsi vagyok, mi vezetett ide.",
+      "founderName": "Zoltán",
+      "sproutCaption": "Csemete — a diófa ébredez.",
+      "cta": "Értem"
+    },
     "graduation": {
       "ariaLabel": "Gratulálunk — elérted a Termőfa szintet",
       "title": "Termőre fordult.",

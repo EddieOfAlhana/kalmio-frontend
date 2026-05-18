@@ -3,8 +3,13 @@ import { Sidebar } from './Sidebar'
 import { MobileNav } from './MobileNav'
 import { LegalFooter } from './LegalFooter'
 import { ImpersonationBanner } from '@/components/ImpersonationBanner'
+import { CsemeteWelcomeMoment } from '@/components/onboarding/CsemeteWelcomeMoment'
+import { useCsemeteWelcomeMoment } from '@/hooks/useCsemeteWelcomeMoment'
 
 export function AppShell() {
+  const { shouldShow: showCsemeteWelcome, dismiss: dismissCsemeteWelcome } =
+    useCsemeteWelcomeMoment()
+
   return (
     <div className="flex h-screen overflow-hidden w-full">
       <Sidebar />
@@ -16,6 +21,11 @@ export function AppShell() {
         <LegalFooter variant="light" />
       </main>
       <MobileNav />
+
+      {/* Csemete welcome moment — shown once per user after MAG → CSEMETE */}
+      {showCsemeteWelcome && (
+        <CsemeteWelcomeMoment onDismiss={dismissCsemeteWelcome} />
+      )}
     </div>
   )
 }

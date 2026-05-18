@@ -47,3 +47,25 @@ export function markGraduationRevealShown(): void {
     // localStorage unavailable (private browsing, storage quota) — fail silently.
   }
 }
+
+// ─── Csemete welcome moment (KALMIO-172) ─────────────────────────────────────
+
+const CSEMETE_WELCOME_LOCAL_STORAGE_KEY = 'kalmio:csemeteWelcomeShown'
+
+/** Returns true if the Csemete welcome overlay has already been shown to this user. */
+export function hasCsemeteWelcomeBeenShown(): boolean {
+  try {
+    return localStorage.getItem(CSEMETE_WELCOME_LOCAL_STORAGE_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
+/** Marks the Csemete welcome overlay as shown so it is never displayed again. */
+export function markCsemeteWelcomeShown(): void {
+  try {
+    localStorage.setItem(CSEMETE_WELCOME_LOCAL_STORAGE_KEY, 'true')
+  } catch {
+    // localStorage unavailable (private browsing, storage quota) — fail silently.
+  }
+}

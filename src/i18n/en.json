@@ -1316,6 +1316,14 @@
       "sproutCaption": "Csemete — the walnut tree stirs.",
       "cta": "See my week"
     },
+    "csemeteWelcome": {
+      "ariaLabel": "Csemete welcome — a personal note from the founder",
+      "title": "Thank you for being here.",
+      "founderLine": "We owe a great deal to the Csemeték who are standing in the front row. If you have a moment, reply to this email — I am curious what brought you here.",
+      "founderName": "Zoltán",
+      "sproutCaption": "Csemete — the walnut tree stirs.",
+      "cta": "Got it"
+    },
     "graduation": {
       "ariaLabel": "Congratulations — you have reached the Termőfa stage",
       "title": "Your tree has come to fruit.",
