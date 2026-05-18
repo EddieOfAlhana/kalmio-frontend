@@ -21,7 +21,7 @@
  * Mobile-first: designed at 375px, scales naturally.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, type Variants, type Easing } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -71,6 +71,11 @@ export function GraduationReveal({ onDismiss }: GraduationRevealProps) {
   const navigate = useNavigate()
   const dismissRef = useRef<HTMLButtonElement>(null)
 
+  const handleDismiss = useCallback(() => {
+    markGraduationRevealShown()
+    onDismiss()
+  }, [onDismiss])
+
   // Delay TERMO widget render so the entrance animation plays first.
   const [treeReady, setTreeReady] = useState(false)
   useEffect(() => {
@@ -91,12 +96,7 @@ export function GraduationReveal({ onDismiss }: GraduationRevealProps) {
     }
     document.addEventListener('keydown', handleKey)
     return () => document.removeEventListener('keydown', handleKey)
-  }, [onDismiss])
-
-  function handleDismiss() {
-    markGraduationRevealShown()
-    onDismiss()
-  }
+  }, [handleDismiss])
 
   function handleDownloadCertificate() {
     // Opens the PDF in a new tab; the browser offers Save/Download natively.

@@ -69,6 +69,8 @@ export function Knob({
     const range = max - min
     const delta = (dy / 150) * range
     onChange(clamp(Math.round(startValue.current + delta)))
+    // clamp closes over min/max, both of which are already in the dep array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [min, max, onChange])
 
   const onPointerUp = useCallback(() => { dragging.current = false }, [])
@@ -79,6 +81,8 @@ export function Knob({
     if (disabled) return
     if (e.key === 'ArrowUp' || e.key === 'ArrowRight') onChange(clamp(value + step))
     else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') onChange(clamp(value - step))
+    // clamp closes over min/max, both of which are already in the dep array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [disabled, value, step, onChange])
 
   return (

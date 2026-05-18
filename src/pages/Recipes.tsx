@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle, SlidersHorizontal, Upload } from 'lucide-react'
-import { useForm, useFieldArray, Controller, type Resolver } from 'react-hook-form'
+import { useForm, useFieldArray, useWatch, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Header } from '@/components/layout/Header'
@@ -704,6 +704,7 @@ export function RecipeFormDialog({
 
   // Reset local preview when a different recipe is opened
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocalImageUrl(null)
   }, [recipe?.id])
 
@@ -749,14 +750,14 @@ export function RecipeFormDialog({
     if (file) handleImageFile(file)
   }
 
-  const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, control, setValue, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema) as Resolver<FormValues>,
     values: defaultValues(recipe, ingredientMap),
   })
 
   const { fields, append, remove } = useFieldArray({ control, name: 'ingredients' })
-  const selectedTags = watch('tags')
-  const watchFreezable = watch('freezableAfterPrep')
+  const selectedTags = useWatch({ control, name: 'tags' })
+  const watchFreezable = useWatch({ control, name: 'freezableAfterPrep' })
   const ingredientIds = fields.map(f => f.ingredientId)
 
   function toggleTag(tag: RecipeTag) {

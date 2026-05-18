@@ -335,6 +335,9 @@ function DetailView({
       feedbackService.markRead(id).catch(() => {})
       qc.invalidateQueries({ queryKey: ['feedback', 'unread'] })
     }
+    // Intentional: re-run only when the loaded item's identity changes,
+    // not on every re-render of detail/qc. markRead is fire-and-forget.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detail?.id])
 
   const replyMutation = useMutation({

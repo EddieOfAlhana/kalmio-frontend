@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { Fingerprint, Trash2, LogOut, ChevronRight, Key, Copy, Check, Star } from 'lucide-react'
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Link } from 'react-router-dom'
@@ -86,6 +86,7 @@ export function Settings() {
     }
   }, [])
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadPasskeys() }, [loadPasskeys])
 
   // ── API Keys queries & mutations ───────────────────────────────────────────
@@ -203,7 +204,7 @@ export function Settings() {
   const isFiatalPlus =
     stageData?.currentStage === 'FIATAL' || stageData?.currentStage === 'TERMO'
 
-  const { register, handleSubmit, reset, setValue, watch } = useForm<FormValues>()
+  const { register, handleSubmit, reset, setValue, control } = useForm<FormValues>()
 
   useEffect(() => {
     if (settings) {
@@ -225,6 +226,7 @@ export function Settings() {
         forbiddenPrefilled.current = true
         const saved = settings.mealPlanPreferences?.forbiddenIngredientIds
         if (saved && saved.length > 0) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setForbiddenIngredientIds(saved)
         }
       }
@@ -266,10 +268,10 @@ export function Settings() {
   }
 
   // ── Implied macro preview ──────────────────────────────────────────────────
-  const watchedKcal = watch('kcalTarget')
-  const watchedProtein = watch('proteinMin')
-  const watchedCarbs = watch('carbsTargetG')
-  const watchedFat = watch('fatTargetG')
+  const watchedKcal = useWatch({ control, name: 'kcalTarget' })
+  const watchedProtein = useWatch({ control, name: 'proteinMin' })
+  const watchedCarbs = useWatch({ control, name: 'carbsTargetG' })
+  const watchedFat = useWatch({ control, name: 'fatTargetG' })
 
   const kcalNum = watchedKcal ? parseFloat(watchedKcal) : null
   const proteinNum = watchedProtein ? parseFloat(watchedProtein) : null
