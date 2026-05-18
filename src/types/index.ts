@@ -566,6 +566,43 @@ export interface LogOffPlanMealRequest {
   carbG?: number
 }
 
+/**
+ * Request body for the AI text-to-meal endpoint
+ * (`POST /api/off-plan-meals/from-text`).
+ *
+ * Premium-gated. The backend parses `text` via gpt-4o-mini, persists the
+ * result with `source = LLM_TEXT`, and returns the persisted row.
+ */
+export interface AiOffPlanLogTextRequest {
+  /** Free-text meal description, max 1000 chars. */
+  text: string
+  /** Optional override; if omitted the model infers it. */
+  mealType?: MealType
+  /** Optional ISO date; defaults to today server-side. */
+  eatenAt?: string
+}
+
+/**
+ * Persisted AI-logged off-plan meal — response from all three AI endpoints:
+ * `/from-text`, `/from-voice`, `/from-photo`.
+ */
+export interface AiOffPlanLogResponse {
+  id: string
+  userId: string
+  date: string
+  mealType: string | null
+  displayName: string
+  kcal: number
+  proteinG: number
+  fatG: number
+  carbG: number
+  /** `LLM_TEXT` | `LLM_VOICE` | `LLM_PHOTO` for AI logs; `MANUAL` for the form path. */
+  source: string
+  createdAt: string
+  /** Model confidence [0.0–1.0]; null for non-AI paths. */
+  confidence: number | null
+}
+
 // ── Shopping List ─────────────────────────────────────────────────────────
 
 export interface ShoppingListRequest {

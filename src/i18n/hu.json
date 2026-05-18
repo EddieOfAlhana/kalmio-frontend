@@ -101,6 +101,7 @@
         "AFTERNOON_SNACK": "Uzsonna"
       },
       "addOffPlan": "+ Hozzáadok valamit",
+      "addOffPlanAi": "AI-val rögzítek",
       "offPlanBadge": "Saját bejegyzés",
       "undoStatus": "Visszaállítás",
       "deleteOffPlan": "Törlés",
@@ -114,6 +115,69 @@
         "log": "Rögzítés",
         "logging": "Rögzítés…",
         "logged": "Rögzítve."
+      }
+    },
+    "aiOffPlan": {
+      "title": "AI-naplózás",
+      "subtitle": "Írd le, fotózd le vagy mondd el — feldolgozom és felveszem a naplódba.",
+      "tabs": {
+        "text": "Szöveg",
+        "photo": "Fotó",
+        "voice": "Hang"
+      },
+      "text": {
+        "label": "Mit ettél?",
+        "placeholder": "Pl. egy gyros és fél liter kóla ebédre",
+        "charsLeft_one": "{{count}} karakter maradt",
+        "charsLeft_other": "{{count}} karakter maradt"
+      },
+      "voice": {
+        "tapToSpeak": "Koppints és mondd",
+        "stop": "Felvétel leállítása",
+        "recorded": "Felvétel kész",
+        "reRecord": "Új felvétel",
+        "discard": "Elvetés",
+        "hint": "A mikrofon a koppintás után indul."
+      },
+      "photo": {
+        "drop": "Húzd ide a fotót vagy koppints",
+        "hint": "jpeg, png vagy webp — max 5 MB",
+        "useCamera": "Fotó készítése",
+        "cameraStarting": "Kamera indul…",
+        "capture": "Kattintás",
+        "retake": "Új fotó",
+        "replaceUpload": "Másik fájl",
+        "remove": "Eltávolítás"
+      },
+      "mealTypeLabel": "Étkezés (opcionális)",
+      "mealTypeAuto": "Automatikus felismerés",
+      "parse": "Feldolgozás",
+      "parsing": "Feldolgozás…",
+      "confidence": "{{value}}% biztos",
+      "persistedHint": "Már rögzítettem. Ha mégsem stimmel, vond vissza.",
+      "undo": "Mégse",
+      "done": "Rendben",
+      "undone": "Visszavontam.",
+      "undoError": "Nem sikerült visszavonni.",
+      "macros": {
+        "kcal": "kcal",
+        "protein": "fehérje",
+        "fat": "zsír",
+        "carbs": "szénhidrát"
+      },
+      "errors": {
+        "premiumTitle": "Ez egy prémium funkció",
+        "premiumDescription": "Az AI-asszisztens naplózás az Alapító Tag csomag része.",
+        "premiumCta": "Alapító Tag információk",
+        "rateLimitText": "Túl gyorsan kérdezed — várj egy percet, és próbáld újra.",
+        "rateLimitPhoto": "Túl sok fotó az elmúlt órában — várj egy órát, és próbáld újra.",
+        "tooLarge": "A fájl túl nagy. Hang: max 25 MB, kép: max 5 MB.",
+        "unsupportedType": "Nem támogatott fájlformátum.",
+        "cameraPermission": "A kamera használatához engedély kell. Add meg a böngészőben, és próbáld újra.",
+        "cameraUnavailable": "Nem érem el a kamerát. Próbáld másik eszközről, vagy tölts fel egy fotót.",
+        "micPermission": "A mikrofon használatához engedély kell. Add meg a böngészőben, és próbáld újra.",
+        "micUnavailable": "Nem érem el a mikrofont. Próbáld másik eszközről.",
+        "generic": "Valami félrement. Próbáld meg újra."
       }
     },
     "macros": {
@@ -703,7 +767,10 @@
       "subtitle_other": "{{count}} regisztrált felhasználó",
       "promote": "Admin kinevezése",
       "demote": "Admin visszavonása",
-      "impersonate": "Megszemélyesítés"
+      "impersonate": "Megszemélyesítés",
+      "premiumBadge": "Prémium",
+      "grantPremium": "Prémium megnyitása",
+      "revokePremium": "Prémium visszavétele"
     },
     "contentReview": {
       "title": "Tartalom jóváhagyás",

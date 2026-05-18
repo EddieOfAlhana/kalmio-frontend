@@ -23,6 +23,7 @@ import { getRecipeNameFromTranslations } from '@/lib/i18nRecipe'
 import type { DashboardDto, OffPlanMealCard, TimePreferencesDto } from '@/types'
 import { useEffect } from 'react'
 import { OffPlanMealLogModal } from './OffPlanMealLogModal'
+import { AiOffPlanLogModal } from './AiOffPlanLogModal'
 
 // ── time helpers ──────────────────────────────────────────────────────────
 
@@ -320,11 +321,12 @@ function DragFeedbackPill({ label, todayOnlyLabel, defaultLabel, onTodayOnly, on
 interface OffPlanMealsSectionProps {
   offPlanMeals: OffPlanMealCard[]
   onLog: () => void
+  onLogAi: () => void
   onDelete: (id: string) => void
   deletingId?: string
 }
 
-function OffPlanMealsSection({ offPlanMeals, onLog, onDelete, deletingId }: OffPlanMealsSectionProps) {
+function OffPlanMealsSection({ offPlanMeals, onLog, onLogAi, onDelete, deletingId }: OffPlanMealsSectionProps) {
   const { t } = useTranslation()
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
@@ -399,14 +401,30 @@ function OffPlanMealsSection({ offPlanMeals, onLog, onDelete, deletingId }: OffP
         </div>
       )}
 
-      {/* Log button */}
-      <button
-        type="button"
-        onClick={onLog}
-        className="w-full rounded-xl border border-dashed border-gray-200 py-2.5 text-[13px] font-medium text-gray-500 hover:border-[#F28C28] hover:text-[#F28C28] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28]"
-      >
-        {t('dashboard.offPlanMeal.logButton')}
-      </button>
+      {/* Log buttons — manual + AI */}
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={onLog}
+          className="w-full rounded-xl border border-dashed border-gray-200 py-2.5 text-[13px] font-medium text-gray-500 hover:border-[#F28C28] hover:text-[#F28C28] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28]"
+        >
+          {t('dashboard.offPlanMeal.logButton')}
+        </button>
+        <button
+          type="button"
+          onClick={onLogAi}
+          className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl border border-dashed border-[#F28C28]/40 bg-[#F28C28]/5 py-2.5 text-[13px] font-medium text-[#F28C28] hover:border-[#F28C28] hover:bg-[#F28C28]/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28]"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/>
+            <path d="M5 3v4"/>
+            <path d="M19 17v4"/>
+            <path d="M3 5h4"/>
+            <path d="M17 19h4"/>
+          </svg>
+          {t('dashboard.meals.addOffPlanAi')}
+        </button>
+      </div>
     </div>
   )
 }
@@ -460,6 +478,7 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
   const [liveDragId, setLiveDragId] = useState<string | null>(null)
   const [liveDragMinutes, setLiveDragMinutes] = useState<number | null>(null)
   const [showOffPlanModal, setShowOffPlanModal] = useState(false)
+  const [showAiOffPlanModal, setShowAiOffPlanModal] = useState(false)
   const dragBaseMinutesRef = useRef<number>(0)
   const outerRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
@@ -780,6 +799,7 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
         <OffPlanMealsSection
           offPlanMeals={dashboard?.offPlanMeals ?? []}
           onLog={() => setShowOffPlanModal(true)}
+          onLogAi={() => setShowAiOffPlanModal(true)}
           onDelete={(id) => deleteOffPlanMeal.mutate(id)}
           deletingId={deleteOffPlanMeal.isPending ? (deleteOffPlanMeal.variables as string | undefined) : undefined}
         />
@@ -791,6 +811,12 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
           onClose={() => setShowOffPlanModal(false)}
         />
       )}
+
+      <AiOffPlanLogModal
+        open={showAiOffPlanModal}
+        onOpenChange={setShowAiOffPlanModal}
+        date={date}
+      />
 
       {/* DragOverlay — anchored to the card rect (setNodeRef is on the card div),
           so it appears exactly where the card is and only moves vertically */}

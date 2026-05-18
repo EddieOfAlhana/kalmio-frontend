@@ -8,10 +8,18 @@ const BASE = import.meta.env.VITE_API_URL ?? ''
 
 export const api = axios.create({
   baseURL: BASE,
-  headers: { 'Content-Type': 'application/json' },
 })
 
 api.interceptors.request.use(async (config) => {
+  // Tell the backend which UI language the caller is using so AI-generated copy
+  // (off-plan meal names etc.) matches the user's locale. i18next normalises this
+  // to a BCP-47 tag like "hu" or "en"; the backend treats "hu*" as Hungarian and
+  // everything else as English.
+  const lang = i18n.language || i18n.resolvedLanguage
+  if (lang) {
+    config.headers['Accept-Language'] = lang
+  }
+
   // Impersonation token takes priority over all other auth paths.
   // Impersonation is set synchronously so no init wait is needed.
   const impersonationToken = useAuthStore.getState().impersonationToken

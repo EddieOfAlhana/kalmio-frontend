@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { ShieldCheck, ShieldOff, UserCheck } from 'lucide-react'
+import { ShieldCheck, ShieldOff, Sparkles, UserCheck } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -25,6 +25,12 @@ export function UserManagement() {
   const roleMutation = useMutation({
     mutationFn: ({ id, role }: { id: string; role: 'USER' | 'ADMIN' }) =>
       adminService.updateRole(id, role),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-users'] }),
+  })
+
+  const premiumMutation = useMutation({
+    mutationFn: ({ id, enabled }: { id: string; enabled: boolean }) =>
+      adminService.togglePremium(id, enabled),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-users'] }),
   })
 
@@ -59,6 +65,9 @@ export function UserManagement() {
                   <Badge variant={user.role === 'ADMIN' ? 'orange' : 'gray'}>
                     {user.role}
                   </Badge>
+                  {user.premiumEnabled && (
+                    <Badge variant="amber">{t('admin.users.premiumBadge')}</Badge>
+                  )}
                   {user.id !== currentUserId && (
                     <>
                       <Button
@@ -77,6 +86,22 @@ export function UserManagement() {
                         ) : (
                           <><ShieldCheck className="h-3.5 w-3.5" /> {t('admin.users.promote')}</>
                         )}
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled={premiumMutation.isPending}
+                        onClick={() =>
+                          premiumMutation.mutate({
+                            id: user.id,
+                            enabled: !user.premiumEnabled,
+                          })
+                        }
+                      >
+                        <Sparkles className="h-3.5 w-3.5" />{' '}
+                        {user.premiumEnabled
+                          ? t('admin.users.revokePremium')
+                          : t('admin.users.grantPremium')}
                       </Button>
                       <Button
                         variant="secondary"

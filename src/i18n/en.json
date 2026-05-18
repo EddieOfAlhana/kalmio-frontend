@@ -101,6 +101,7 @@
         "AFTERNOON_SNACK": "Afternoon snack"
       },
       "addOffPlan": "+ Add something I ate",
+      "addOffPlanAi": "Log with AI",
       "offPlanBadge": "Off-plan",
       "undoStatus": "Undo",
       "deleteOffPlan": "Delete entry",
@@ -114,6 +115,69 @@
         "log": "Log",
         "logging": "Logging…",
         "logged": "Logged."
+      }
+    },
+    "aiOffPlan": {
+      "title": "AI meal log",
+      "subtitle": "Describe it, photograph it or speak it — I'll process it and add it to your log.",
+      "tabs": {
+        "text": "Text",
+        "photo": "Photo",
+        "voice": "Voice"
+      },
+      "text": {
+        "label": "What did you eat?",
+        "placeholder": "e.g. a gyros and a half-litre cola for lunch",
+        "charsLeft_one": "{{count}} character left",
+        "charsLeft_other": "{{count}} characters left"
+      },
+      "voice": {
+        "tapToSpeak": "Touch to speak",
+        "stop": "Stop recording",
+        "recorded": "Recording ready",
+        "reRecord": "Record again",
+        "discard": "Discard",
+        "hint": "Mic starts after you tap."
+      },
+      "photo": {
+        "drop": "Drop a photo here or tap to browse",
+        "hint": "jpeg, png or webp — up to 5 MB",
+        "useCamera": "Take a photo",
+        "cameraStarting": "Camera starting…",
+        "capture": "Capture",
+        "retake": "Retake",
+        "replaceUpload": "Replace file",
+        "remove": "Remove"
+      },
+      "mealTypeLabel": "Meal (optional)",
+      "mealTypeAuto": "Auto-detect",
+      "parse": "Process",
+      "parsing": "Processing…",
+      "confidence": "{{value}}% confidence",
+      "persistedHint": "Logged. Undo if it's not right.",
+      "undo": "Undo",
+      "done": "Done",
+      "undone": "Reverted.",
+      "undoError": "Could not undo.",
+      "macros": {
+        "kcal": "kcal",
+        "protein": "protein",
+        "fat": "fat",
+        "carbs": "carbs"
+      },
+      "errors": {
+        "premiumTitle": "Premium feature",
+        "premiumDescription": "AI meal logging is part of the Founding Member plan.",
+        "premiumCta": "About Founding Member",
+        "rateLimitText": "Too fast — wait a minute and try again.",
+        "rateLimitPhoto": "Too many photos this hour — wait an hour and try again.",
+        "tooLarge": "File too large. Audio: max 25 MB, image: max 5 MB.",
+        "unsupportedType": "Unsupported file format.",
+        "cameraPermission": "The camera needs your permission. Grant it in the browser and try again.",
+        "cameraUnavailable": "I can't reach the camera. Try a different device, or upload a photo instead.",
+        "micPermission": "The microphone needs your permission. Grant it in the browser and try again.",
+        "micUnavailable": "I can't reach the microphone. Try a different device.",
+        "generic": "Something went wrong. Try again."
       }
     },
     "macros": {
@@ -703,7 +767,10 @@
       "subtitle_other": "{{count}} registered users",
       "promote": "Make admin",
       "demote": "Remove admin",
-      "impersonate": "Impersonate"
+      "impersonate": "Impersonate",
+      "premiumBadge": "Premium",
+      "grantPremium": "Grant premium",
+      "revokePremium": "Revoke premium"
     },
     "contentReview": {
       "title": "Content Review",
