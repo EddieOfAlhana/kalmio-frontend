@@ -42,6 +42,7 @@ import { PlantingPreview } from '@/pages/_preview/PlantingPreview'
 import { DiofaPreview } from '@/pages/_preview/DiofaPreview'
 import { TasteSwipePreview } from '@/pages/_preview/TasteSwipePreview'
 import { Grove } from '@/pages/Grove'
+import { FoundingMember } from '@/pages/FoundingMember'
 
 initAnalytics()
 
@@ -149,6 +150,7 @@ export default function App() {
                 <Route path="my-recipes" element={<MyRecipes />} />
                 <Route path="my-ingredients" element={<MyIngredients />} />
                 <Route path="grove" element={<Grove />} />
+                <Route path="founding-member" element={<FoundingMember />} />
                 <Route path="_preview/planting" element={<PlantingPreview />} />
                 <Route path="_preview/diofa" element={<DiofaPreview />} />
                 <Route path="_preview/taste-swipe" element={<TasteSwipePreview />} />

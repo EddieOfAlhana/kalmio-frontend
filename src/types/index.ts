@@ -774,6 +774,17 @@ export interface GrovePinsResponse {
   pins: GrovePin[]
 }
 
+// ── Founding Member ───────────────────────────────────────────────────────
+
+/** Response from GET /api/founding-member/availability */
+export interface FoundingMemberAvailability {
+  cap: number
+  soldCount: number
+  remaining: number
+  price: number
+  currency: string
+}
+
 // ── Weekly Summary ─────────────────────────────────────────────────────────
 
 export interface WeeklyDayDto {

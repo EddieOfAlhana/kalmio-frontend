@@ -7,6 +7,7 @@ import { LegalFooter } from '@/components/layout/LegalFooter'
 import { useAuthStore } from '@/store/auth'
 import { ArrowRight, CheckCircle2, XCircle, Clock, Leaf, ShoppingCart } from 'lucide-react'
 import { getLatestPosts, type BlogCategory } from '@/data/blog'
+import { FoundingMemberPromo } from '@/pages/landing/FoundingMemberPromo'
 
 const categoryColor: Record<BlogCategory, string> = {
   Roadmap: 'bg-[#F28C28]/15 text-[#F28C28]',
@@ -353,6 +354,9 @@ export function LandingPage() {
 
       {/* ── Blog Preview ── */}
       <BlogPreviewSection />
+
+      {/* ── Founding Member Promo ── */}
+      <FoundingMemberPromo />
 
       {/* ── Final CTA ── */}
       <section className="bg-[#1A1A1A] py-20 sm:py-28 px-6">
