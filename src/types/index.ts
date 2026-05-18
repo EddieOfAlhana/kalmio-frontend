@@ -878,3 +878,92 @@ export interface WeeklySummaryDto {
   /** null when no prior week data exists */
   weekOverWeekDeltaKcal: number | null
 }
+
+// ── Family ────────────────────────────────────────────────────────────────
+
+export type FamilyRole = 'PLANNER' | 'MEMBER'
+
+export interface FamilyMemberDto {
+  userId: string
+  role: FamilyRole
+  joinedAt: string  // ISO-8601
+}
+
+/** Response from POST /api/families and GET /api/families/{id} */
+export interface FamilyResponse {
+  id: string
+  createdByUserId: string
+  createdAt: string  // ISO-8601
+  members: FamilyMemberDto[]
+}
+
+export interface AddManagedProfileResponse {
+  profileId: string
+}
+
+export interface UserPreferencesDto {
+  allergens: string[]
+  dislikedIngredientIds: string[]
+  vegetarian: boolean
+  vegan: boolean
+  pescatarian: boolean
+  glutenFree: boolean
+  dairyFree: boolean
+  lactoseFree: boolean
+  milkProteinFree: boolean
+  eggFree: boolean
+  nutFree: boolean
+  peanutFree: boolean
+  soyFree: boolean
+  fishFree: boolean
+  shellfishFree: boolean
+  sesameFree: boolean
+  halal: boolean
+  kosher: boolean
+  keto: boolean
+  lowGi: boolean
+  lowFodmap: boolean
+  paleo: boolean
+  kcalTarget: number | null
+  proteinMinG: number | null
+  carbsTargetG: number | null
+  fatTargetG: number | null
+  portionSizeMultiplier: number | null
+  prepToleranceMinutes: number | null
+}
+
+export interface AddManagedProfileRequest {
+  displayName: string
+  preferences?: Partial<UserPreferencesDto>
+}
+
+export interface SendInviteRequest {
+  boundManagedProfileId: string | null
+  freshSlot: boolean
+}
+
+export interface SendInviteResponse {
+  claimCode: string
+}
+
+export interface AcceptInviteRequest {
+  claim: boolean
+}
+
+export interface MacroMergeResultDto {
+  kcalTargetSource: string
+  proteinMinSource: string
+  carbsTargetSource: string
+  fatTargetSource: string
+}
+
+export interface MergePreviewResponse {
+  mergedAllergens: string[]
+  mergedDislikedIngredientIds: string[]
+  activeDietaryFlags: string[]
+  macros: MacroMergeResultDto
+}
+
+export interface ImpersonateResponse {
+  sessionToken: string
+}

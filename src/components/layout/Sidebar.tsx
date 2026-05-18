@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Link } from 'react-router-dom'
-import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store, LogOut, Settings, ShieldCheck, MessageSquarePlus, Vault, ChevronRight, Refrigerator, BookOpenCheck, ClipboardList } from 'lucide-react'
+import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store, LogOut, Settings, ShieldCheck, MessageSquarePlus, Vault, ChevronRight, Refrigerator, BookOpenCheck, ClipboardList, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
@@ -41,6 +41,7 @@ export function Sidebar() {
     { to: '/app/shopping-list', icon: ShoppingCart, label: t('nav.shoppingList') },
     { to: '/app/fridge', icon: Refrigerator, label: t('nav.fridge') },
     { to: '/app/retail-products', icon: Store, label: t('nav.retail') },
+    { to: '/app/family', icon: Users, label: t('nav.family') },
   ]
 
   return (

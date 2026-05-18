@@ -20,7 +20,8 @@
     "ipVault": "IP Vault",
     "contentReview": "Content Review",
     "feedback": "Feedback",
-    "more": "More"
+    "more": "More",
+    "family": "Family"
   },
   "common": {
     "version": "Nutrition Engine v0.1",
@@ -1459,6 +1460,131 @@
         "shoppingDay": "Usual shopping day",
         "dietaryRestrictions": "Dietary restrictions"
       }
+    }
+  },
+  "family": {
+    "title": "Family",
+    "subtitleNoFamily": "Your family group is not set up yet",
+    "noFamilyExplainer": "Create your family to plan meals together.",
+    "capacityCounter": "{{used}} of {{cap}} slots used",
+    "membersSection": "Members",
+    "capReached": "You have reached the 5-member limit.",
+    "creation": {
+      "cta": "Start your family",
+      "creating": "Creating…",
+      "success": "Your family has been created."
+    },
+    "managedProfile": {
+      "addCta": "Add profile",
+      "addTitle": "New managed profile",
+      "addSubmit": "Create",
+      "addSuccess": "Profile added.",
+      "editTitle": "{{name}}'s preferences",
+      "savedPrefs": "Preferences saved.",
+      "displayName": "Name",
+      "displayNamePlaceholder": "e.g. Anna",
+      "nameMaxLength": "Name must be 50 characters or fewer."
+    },
+    "memberRow": {
+      "you": "you",
+      "managedBadge": "managed",
+      "editPrefs": "Edit {{name}}'s preferences",
+      "removeProfile": "Remove {{name}}",
+      "confirmRemove": "Remove this profile: {{name}}?",
+      "profileRemoved": "Profile removed."
+    },
+    "roles": {
+      "planner": "Planner",
+      "member": "Member",
+      "changeRole": "Change role",
+      "cannotDemoteLastPlanner": "You cannot step down — you are the only Planner. Appoint another Planner first."
+    },
+    "invite": {
+      "inviteCta": "Invite a member",
+      "dialogTitle": "Send an invite",
+      "capBindingIntro": "You are inviting someone to join your family.",
+      "capBindingPrompt": "Do you already have a managed profile for this person?",
+      "bindToProfile": "Yes, this is the same person as {{name}}",
+      "freshSlotCta": "No, this is a new person",
+      "capExceededMessage": "You are at the 5-member limit. Remove a managed profile to free up a slot.",
+      "removeProfilePrompt": "Which managed profile would you like to remove to make room?",
+      "generating": "Generating code…",
+      "codeReadyIntro": "Share this code with the person you are inviting. The code is valid for 7 days.",
+      "copyCode": "Copy code",
+      "codeExpiry": "This code expires in 7 days.",
+      "claimSection": "Join with an invite",
+      "claimPrompt": "If you received an invite code, enter it here to join the right family.",
+      "enterCodeCta": "Redeem invite code",
+      "claimDialogTitle": "Redeem invite code",
+      "codePlaceholder": "Code (e.g. ABC123)",
+      "submitCodeCta": "Continue",
+      "checking": "Checking…",
+      "invalidCode": "This code is not valid or has expired.",
+      "acceptSuccess": "You have joined the family."
+    },
+    "merge": {
+      "dialogTitle": "Link your profile",
+      "intro": "This invite is linked to a managed profile. The settings below will be added to your account.",
+      "allergenSection": "Allergens",
+      "allergenHint": "Allergens are checked by default for your safety. All checked allergens will be added to your account.",
+      "allergenSafetyBadge": "safety",
+      "allergenItemAriaLabel": "{{allergen}} allergen checked",
+      "dietaryFlagsSection": "Dietary restrictions",
+      "flagsUncheckable": "Dietary flags will be merged automatically.",
+      "macroSection": "Macro targets",
+      "macroHint": "Your actual account data takes precedence when a value is set in both places.",
+      "kcal": "Calories",
+      "protein": "Protein",
+      "carbs": "Carbohydrates",
+      "fat": "Fat",
+      "sourceRealAccount": "From your account",
+      "sourceManagedProfile": "From managed profile",
+      "sourceNotSet": "Not set",
+      "noDiff": "No differences — the profile has no special preferences.",
+      "confirmCta": "Confirm and link",
+      "joinWithoutClaimCta": "Join without linking",
+      "confirming": "Processing…"
+    },
+    "impersonation": {
+      "banner": "You are viewing the app as {{name}}.",
+      "returnCta": "Return to your view",
+      "switchTo": "Switch to {{name}}",
+      "switchLabel": "View as",
+      "auditLogTitle": "Who viewed your plans",
+      "auditLogEmpty": "No one has viewed your plans yet."
+    },
+    "prefs": {
+      "allergens": "Allergens",
+      "allergensPlaceholder": "e.g. peanuts, milk, eggs",
+      "allergensHint": "Separate allergens with a comma.",
+      "dietaryFlags": "Dietary restrictions",
+      "macroTargets": "Macro targets",
+      "kcalTarget": "Calorie target (kcal)",
+      "proteinMin": "Protein minimum (g)",
+      "carbsTarget": "Carbohydrate target (g)",
+      "fatTarget": "Fat target (g)",
+      "prepTolerance": "Prep tolerance (minutes)",
+      "portionSize": "Portion multiplier",
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan",
+      "pescatarian": "Pescatarian",
+      "glutenFree": "Gluten-free",
+      "dairyFree": "Dairy-free",
+      "lactoseFree": "Lactose-free",
+      "milkProteinFree": "Milk protein-free",
+      "eggFree": "Egg-free",
+      "nutFree": "Nut-free",
+      "peanutFree": "Peanut-free",
+      "soyFree": "Soy-free",
+      "fishFree": "Fish-free",
+      "shellfishFree": "Shellfish-free",
+      "sesameFree": "Sesame-free",
+      "halal": "Halal",
+      "kosher": "Kosher",
+      "keto": "Keto",
+      "lowGi": "Low GI",
+      "lowFodmap": "Low FODMAP",
+      "paleo": "Paleo"
     }
   }
 }

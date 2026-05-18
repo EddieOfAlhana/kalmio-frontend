@@ -20,7 +20,8 @@
     "ipVault": "IP Trezor",
     "contentReview": "Tartalom jóváhagyás",
     "feedback": "Visszajelzés",
-    "more": "Több"
+    "more": "Több",
+    "family": "Család"
   },
   "common": {
     "version": "Táplálkozási Motor v0.1",
@@ -1459,6 +1460,131 @@
         "shoppingDay": "Szokásos bevásárlónap",
         "dietaryRestrictions": "Étrendi megszorítások"
       }
+    }
+  },
+  "family": {
+    "title": "Család",
+    "subtitleNoFamily": "Még nincs beállítva a csoportod",
+    "noFamilyExplainer": "Hozd létre a családodat, hogy közösen tervezhessétek az étrendet.",
+    "capacityCounter": "{{used}} / {{cap}} hely foglalt",
+    "membersSection": "Tagok",
+    "capReached": "Elértétek az 5 fős limitet.",
+    "creation": {
+      "cta": "Hozd létre a családot",
+      "creating": "Létrehozás…",
+      "success": "A család sikeresen létrejött."
+    },
+    "managedProfile": {
+      "addCta": "Profil hozzáadása",
+      "addTitle": "Új felügyelt profil",
+      "addSubmit": "Létrehozás",
+      "addSuccess": "A profil hozzáadva.",
+      "editTitle": "{{name}} beállításai",
+      "savedPrefs": "Beállítások mentve.",
+      "displayName": "Név",
+      "displayNamePlaceholder": "pl. Anna",
+      "nameMaxLength": "A név legfeljebb 50 karakter lehet."
+    },
+    "memberRow": {
+      "you": "te",
+      "managedBadge": "felügyelt",
+      "editPrefs": "{{name}} beállításainak szerkesztése",
+      "removeProfile": "{{name}} törlése",
+      "confirmRemove": "Biztosan törölni szeretnéd ezt a profilt: {{name}}?",
+      "profileRemoved": "A profil törölve."
+    },
+    "roles": {
+      "planner": "Tervező",
+      "member": "Tag",
+      "changeRole": "Szerepkör módosítása",
+      "cannotDemoteLastPlanner": "Nem léphetsz vissza, mert te vagy az egyetlen tervező. Először nevezz ki egy másikat."
+    },
+    "invite": {
+      "inviteCta": "Tag meghívása",
+      "dialogTitle": "Meghívó küldése",
+      "capBindingIntro": "Meghívod a következő személyt a családba.",
+      "capBindingPrompt": "Van már felügyelt profilod erre a személyre?",
+      "bindToProfile": "Igen, ez ugyanaz, mint {{name}}",
+      "freshSlotCta": "Nem, ez egy új személy",
+      "capExceededMessage": "Elértétek az 5 fős limitet. Egy felügyelt profil törlésével felszabadíthatsz helyet.",
+      "removeProfilePrompt": "Melyik felügyelt profilt szeretnéd törölni a meghíváshoz?",
+      "generating": "Kód generálása…",
+      "codeReadyIntro": "Oszd meg ezt a kódot a meghívott személlyel. A kód 7 napig érvényes.",
+      "copyCode": "Kód másolása",
+      "codeExpiry": "A kód 7 napig érvényes.",
+      "claimSection": "Csatlakozás meghívóval",
+      "claimPrompt": "Ha kaptál egy meghívókódot, add meg itt, és csatlakozol a megfelelő családhoz.",
+      "enterCodeCta": "Meghívókód beváltása",
+      "claimDialogTitle": "Meghívókód beváltása",
+      "codePlaceholder": "Kód (pl. ABC123)",
+      "submitCodeCta": "Folytatás",
+      "checking": "Ellenőrzés…",
+      "invalidCode": "Ez a kód nem érvényes vagy már lejárt.",
+      "acceptSuccess": "Sikeresen csatlakoztál a családhoz."
+    },
+    "merge": {
+      "dialogTitle": "Profil összekapcsolása",
+      "intro": "A meghívó egy felügyelt profilhoz van kötve. Az alábbi beállítások kerülnek az Kalmio-fiókodba.",
+      "allergenSection": "Allergének",
+      "allergenHint": "Az allergének biztonsági okokból alapból be vannak jelölve. Az összes allergén fiókodba kerül.",
+      "allergenSafetyBadge": "biztonsági",
+      "allergenItemAriaLabel": "{{allergen}} allergén bejelölve",
+      "dietaryFlagsSection": "Étrendi megszorítások",
+      "flagsUncheckable": "Az étrendi beállítások automatikusan egyesülnek.",
+      "macroSection": "Makrócélok",
+      "macroHint": "A tényleges fiókadataid az irányadók, ha mindkét helyen be van állítva érték.",
+      "kcal": "Kalória",
+      "protein": "Fehérje",
+      "carbs": "Szénhidrát",
+      "fat": "Zsír",
+      "sourceRealAccount": "A te fiókodból",
+      "sourceManagedProfile": "A felügyelt profilból",
+      "sourceNotSet": "Nincs beállítva",
+      "noDiff": "Nincs eltérés — a profilnak nincsenek speciális beállításai.",
+      "confirmCta": "Összekapcsolás",
+      "joinWithoutClaimCta": "Csatlakozás az összekapcsolás nélkül",
+      "confirming": "Feldolgozás…"
+    },
+    "impersonation": {
+      "banner": "{{name}} nézőpontjából látod az alkalmazást.",
+      "returnCta": "Vissza a saját nézedhez",
+      "switchTo": "Váltás: {{name}}",
+      "switchLabel": "Megtekintés",
+      "auditLogTitle": "Ki tekintette meg a tervedet",
+      "auditLogEmpty": "Még senki nem tekintette meg a tervedet."
+    },
+    "prefs": {
+      "allergens": "Allergének",
+      "allergensPlaceholder": "pl. mogyoró, tej, tojás",
+      "allergensHint": "Vesszővel elválasztva add meg az allergéneket.",
+      "dietaryFlags": "Étrendi megszorítások",
+      "macroTargets": "Makrócélok",
+      "kcalTarget": "Kalóriacél (kcal)",
+      "proteinMin": "Fehérje minimum (g)",
+      "carbsTarget": "Szénhidrát cél (g)",
+      "fatTarget": "Zsír cél (g)",
+      "prepTolerance": "Konyhai tolerancia (perc)",
+      "portionSize": "Adag szorzó",
+      "vegetarian": "Vegetáriánus",
+      "vegan": "Vegán",
+      "pescatarian": "Pescatariánus",
+      "glutenFree": "Gluténmentes",
+      "dairyFree": "Tejtermékmentesán",
+      "lactoseFree": "Laktózmentes",
+      "milkProteinFree": "Tejfehérjementes",
+      "eggFree": "Tojásmentes",
+      "nutFree": "Diómentes",
+      "peanutFree": "Mogyorómentes",
+      "soyFree": "Szójamentes",
+      "fishFree": "Halmentes",
+      "shellfishFree": "Kagylómentes",
+      "sesameFree": "Szézammentes",
+      "halal": "Halal",
+      "kosher": "Kóser",
+      "keto": "Keto",
+      "lowGi": "Alacsony GI",
+      "lowFodmap": "Alacsony FODMAP",
+      "paleo": "Paleó"
     }
   }
 }

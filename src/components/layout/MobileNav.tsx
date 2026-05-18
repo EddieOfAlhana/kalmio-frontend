@@ -10,6 +10,7 @@ import {
   MessageSquarePlus,
   MoreHorizontal,
   Globe,
+  Users,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
@@ -22,6 +23,7 @@ import { feedbackService } from '@/services/feedback'
 const OVERFLOW_ROUTES = [
   '/app/recipes',
   '/app/retail-products',
+  '/app/family',
 ]
 
 export function MobileNav() {
@@ -120,6 +122,21 @@ export function MobileNav() {
             >
               <Store className="h-5 w-5 shrink-0" />
               {t('nav.retail')}
+            </NavLink>
+
+            {/* Család */}
+            <NavLink
+              to="/app/family"
+              role="menuitem"
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 px-5 py-3 text-sm font-medium transition-colors',
+                  isActive ? 'text-[#F28C28]' : 'text-white/80 hover:text-white hover:bg-white/5'
+                )
+              }
+            >
+              <Users className="h-5 w-5 shrink-0" />
+              {t('nav.family')}
             </NavLink>
 
             {/* Visszajelzés */}

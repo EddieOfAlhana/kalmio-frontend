@@ -5,6 +5,9 @@ import { clearPasskeyToken } from '@/lib/passkeySession'
 
 export type AppRole = 'USER' | 'ADMIN'
 
+/** Whether the active impersonation was started from the admin panel or the family settings page. */
+export type ImpersonationContext = 'admin' | 'family'
+
 interface AuthState {
   user: User | null
   session: Session | null
@@ -13,11 +16,13 @@ interface AuthState {
   isAdmin: boolean
   impersonationToken: string | null
   impersonatedEmail: string | null
+  /** Context that originated the impersonation — determines where "Return to your view" navigates. */
+  impersonationContext: ImpersonationContext | null
   setSession: (session: Session | null) => void
   updateSession: (session: Session | null) => void
   setAppRole: (role: AppRole | null) => void
   signOut: () => Promise<void>
-  startImpersonation: (token: string, email: string) => void
+  startImpersonation: (token: string, email: string, context?: ImpersonationContext) => void
   stopImpersonation: () => void
 }
 
@@ -29,6 +34,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAdmin: false,
   impersonationToken: null,
   impersonatedEmail: null,
+  impersonationContext: null,
   setSession: (session) =>
     set({ session, user: session?.user ?? null, initialized: true }),
   updateSession: (session) =>
@@ -38,12 +44,20 @@ export const useAuthStore = create<AuthState>((set) => ({
   signOut: async () => {
     clearPasskeyToken()
     await supabase.auth.signOut()
-    set({ session: null, user: null, appRole: null, isAdmin: false, impersonationToken: null, impersonatedEmail: null })
+    set({
+      session: null,
+      user: null,
+      appRole: null,
+      isAdmin: false,
+      impersonationToken: null,
+      impersonatedEmail: null,
+      impersonationContext: null,
+    })
   },
-  startImpersonation: (token, email) =>
-    set({ impersonationToken: token, impersonatedEmail: email }),
+  startImpersonation: (token, email, context = 'admin') =>
+    set({ impersonationToken: token, impersonatedEmail: email, impersonationContext: context }),
   stopImpersonation: () =>
-    set({ impersonationToken: null, impersonatedEmail: null }),
+    set({ impersonationToken: null, impersonatedEmail: null, impersonationContext: null }),
 }))
 
 /**
