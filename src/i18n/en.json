@@ -1262,6 +1262,37 @@
     }
   },
   "onboarding": {
+    "shell": {
+      "progressAriaLabel": "Step {{current}} of {{total}}",
+      "progressSrText": "Step {{current}} of {{total}}",
+      "skip": "Skip for now",
+      "skipAriaLabel": "Skip the guided setup — you can complete it any time from your Profile",
+      "skipConfirm": {
+        "title": "Are you sure you want to skip?",
+        "body": "You can finish this in your Profile any time. We will start building your plan with what we have so far.",
+        "confirm": "Yes, skip it",
+        "cancel": "Continue setup"
+      },
+      "welcome": {
+        "title": "Welcome to Kalmio.",
+        "body": "A few questions and we will put your first week together. The whole thing takes about ten minutes.",
+        "cta": "Let's start"
+      },
+      "next": "Next",
+      "finish": "Show me my week",
+      "stepLabels": {
+        "1":  "Welcome",
+        "2":  "Household size",
+        "3":  "Activity and calories",
+        "4":  "Dietary preferences",
+        "5":  "Shopping habits",
+        "6":  "Forbidden ingredients",
+        "7":  "Taste tour",
+        "8":  "Building your plan…",
+        "9":  "Your first week is ready",
+        "10": "Csemete — your first action"
+      }
+    },
     "planting": {
       "ariaLabel": "Walnut planting animation — progress through the planting sequence",
       "steps": {
@@ -1294,6 +1325,35 @@
       "viewGrove": "View my grove",
       "viewGroveAriaLabel": "View grove map",
       "dismiss": "Close"
+    },
+    "miniTutorial": {
+      "planner": {
+        "ariaLabel": "Weekly planner preview animation",
+        "caption": "This is what your week looks like.",
+        "frame0": "Your week — five days, every meal planned.",
+        "frame1": "Tap once to mark a meal you want to swap.",
+        "frame2": "Kalmio finds a better alternative straight away.",
+        "frame3": "The change is saved — the rest of the week stays untouched.",
+        "skip": "Got it"
+      },
+      "grooming": {
+        "ariaLabel": "Fridge grooming preview animation",
+        "caption": "Before planning a new week, we check your fridge.",
+        "frame0": "See what is in your fridge — with quantities.",
+        "frame1": "Keep what is still good — in a single tap.",
+        "frame2": "What has expired or is surplus, we set aside.",
+        "frame3": "Your new week only counts what you actually have.",
+        "skip": "Got it"
+      },
+      "replanDiff": {
+        "ariaLabel": "Replan diff preview animation",
+        "caption": "When life intervenes, I reorganise.",
+        "frame0": "Your week is planned — every day in order.",
+        "frame1": "You mark a meal as skipped.",
+        "frame2": "One moment — reorganising the rest of the week.",
+        "frame3": "Done. The changes are shown clearly.",
+        "skip": "Got it"
+      }
     }
   }
 }

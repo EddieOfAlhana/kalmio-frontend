@@ -43,6 +43,7 @@ import { DiofaPreview } from '@/pages/_preview/DiofaPreview'
 import { TasteSwipePreview } from '@/pages/_preview/TasteSwipePreview'
 import { Grove } from '@/pages/Grove'
 import { FoundingMember } from '@/pages/FoundingMember'
+import { OnboardingShell } from '@/pages/onboarding/OnboardingShell'
 
 initAnalytics()
 
@@ -136,6 +137,8 @@ export default function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route element={<ProtectedRoute />}>
+              {/* Full-screen onboarding flow — no AppShell sidebar/nav chrome */}
+              <Route path="/app/onboarding" element={<OnboardingShell />} />
               <Route path="/app" element={<AppShell />}>
                 <Route index element={<Dashboard />} />
                 <Route path="meal-plans" element={<MealPlan />} />

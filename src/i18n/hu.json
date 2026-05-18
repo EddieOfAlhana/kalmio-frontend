@@ -1262,6 +1262,37 @@
     }
   },
   "onboarding": {
+    "shell": {
+      "progressAriaLabel": "{{current}}. lépés a {{total}}-ből",
+      "progressSrText": "{{current}}. lépés, összesen {{total}} lépésből",
+      "skip": "Kihagyom most",
+      "skipAriaLabel": "Az ismerkedés kihagyása — a Profilban bármikor folytathatod",
+      "skipConfirm": {
+        "title": "Biztos kihagyod?",
+        "body": "Pár perc múlva itt is befejezheted a Profilban. Addig is elindítjuk az étrendedet azzal, amit már megkaptunk.",
+        "confirm": "Igen, kihagyom",
+        "cancel": "Inkább folytatom"
+      },
+      "welcome": {
+        "title": "Üdvözlünk a Kalmióban.",
+        "body": "Néhány kérdés, és összerakjuk az első hetedet. Körülbelül tíz perc az egész.",
+        "cta": "Kezdjük"
+      },
+      "next": "Tovább",
+      "finish": "Mutatja a hetemet",
+      "stepLabels": {
+        "1":  "Üdvözlés",
+        "2":  "Hány személyre főzzük?",
+        "3":  "Aktivitás és kalória",
+        "4":  "Étrendi preferenciák",
+        "5":  "Bevásárlási szokások",
+        "6":  "Tiltott hozzávalók",
+        "7":  "Ízlés-körkép",
+        "8":  "Étrend összerakása…",
+        "9":  "Az első heted kész",
+        "10": "Csemete — az első cselekvés"
+      }
+    },
     "planting": {
       "ariaLabel": "Dióültetés animáció — az ültetési folyamat előrehaladása",
       "steps": {
@@ -1294,6 +1325,35 @@
       "viewGrove": "A ligetem megtekintése",
       "viewGroveAriaLabel": "Liget térkép megtekintése",
       "dismiss": "Bezárás"
+    },
+    "miniTutorial": {
+      "planner": {
+        "ariaLabel": "Heti tervező bemutató animáció",
+        "caption": "Így néz ki egy heted.",
+        "frame0": "Ez a heted — öt nap, minden étkezés tervezve.",
+        "frame1": "Egy kattintás, és megjelölöd, amit kicserélnél.",
+        "frame2": "A Kalmio azonnal talál egy jobb alternatívát.",
+        "frame3": "A változás rögzítve — a többi étkezés érintetlen marad.",
+        "skip": "Értem"
+      },
+      "grooming": {
+        "ariaLabel": "Hűtőátnézés bemutató animáció",
+        "caption": "Mielőtt új hetet tervezel, gyorsan átnézzük a hűtődet.",
+        "frame0": "Látod, mi van a hűtőben — mennyiséggel együtt.",
+        "frame1": "Tartsd meg, ami még jó — egy mozdulattal.",
+        "frame2": "Ami lejárt vagy felesleges, azzal nem tervezünk tovább.",
+        "frame3": "Az új heted csak azzal számol, amivel tényleg rendelkezel.",
+        "skip": "Értem"
+      },
+      "replanDiff": {
+        "ariaLabel": "Újratervezés különbség bemutató animáció",
+        "caption": "Ha közbeszól az élet, újrarendezem.",
+        "frame0": "A heted el van tervezve — minden nap rendben.",
+        "frame1": "Jelzed, hogy egy étkezést kihagysz.",
+        "frame2": "Egy pillanat — újrarendezem a maradék hetet.",
+        "frame3": "Kész. A változások átláthatóan megjelennek.",
+        "skip": "Értem"
+      }
     }
   }
 }
