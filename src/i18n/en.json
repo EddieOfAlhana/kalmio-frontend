@@ -707,6 +707,23 @@
         "copied": "Copied",
         "dismiss": "Got it"
       }
+    },
+    "diofaName": {
+      "sectionTitle": "Your tree",
+      "label": "Tree name",
+      "unnamed": "Not named yet",
+      "nameAria": "Name your walnut tree",
+      "editAria": "Tree name: {{name}} — edit",
+      "modalTitle": "What's your tree called?",
+      "modalDesc": "Give your walnut tree a name — it will appear beneath it.",
+      "inputLabel": "Tree name",
+      "placeholder": "e.g. Old Walnut, Acorn, Rustle",
+      "preview": "Preview",
+      "save": "Save",
+      "success": "Tree name saved.",
+      "saveFailed": "Could not save. Please try again.",
+      "inappropriate": "That name is not allowed. Please choose another.",
+      "tooLong": "The name must be {{max}} characters or fewer."
     }
   },
   "impersonation": {

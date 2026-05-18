@@ -17,6 +17,7 @@ import { toast } from '@/components/ui/toast'
 import { UserAvatar } from '@/components/ui/UserAvatar'
 import { ForbiddenIngredientsPicker } from '@/components/ForbiddenIngredientsPicker'
 import { usersService, type UpdateSettingsRequest } from '@/services/users'
+import { DiofaNameField } from '@/components/settings/DiofaNameField'
 import { listPasskeys, registerPasskey, deletePasskey, type PasskeyInfo } from '@/services/passkey'
 import { apiKeysService, type ApiKey, type ApiKeyCreated } from '@/services/apiKeys'
 import { useAuthStore } from '@/store/auth'
@@ -192,6 +193,15 @@ export function Settings() {
     queryKey: ['me'],
     queryFn: usersService.getMe,
   })
+
+  const { data: stageData } = useQuery({
+    queryKey: ['me', 'stage'],
+    queryFn: usersService.getMyStage,
+    staleTime: 30_000,
+  })
+
+  const isFiatalPlus =
+    stageData?.currentStage === 'FIATAL' || stageData?.currentStage === 'TERMO'
 
   const { register, handleSubmit, reset, setValue, watch } = useForm<FormValues>()
 
@@ -548,6 +558,14 @@ export function Settings() {
           {mutation.isPending ? t('common.save') + '…' : t('common.save')}
         </Button>
       </form>
+
+      {/* ── Diófa tree naming — FIATAL+ only ── */}
+      {isFiatalPlus && (
+        <div className="max-w-lg mt-6">
+          <h2 className="font-semibold text-sm text-[#1A1A1A] mb-3">{t('settings.diofaName.sectionTitle')}</h2>
+          <DiofaNameField currentName={settings?.diofaName ?? null} />
+        </div>
+      )}
 
       {/* ── Security ── */}
       <div className="space-y-4 max-w-lg mt-2">

@@ -707,6 +707,23 @@
         "copied": "Másolva",
         "dismiss": "Értettem"
       }
+    },
+    "diofaName": {
+      "sectionTitle": "A diófád",
+      "label": "A fa neve",
+      "unnamed": "Még nem kapta nevet",
+      "nameAria": "Nevezd el a diófádat",
+      "editAria": "A fa neve: {{name}} — szerkesztés",
+      "modalTitle": "Hogy hívják a fádat?",
+      "modalDesc": "Adj nevet a diófádnak — ez az, ami megjelenik alatta.",
+      "inputLabel": "Fa neve",
+      "placeholder": "pl. Öreg dió, Makk, Tölgy",
+      "preview": "Előnézet",
+      "save": "Mentés",
+      "success": "A fa neve elmentve.",
+      "saveFailed": "Nem sikerült menteni. Próbáld újra.",
+      "inappropriate": "Ez a név nem megfelelő. Kérjük, válassz másikat.",
+      "tooLong": "A név legfeljebb {{max}} karakter lehet."
     }
   },
   "impersonation": {

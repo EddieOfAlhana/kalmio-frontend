@@ -52,6 +52,8 @@ export interface UserSettings {
   foundingMember: boolean
   /** ISO-8601 timestamp of the Founding Member purchase. Null until exposed by the backend. */
   foundingMemberSince: string | null
+  /** User-chosen name for their diófa tree. Available from FIATAL stage onward. Null = unnamed. */
+  diofaName: string | null
 }
 
 export interface BodyDataRequest {
@@ -106,4 +108,7 @@ export const usersService = {
   /** GET /api/users/me/dashboard-state — returns current Diófa stage + visible module list. */
   getMyDashboardState: (): Promise<DashboardStateResponse> =>
     api.get<DashboardStateResponse>('/api/users/me/dashboard-state').then(r => r.data),
+  /** PUT /api/users/me/diofa-name — set or update the user's diófa tree name (FIATAL+ only). */
+  updateDiofaName: (name: string): Promise<void> =>
+    api.put('/api/users/me/diofa-name', { name }).then(() => undefined),
 }
