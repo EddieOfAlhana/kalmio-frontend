@@ -661,6 +661,10 @@
     },
     "saveError": "Nem sikerült menteni a beállításokat.",
     "saveSuccess": "Beállítások elmentve.",
+    "foundingMemberBadge": {
+      "label": "Alapító tag",
+      "title": "Életre szóló alapítói tagság"
+    },
     "security": {
       "title": "Biztonság",
       "passkeysHint": "Lépj be gyorsabban az eszközöd biometriájával vagy PIN-kódjával — a következő bejelentkezéshez már nem kell e-mail link.",
@@ -826,6 +830,13 @@
       "subtitle": "Az első étrend generálása ingyenes.",
       "button": "Étrend generálása",
       "buttonLoggedIn": "Az étrendemhez"
+    },
+    "foundingMember": {
+      "headline": "Alapító tag",
+      "sub": "Élethosszig tartó hozzáférés minden prémium funkcióhoz — 19 990 Ft.",
+      "counter": "Még {{remaining}} hely érhető el.",
+      "cta": "Csatlakozom",
+      "soldOut": "Az alapító tagság elkelt — köszönjük az érdeklődést."
     }
   },
   "auth": {
@@ -1177,6 +1188,9 @@
         "SATURATED": "telített"
       }
     }
+  },
+  "foundingMember": {
+    "comingSoon": "Hamarosan elérhető."
   },
   "blog": {
     "nav": "Blog",

@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { Fingerprint, Trash2, LogOut, ChevronRight, Key, Copy, Check } from 'lucide-react'
+import { Fingerprint, Trash2, LogOut, ChevronRight, Key, Copy, Check, Star } from 'lucide-react'
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Link } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Card, CardContent } from '@/components/ui/card'
@@ -339,6 +340,39 @@ export function Settings() {
         </div>
         <ChevronRight className="h-4 w-4 text-gray-300 shrink-0" />
       </Link>
+
+      {/* Founding Member badge — shown only when the flag is set */}
+      {settings?.foundingMember && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                className="flex items-center gap-2 max-w-lg mb-6 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 cursor-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+              >
+                <Star
+                  size={16}
+                  className="text-amber-500 shrink-0"
+                  aria-hidden="true"
+                  fill="currentColor"
+                />
+                <span className="text-sm font-medium text-amber-800">
+                  {t('settings.foundingMemberBadge.label')}
+                </span>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {settings.foundingMemberSince
+                ? new Intl.DateTimeFormat('hu-HU', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                  }).format(new Date(settings.foundingMemberSince)) + '.'
+                : t('settings.foundingMemberBadge.title')}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
 
       {/* Suggested targets card — only shown when backend has computed values */}
       {(settings?.suggestedKcalTarget != null || settings?.suggestedProteinMin != null) && (

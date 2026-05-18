@@ -661,6 +661,10 @@
     },
     "saveError": "Failed to save settings.",
     "saveSuccess": "Settings saved.",
+    "foundingMemberBadge": {
+      "label": "Founding Member",
+      "title": "Lifetime founding membership"
+    },
     "security": {
       "title": "Security",
       "passkeysHint": "Sign in faster with your device's biometrics or PIN — no email link needed on future visits.",
@@ -826,6 +830,13 @@
       "subtitle": "Your first meal plan is free.",
       "button": "Generate Meal Plan",
       "buttonLoggedIn": "Go to my plan"
+    },
+    "foundingMember": {
+      "headline": "Founding Member",
+      "sub": "Lifetime access to every premium feature — HUF 19,990.",
+      "counter": "{{remaining}} seats still available.",
+      "cta": "Join now",
+      "soldOut": "Founding membership is sold out — thank you for your interest."
     }
   },
   "auth": {
@@ -1177,6 +1188,9 @@
         "SATURATED": "saturated"
       }
     }
+  },
+  "foundingMember": {
+    "comingSoon": "Coming soon."
   },
   "blog": {
     "nav": "Blog",

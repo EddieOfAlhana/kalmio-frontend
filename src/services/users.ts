@@ -48,6 +48,10 @@ export interface UserSettings {
   carbsTargetG: number | null
   /** Daily fat target in grams. Null = no target set. */
   fatTargetG: number | null
+  /** True when the user holds a Founding Member entitlement. */
+  foundingMember: boolean
+  /** ISO-8601 timestamp of the Founding Member purchase. Null until exposed by the backend. */
+  foundingMemberSince: string | null
 }
 
 export interface BodyDataRequest {
