@@ -42,6 +42,8 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_API_URL: https://kalmio-api.azurewebsites.net
+          VITE_POSTHOG_KEY: phc_nYqkbHKoWCyQXAEc5E85j3brbFYnQiPXPtDGbG7U4K3G
+          VITE_POSTHOG_HOST: https://eu.i.posthog.com
 
       - name: Deploy
         uses: Azure/static-web-apps-deploy@v1

@@ -2,9 +2,8 @@
  * FirstPlanReveal — KALMIO-157 / E9.6
  *
  * Full-screen modal shown exactly once after the user generates their first
- * plan. Detects the MAG → CSEMETE stage transition via `GET /api/users/me/stage`
- * (KALMIO-123 endpoint), then animates the DiofaWidget from MAG to CSEMETE and
- * advances PlantingScene to step 10 (sprout).
+ * plan. Confirms the MAG → CSEMETE stage transition via `GET /api/users/me/stage`
+ * (KALMIO-123 endpoint) and shows the sprout via PlantingScene at step 10.
  *
  * Non-repeat guarantee: on dismiss, writes `kalmio:firstPlanRevealShown` to
  * localStorage. The parent passes `onDismiss`; rendering is controlled by the
@@ -16,11 +15,10 @@
  * Mobile-first: designed for 375px width; scales up naturally.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence, type Variants, type Easing } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { DiofaWidget } from '@/components/diofa/DiofaWidget'
 import { PlantingScene } from '@/components/onboarding/PlantingScene'
 import { usersService } from '@/services/users'
 import { markRevealShown } from '@/lib/firstPlanReveal'
@@ -55,21 +53,11 @@ const panelVariants: Variants = {
   },
 }
 
-// The DiofaWidget "wakes up" from MAG after a short delay to let the panel settle.
-const STAGE_ANIMATION_DELAY_MS = 700
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function FirstPlanReveal({ onDismiss }: FirstPlanRevealProps) {
   const { t } = useTranslation()
   const dismissRef = useRef<HTMLButtonElement>(null)
-
-  // Delay MAG→CSEMETE widget flip so the panel entrance animation plays first.
-  const [widgetStageReady, setWidgetStageReady] = useState(false)
-  useEffect(() => {
-    const id = window.setTimeout(() => setWidgetStageReady(true), STAGE_ANIMATION_DELAY_MS)
-    return () => window.clearTimeout(id)
-  }, [])
 
   // Focus the dismiss button once the panel is visible.
   useEffect(() => {
@@ -127,43 +115,9 @@ export function FirstPlanReveal({ onDismiss }: FirstPlanRevealProps) {
           animate="visible"
           exit="exit"
         >
-          {/* Diófa illustration — transitions MAG → CSEMETE after delay */}
-          <div className="relative">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={widgetStageReady ? 'csemete' : 'mag'}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <DiofaWidget
-                  stage={widgetStageReady ? 'CSEMETE' : 'MAG'}
-                  moisture="WET"
-                  className="rounded-none"
-                />
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Sprout caption — appears alongside the Csemete frame */}
-            <AnimatePresence>
-              {widgetStageReady && (
-                <motion.p
-                  key="sprout-caption"
-                  className="absolute bottom-3 left-0 right-0 text-center text-xs font-medium text-[#3d2008]/80 px-4"
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0, transition: { delay: 0.4, duration: 0.4 } }}
-                  exit={{ opacity: 0 }}
-                >
-                  {t('onboarding.firstPlan.sproutCaption')}
-                </motion.p>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Planting scene at step 10 — shows the sprout */}
-          <div className="px-4 pt-2 pb-0">
-            <PlantingScene step={10} className="max-w-[200px] mx-auto" />
+          {/* Planting scene at step 10 — the sprout, hero of the reveal */}
+          <div className="px-4 pt-8 pb-0">
+            <PlantingScene step={10} className="max-w-[260px] mx-auto" />
           </div>
 
           {/* Copy block */}

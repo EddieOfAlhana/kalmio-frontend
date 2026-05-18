@@ -13,8 +13,6 @@ import { momentumService } from '@/services/momentum'
 import { usePointsToast } from '@/hooks/usePointsToast'
 import type { CalendarDayDto, MoistureBand } from '@/types'
 import type { DiofaStage, DiofaMoisture } from '@/components/diofa/DiofaWidget'
-import { isVisible } from '@/lib/dashboardVisibility'
-import { LockedModulePlaceholder } from '@/components/dashboard/LockedModulePlaceholder'
 import { TeachOnReturnHint } from '@/components/dashboard/TeachOnReturnHint'
 import { useEngagementGap } from '@/hooks/useEngagementGap'
 
@@ -24,24 +22,6 @@ function toWidgetMoisture(band: MoistureBand): DiofaMoisture {
   if (band === 'MOIST') return 'OK'
   return 'DRY' // DRY | DRYING
 }
-
-/**
- * Maps each module identifier (from the dashboard-state API) to the
- * Dashboard components that should be gated by it.
- *
- * Modules not yet rendered in Dashboard.tsx are listed here for forward
- * compatibility — they will simply not match any rendered element until
- * the component is added.
- *
- * Identifiers defined in DashboardModuleId:
- *   current-plan, shopping-list, fridge-basic, diofa-widget,
- *   macro-tracker, prep-tasks, weekly-summary, taste-signals,
- *   replan-diff, grooming-prompt, off-plan-meals, points-counter, achievements
- *
- * Current rendered mapping:
- *   DailyTimeline    ← 'current-plan'  (includes today's meals & prep tasks)
- *   WeeklySummaryModule ← 'weekly-summary'
- */
 
 export function Dashboard() {
   const { t } = useTranslation()
@@ -65,21 +45,15 @@ export function Dashboard() {
     queryKey: ['users', 'me', 'dashboard-state'],
     queryFn: usersService.getMyDashboardState,
     staleTime: 30_000,
-    // If the backend endpoint is not yet deployed (404/5xx), treat as all-visible.
     retry: false,
   })
 
-  const visibleModules = dashboardState?.visibleModules
-
   // Fetch recent moisture history to derive the widget's current moisture band.
-  // Only one day is needed (today), but the service minimum is the history window.
-  // Re-use the same key shape TanStack Query uses elsewhere for momentum history.
   const { data: moistureHistory } = useQuery({
     queryKey: ['momentum', 'history', 1],
     queryFn: () => momentumService.getHistory(1),
     staleTime: 30_000,
     retry: false,
-    enabled: isVisible('diofa-widget', visibleModules),
   })
 
   const diofaStage = (dashboardState?.stage as DiofaStage | undefined) ?? 'MAG'
@@ -94,37 +68,19 @@ export function Dashboard() {
         onSelectDate={setSelectedDate}
         onDayData={setSelectedDayData}
       />
-      {isVisible('current-plan', visibleModules) ? (
-        <DailyTimeline
-          date={selectedDate}
-          hasShoppingDay={selectedDayData?.hasShoppingDay ?? false}
-          activePlanId={activePlan?.id ?? null}
-        />
-      ) : (
-        visibleModules !== undefined && (
-          <LockedModulePlaceholder moduleId="current-plan" />
-        )
-      )}
-      {isVisible('diofa-widget', visibleModules) ? (
-        <section aria-label={t('diofa.sectionLabel')} className="px-4 pb-4 space-y-3">
-          <TeachOnReturnHint bucket={engagementGapBucket} />
-          <DiofaWidget stage={diofaStage} moisture={diofaMoisture} />
-          <MoistureHistoryStrip />
-        </section>
-      ) : (
-        visibleModules !== undefined && (
-          <LockedModulePlaceholder moduleId="diofa-widget" />
-        )
-      )}
-      {isVisible('weekly-summary', visibleModules) ? (
-        <div className="px-4 pb-6">
-          <WeeklySummaryModule />
-        </div>
-      ) : (
-        visibleModules !== undefined && (
-          <LockedModulePlaceholder moduleId="weekly-summary" />
-        )
-      )}
+      <DailyTimeline
+        date={selectedDate}
+        hasShoppingDay={selectedDayData?.hasShoppingDay ?? false}
+        activePlanId={activePlan?.id ?? null}
+      />
+      <section aria-label={t('diofa.sectionLabel')} className="px-4 pb-4 space-y-3">
+        <TeachOnReturnHint bucket={engagementGapBucket} />
+        <DiofaWidget stage={diofaStage} moisture={diofaMoisture} />
+        <MoistureHistoryStrip />
+      </section>
+      <div className="px-4 pb-6">
+        <WeeklySummaryModule />
+      </div>
     </div>
   )
 }
