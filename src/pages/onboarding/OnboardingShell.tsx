@@ -39,7 +39,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/store/auth'
 import { OnboardingProgressBar } from '@/components/onboarding/OnboardingProgressBar'
@@ -105,6 +105,14 @@ function WelcomeStep({ onNext }: WelcomeStepProps) {
       >
         {t('onboarding.shell.welcome.cta')}
       </button>
+
+      {/* Conversational alternative — premium opt-in (E11.7) */}
+      <Link
+        to="/app/onboarding/conversational"
+        className="mt-1 text-sm text-[#6B6460] underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28] focus-visible:ring-offset-2 rounded"
+      >
+        {t('onboarding.shell.welcome.chatToggle')}
+      </Link>
     </div>
   )
 }

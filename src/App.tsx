@@ -44,6 +44,7 @@ import { TasteSwipePreview } from '@/pages/_preview/TasteSwipePreview'
 import { Grove } from '@/pages/Grove'
 import { FoundingMember } from '@/pages/FoundingMember'
 import { OnboardingShell } from '@/pages/onboarding/OnboardingShell'
+import { ConversationalOnboarding } from '@/pages/onboarding/ConversationalOnboarding'
 
 initAnalytics()
 
@@ -139,6 +140,8 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
               {/* Full-screen onboarding flow — no AppShell sidebar/nav chrome */}
               <Route path="/app/onboarding" element={<OnboardingShell />} />
+              {/* Conversational onboarding alternative — E11.7, premium-only */}
+              <Route path="/app/onboarding/conversational" element={<ConversationalOnboarding />} />
               <Route path="/app" element={<AppShell />}>
                 <Route index element={<Dashboard />} />
                 <Route path="meal-plans" element={<MealPlan />} />
