@@ -1279,7 +1279,7 @@
         "cta": "Kezdjük"
       },
       "next": "Tovább",
-      "finish": "Mutatja a hetemet",
+      "finish": "Megnézem a hetemet",
       "stepLabels": {
         "1":  "Üdvözlés",
         "2":  "Hány személyre főzzük?",
@@ -1338,7 +1338,7 @@
       },
       "grooming": {
         "ariaLabel": "Hűtőátnézés bemutató animáció",
-        "caption": "Mielőtt új hetet tervezel, gyorsan átnézzük a hűtődet.",
+        "caption": "Mielőtt új hetet tervezel, átnézzük a hűtődet.",
         "frame0": "Látod, mi van a hűtőben — mennyiséggel együtt.",
         "frame1": "Tartsd meg, ami még jó — egy mozdulattal.",
         "frame2": "Ami lejárt vagy felesleges, azzal nem tervezünk tovább.",

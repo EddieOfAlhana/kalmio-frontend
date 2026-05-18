@@ -1338,7 +1338,7 @@
       },
       "grooming": {
         "ariaLabel": "Fridge grooming preview animation",
-        "caption": "Before planning a new week, we check your fridge.",
+        "caption": "Before planning a new week, we run through your fridge.",
         "frame0": "See what is in your fridge — with quantities.",
         "frame1": "Keep what is still good — in a single tap.",
         "frame2": "What has expired or is surplus, we set aside.",
