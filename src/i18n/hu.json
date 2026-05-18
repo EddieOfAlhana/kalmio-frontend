@@ -1261,6 +1261,32 @@
       "cta": "Prémium próbaidő aktiválása"
     }
   },
+  "premium": {
+    "tasterReveal": {
+      "dismiss": "Majd később",
+      "suhang": {
+        "ariaLabel": "Prémium kóstoló — az asszisztens egy napra megnyílt",
+        "badge": "1 nap prémium",
+        "title": "Ma az asszisztens segít a cserékben.",
+        "sub": "A Suháng-szinten egy napra megnyílik a csereasszisztens. Nincs teendőd — egyszerűen használd.",
+        "cta": "Próbáld ki"
+      },
+      "fiatal": {
+        "ariaLabel": "Prémium kóstoló — az asszisztens három napra megnyílt",
+        "badge": "3 nap prémium",
+        "title": "Három napra megnyílt az AI-asszisztensed.",
+        "sub": "A Fiatal-szinten három napig segítek a tervezésben és a cserékben. Szólj, ha kérdésed van.",
+        "cta": "Próbáld ki"
+      },
+      "termo": {
+        "ariaLabel": "Prémium kóstoló — az asszisztens két hétre megnyílt",
+        "badge": "14 nap prémium",
+        "title": "14 nap prémium próbaidőszak.",
+        "sub": "A Termőfa-szinthez jár két hét — kártya és meglepetés nélkül. Nédd meg, mit kaptak a többiek is.",
+        "cta": "Prémium funkciók megtekintése"
+      }
+    }
+  },
   "onboarding": {
     "shell": {
       "progressAriaLabel": "{{current}}. lépés a {{total}}-ből",
@@ -1319,7 +1345,7 @@
     "csemeteWelcome": {
       "ariaLabel": "Csemete köszöntő — személyes üzenet az alapítótól",
       "title": "Köszönjük, hogy itt vagy.",
-      "founderLine": "Sokat köszönhetünk a Csemetéknek, akik az első sorban állnak. Ha lesz egy perced, válaszolj erre az emailre — kíváncsi vagyok, mi vezetett ide.",
+      "founderLine": "Sokat köszönhetünk a Csemetéknek, akik az elsők között csatlakoztak hozzánk. Ha lesz egy perced, válaszolj erre az e-mailre — kíváncsi vagyok, mi vezetett ide.",
       "founderName": "Zoltán",
       "sproutCaption": "Csemete — a diófa ébredez.",
       "cta": "Értem"

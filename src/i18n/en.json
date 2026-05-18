@@ -1261,6 +1261,32 @@
       "cta": "Activate premium trial"
     }
   },
+  "premium": {
+    "tasterReveal": {
+      "dismiss": "Maybe later",
+      "suhang": {
+        "ariaLabel": "Premium taster — your assistant is open for one day",
+        "badge": "1-day premium",
+        "title": "Today the assistant will help you with swaps.",
+        "sub": "At the Suháng stage the swap assistant opens for one day. Nothing to set up — just use it.",
+        "cta": "Try it"
+      },
+      "fiatal": {
+        "ariaLabel": "Premium taster — your assistant is open for three days",
+        "badge": "3-day premium",
+        "title": "Your AI assistant is open for three days.",
+        "sub": "At the Fiatal stage I will help with planning and swaps for three days. Let me know if you have questions.",
+        "cta": "Try it"
+      },
+      "termo": {
+        "ariaLabel": "Premium taster — your assistant is open for two weeks",
+        "badge": "14-day premium",
+        "title": "14-day premium trial.",
+        "sub": "Reaching Termőfa earns two weeks — no card, no surprises. See what others have access to as well.",
+        "cta": "View premium features"
+      }
+    }
+  },
   "onboarding": {
     "shell": {
       "progressAriaLabel": "Step {{current}} of {{total}}",
@@ -1319,7 +1345,7 @@
     "csemeteWelcome": {
       "ariaLabel": "Csemete welcome — a personal note from the founder",
       "title": "Thank you for being here.",
-      "founderLine": "We owe a great deal to the Csemeték who are standing in the front row. If you have a moment, reply to this email — I am curious what brought you here.",
+      "founderLine": "We owe a great deal to the Csemeték who were among the first to join us. If you have a moment, reply to this email — I am curious what brought you here.",
       "founderName": "Zoltán",
       "sproutCaption": "Csemete — the walnut tree stirs.",
       "cta": "Got it"
