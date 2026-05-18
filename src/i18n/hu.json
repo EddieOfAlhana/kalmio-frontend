@@ -832,10 +832,11 @@
       "buttonLoggedIn": "Az étrendemhez"
     },
     "foundingMember": {
-      "headline": "Alapító tag",
-      "sub": "Élethosszig tartó hozzáférés minden prémium funkcióhoz — 19 990 Ft.",
+      "label": "Alapító tag",
+      "headline": "Az első 1000 alapító tag.",
+      "sub": "Élethosszigtartó hozzáférés minden prémium funkcióhoz — 19 990 Ft.",
       "counter": "Még {{remaining}} hely érhető el.",
-      "cta": "Csatlakozom",
+      "cta": "Alapító tag leszek",
       "soldOut": "Az alapító tagság elkelt — köszönjük az érdeklődést."
     }
   },

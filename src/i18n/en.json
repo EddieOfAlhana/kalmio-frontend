@@ -832,10 +832,11 @@
       "buttonLoggedIn": "Go to my plan"
     },
     "foundingMember": {
-      "headline": "Founding Member",
+      "label": "Founding Member",
+      "headline": "The first 1,000 founding members.",
       "sub": "Lifetime access to every premium feature — HUF 19,990.",
       "counter": "{{remaining}} seats still available.",
-      "cta": "Join now",
+      "cta": "Join as Founding Member",
       "soldOut": "Founding membership is sold out — thank you for your interest."
     }
   },
