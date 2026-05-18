@@ -711,18 +711,18 @@
     "diofaName": {
       "sectionTitle": "A diófád",
       "label": "A fa neve",
-      "unnamed": "Még nem kapta nevet",
+      "unnamed": "Még nincs neve",
       "nameAria": "Nevezd el a diófádat",
       "editAria": "A fa neve: {{name}} — szerkesztés",
-      "modalTitle": "Hogy hívják a fádat?",
-      "modalDesc": "Adj nevet a diófádnak — ez az, ami megjelenik alatta.",
+      "modalTitle": "Mi a fád neve?",
+      "modalDesc": "Adj nevet a diófádnak — ez jelenik meg alatta.",
       "inputLabel": "Fa neve",
       "placeholder": "pl. Öreg dió, Makk, Tölgy",
       "preview": "Előnézet",
       "save": "Mentés",
       "success": "A fa neve elmentve.",
       "saveFailed": "Nem sikerült menteni. Próbáld újra.",
-      "inappropriate": "Ez a név nem megfelelő. Kérjük, válassz másikat.",
+      "inappropriate": "Ez a név nem engedélyezett. Válassz másikat.",
       "tooLong": "A név legfeljebb {{max}} karakter lehet."
     }
   },
@@ -1319,7 +1319,8 @@
       "welcome": {
         "title": "Üdvözlünk a Kalmióban.",
         "body": "Néhány kérdés, és összerakjuk az első hetedet. Körülbelül tíz perc az egész.",
-        "cta": "Kezdjük"
+        "cta": "Kezdjük",
+        "chatToggle": "Inkább beszéljük meg"
       },
       "next": "Tovább",
       "finish": "Megnézem a hetemet",
@@ -1404,6 +1405,27 @@
         "frame2": "Egy pillanat — újrarendezem a maradék hetet.",
         "frame3": "Kész. A változások átláthatóan megjelennek.",
         "skip": "Értem"
+      }
+    },
+    "conversational": {
+      "title": "Kalmio — beállítás chattel",
+      "switchBack": "Vissza az űrlaphoz",
+      "inputPlaceholder": "Írj egy üzenetet…",
+      "send": "Küldés",
+      "confirmTitle": "Ellenőrizd az adataidat",
+      "confirmCta": "Ezekkel dolgozzunk",
+      "confirming": "Mentés…",
+      "premiumOnly": "A csevegéses beállítás prémium funkció. Csatlakozz az Alapító Tagok közé, hogy azonnal elérd.",
+      "premiumLearnMore": "Tudj meg többet az Alapító Tagságról",
+      "rateLimited": "Erre a hónapra elérted a csevegéses beállítások korlátját. Próbáld újra jövő hónapban, vagy használd az űrlapos beállítást.",
+      "errorTurn": "Nem sikerült feldolgozni az üzenetet. Próbáld újra.",
+      "errorFinalize": "Nem sikerült menteni a beállításokat. Próbáld újra.",
+      "confirm": {
+        "householdSize": "Hány főre főzöl?",
+        "kcalTarget": "Napi kalóriacél (kcal)",
+        "shoppingCadence": "Bevásárlás gyakorisága (nap)",
+        "shoppingDay": "Szokásos bevásárlónap",
+        "dietaryRestrictions": "Étrendi megszorítások"
       }
     }
   }

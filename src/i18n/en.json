@@ -711,18 +711,18 @@
     "diofaName": {
       "sectionTitle": "Your tree",
       "label": "Tree name",
-      "unnamed": "Not named yet",
+      "unnamed": "No name yet",
       "nameAria": "Name your walnut tree",
       "editAria": "Tree name: {{name}} — edit",
-      "modalTitle": "What's your tree called?",
-      "modalDesc": "Give your walnut tree a name — it will appear beneath it.",
+      "modalTitle": "What is your tree's name?",
+      "modalDesc": "Give your walnut tree a name — it appears beneath it.",
       "inputLabel": "Tree name",
       "placeholder": "e.g. Old Walnut, Acorn, Rustle",
       "preview": "Preview",
       "save": "Save",
       "success": "Tree name saved.",
       "saveFailed": "Could not save. Please try again.",
-      "inappropriate": "That name is not allowed. Please choose another.",
+      "inappropriate": "That name is not allowed. Choose another.",
       "tooLong": "The name must be {{max}} characters or fewer."
     }
   },
@@ -1319,7 +1319,8 @@
       "welcome": {
         "title": "Welcome to Kalmio.",
         "body": "A few questions and we will put your first week together. The whole thing takes about ten minutes.",
-        "cta": "Let's start"
+        "cta": "Let's start",
+        "chatToggle": "I would rather talk it through"
       },
       "next": "Next",
       "finish": "Show me my week",
@@ -1404,6 +1405,27 @@
         "frame2": "One moment — reorganising the rest of the week.",
         "frame3": "Done. The changes are shown clearly.",
         "skip": "Got it"
+      }
+    },
+    "conversational": {
+      "title": "Kalmio — set up by chat",
+      "switchBack": "Back to the form",
+      "inputPlaceholder": "Write a message…",
+      "send": "Send",
+      "confirmTitle": "Check your details",
+      "confirmCta": "These look right",
+      "confirming": "Saving…",
+      "premiumOnly": "The conversational set-up is a premium feature. Join the Founding Members to unlock it straight away.",
+      "premiumLearnMore": "Learn more about Founding Membership",
+      "rateLimited": "You have reached your conversational set-up limit for this month. Try again next month or use the form instead.",
+      "errorTurn": "Could not process your message. Please try again.",
+      "errorFinalize": "Could not save your preferences. Please try again.",
+      "confirm": {
+        "householdSize": "How many people are you cooking for?",
+        "kcalTarget": "Daily calorie target (kcal)",
+        "shoppingCadence": "Shopping frequency (days)",
+        "shoppingDay": "Usual shopping day",
+        "dietaryRestrictions": "Dietary restrictions"
       }
     }
   }
