@@ -65,6 +65,7 @@ const schema = z.object({
 })
 export type FormValues = z.infer<typeof schema>
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function toRequest(v: FormValues) {
   return {
     name: v.name,
@@ -134,6 +135,7 @@ export function Recipes() {
         const active = (Object.entries(user.dietaryPreferences) as [DietaryRestrictionKey, boolean][])
           .filter(([, v]) => v)
           .map(([k]) => k)
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setActiveRestrictions(new Set(active))
       }
     }
@@ -427,6 +429,7 @@ function RecipeDetailDialog({
   const { t, i18n } = useTranslation()
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [photoFailed, setPhotoFailed] = useState(false)
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { setPhotoFailed(false) }, [recipe?.id])
 
   if (!recipe) return null

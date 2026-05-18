@@ -124,6 +124,7 @@ export function ShoppingList() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(`shopping-list-bought-${planKey}`)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setBought(raw ? new Set<string>(JSON.parse(raw) as string[]) : new Set<string>())
     } catch {
       setBought(new Set<string>())
@@ -133,7 +134,7 @@ export function ShoppingList() {
   function toggleBought(key: string) {
     setBought(prev => {
       const next = new Set(prev)
-      next.has(key) ? next.delete(key) : next.add(key)
+      if (next.has(key)) { next.delete(key) } else { next.add(key) }
       localStorage.setItem(`shopping-list-bought-${planKey}`, JSON.stringify([...next]))
       return next
     })

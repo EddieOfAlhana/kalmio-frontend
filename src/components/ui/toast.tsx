@@ -108,6 +108,7 @@ function dispatch(update: ToastEntry[]) {
   listeners.forEach((l) => l(toasts))
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function toast(options: ToastOptions) {
   const id = Math.random().toString(36).slice(2)
   dispatch([...toasts, { ...options, id, open: true }])

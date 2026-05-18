@@ -2,7 +2,7 @@
  * foundingMember service — KALMIO-20
  *
  * Backend dependency: GET /api/founding-member/availability (public, no auth required)
- * Returns { cap, sold, remaining }.  Cache-Control max-age=30 on the server side.
+ * Returns { cap, soldCount, remaining }.  Cache-Control max-age=30 on the server side.
  */
 
 import { api } from '@/lib/api'

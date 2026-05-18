@@ -57,6 +57,7 @@ const schema = z.object({
 })
 export type FormValues = z.infer<typeof schema>
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function toRequest(v: FormValues) {
   return {
     name: v.name,

@@ -122,6 +122,7 @@ export function Profile() {
 
   useEffect(() => {
     if (user?.dietaryPreferences) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDietary({ ...EMPTY_DIETARY, ...user.dietaryPreferences })
     }
   }, [user])
@@ -162,6 +163,7 @@ export function Profile() {
   )
   const [mealPrefSaving, setMealPrefSaving] = useState(false)
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (user) {
       const prefs = user.mealPlanPreferences
@@ -176,6 +178,7 @@ export function Profile() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   async function saveMealPreferences() {
     setMealPrefSaving(true)
@@ -206,6 +209,7 @@ export function Profile() {
   const [activityLevel, setActivityLevel] = useState<ActivityLevel | ''>('')
   const [bodyDataSaving, setBodyDataSaving] = useState(false)
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (user) {
       setWeightKg(user.weightKg != null ? String(user.weightKg) : '')
@@ -216,6 +220,7 @@ export function Profile() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   async function saveBodyData() {
     setBodyDataSaving(true)

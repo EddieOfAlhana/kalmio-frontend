@@ -4,8 +4,11 @@ import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const Dialog = DialogPrimitive.Root
+// eslint-disable-next-line react-refresh/only-export-components
 export const DialogTrigger = DialogPrimitive.Trigger
+// eslint-disable-next-line react-refresh/only-export-components
 export const DialogClose = DialogPrimitive.Close
 
 export function DialogContent({ className, children, ...props }: DialogPrimitive.DialogContentProps) {
