@@ -5,10 +5,18 @@ import { LegalFooter } from './LegalFooter'
 import { ImpersonationBanner } from '@/components/ImpersonationBanner'
 import { CsemeteWelcomeMoment } from '@/components/onboarding/CsemeteWelcomeMoment'
 import { useCsemeteWelcomeMoment } from '@/hooks/useCsemeteWelcomeMoment'
+import { PremiumTasterRevealBanner } from '@/components/premium/PremiumTasterRevealBanner'
+import { usePremiumTaster } from '@/hooks/usePremiumTaster'
 
 export function AppShell() {
   const { shouldShow: showCsemeteWelcome, dismiss: dismissCsemeteWelcome } =
     useCsemeteWelcomeMoment()
+
+  const {
+    shouldShow: showPremiumTaster,
+    tasterStage,
+    dismiss: dismissPremiumTaster,
+  } = usePremiumTaster()
 
   return (
     <div className="flex h-screen overflow-hidden w-full">
@@ -25,6 +33,14 @@ export function AppShell() {
       {/* Csemete welcome moment — shown once per user after MAG → CSEMETE */}
       {showCsemeteWelcome && (
         <CsemeteWelcomeMoment onDismiss={dismissCsemeteWelcome} />
+      )}
+
+      {/* Premium taster reveal — shown once per stage transition (SUHANG / FIATAL / TERMO) */}
+      {showPremiumTaster && tasterStage && (
+        <PremiumTasterRevealBanner
+          stage={tasterStage}
+          onDismiss={dismissPremiumTaster}
+        />
       )}
     </div>
   )

@@ -69,3 +69,37 @@ export function markCsemeteWelcomeShown(): void {
     // localStorage unavailable (private browsing, storage quota) — fail silently.
   }
 }
+
+// ─── Premium taster reveal (KALMIO-173) ──────────────────────────────────────
+
+/**
+ * Returns the localStorage key used to record that the taster reveal banner
+ * has been shown for a given stage (SUHANG | FIATAL | TERMO).
+ */
+function premiumTasterKey(stage: string): string {
+  return `kalmio:premiumTasterShown:${stage.toUpperCase()}`
+}
+
+/**
+ * Returns true if the premium taster reveal banner has already been shown to
+ * this user for the given stage transition.
+ */
+export function hasPremiumTasterBeenShown(stage: string): boolean {
+  try {
+    return localStorage.getItem(premiumTasterKey(stage)) === 'true'
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Marks the premium taster reveal banner as shown for the given stage so it
+ * is never displayed again for that stage.
+ */
+export function markPremiumTasterShown(stage: string): void {
+  try {
+    localStorage.setItem(premiumTasterKey(stage), 'true')
+  } catch {
+    // localStorage unavailable (private browsing, storage quota) — fail silently.
+  }
+}

@@ -785,6 +785,26 @@ export interface FoundingMemberAvailability {
   currency: string
 }
 
+// ── Premium Grants (KALMIO-169 / KALMIO-173) ─────────────────────────────────
+
+/**
+ * Grant source values that correspond to stage-based premium tasters.
+ * Maps to the backend PremiumGrantEntity.source field.
+ */
+export type PremiumGrantSource = 'STAGE_SUHANG' | 'STAGE_FIATAL' | 'STAGE_TERMO' | 'MANUAL'
+
+/**
+ * A single premium entitlement window for the current user.
+ * Returned by GET /api/users/me/premium-grants (KALMIO-173 follow-up endpoint).
+ */
+export interface PremiumGrant {
+  id: string
+  source: PremiumGrantSource
+  validFrom: string    // ISO-8601
+  validUntil: string | null  // ISO-8601; null = no expiry
+  createdAt: string   // ISO-8601
+}
+
 // ── Weekly Summary ─────────────────────────────────────────────────────────
 
 export interface WeeklyDayDto {
