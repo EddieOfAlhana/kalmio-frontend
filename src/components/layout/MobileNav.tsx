@@ -11,6 +11,9 @@ import {
   MoreHorizontal,
   Globe,
   Users,
+  ShieldCheck,
+  Vault,
+  ClipboardList,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
@@ -24,6 +27,7 @@ const OVERFLOW_ROUTES = [
   '/app/recipes',
   '/app/retail-products',
   '/app/family',
+  '/app/admin',
 ]
 
 export function MobileNav() {
@@ -138,6 +142,52 @@ export function MobileNav() {
               <Users className="h-5 w-5 shrink-0" />
               {t('nav.family')}
             </NavLink>
+
+            {isAdmin && (
+              <>
+                <div className="my-1 border-t border-white/10" role="separator" />
+                <NavLink
+                  to="/app/admin/users"
+                  role="menuitem"
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center gap-3 px-5 py-3 text-sm font-medium transition-colors',
+                      isActive ? 'text-[#F28C28]' : 'text-white/80 hover:text-white hover:bg-white/5'
+                    )
+                  }
+                >
+                  <ShieldCheck className="h-5 w-5 shrink-0" />
+                  {t('nav.admin')}
+                </NavLink>
+                <NavLink
+                  to="/app/admin/ip-vault"
+                  role="menuitem"
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center gap-3 px-5 py-3 text-sm font-medium transition-colors',
+                      isActive ? 'text-[#F28C28]' : 'text-white/80 hover:text-white hover:bg-white/5'
+                    )
+                  }
+                >
+                  <Vault className="h-5 w-5 shrink-0" />
+                  {t('nav.ipVault')}
+                </NavLink>
+                <NavLink
+                  to="/app/admin/content-review"
+                  role="menuitem"
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center gap-3 px-5 py-3 text-sm font-medium transition-colors',
+                      isActive ? 'text-[#F28C28]' : 'text-white/80 hover:text-white hover:bg-white/5'
+                    )
+                  }
+                >
+                  <ClipboardList className="h-5 w-5 shrink-0" />
+                  {t('nav.contentReview')}
+                </NavLink>
+                <div className="my-1 border-t border-white/10" role="separator" />
+              </>
+            )}
 
             {/* Visszajelzés */}
             <button
