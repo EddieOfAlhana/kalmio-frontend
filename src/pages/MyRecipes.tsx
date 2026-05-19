@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Clock, Pencil, SendHorizonal, Undo2 } from 'lucide-react'
+import { ChevronDown, Clock, Pencil, Plus, SendHorizonal, Sparkles, Undo2, X } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -10,9 +10,19 @@ import { Spinner } from '@/components/ui/spinner'
 import { toast } from '@/components/ui/toast'
 import { recipesService } from '@/services/recipes'
 import { ingredientsService } from '@/services/ingredients'
+import { aiRecipeImportService } from '@/services/aiRecipeImport'
+import { AiRecipeImportModal } from '@/components/recipes/AiRecipeImportModal'
+import { IngredientSearchDialog } from '@/components/IngredientSearchDialog'
 import { RecipeFormDialog, toRequest } from '@/pages/Recipes'
 import { formatCurrency } from '@/lib/utils'
-import type { Recipe } from '@/types'
+import type {
+  HealthifySuggestion,
+  Ingredient,
+  Recipe,
+  RecipeImportConfirmRequest,
+  RecipeImportPreview,
+  RecipeImportSource,
+} from '@/types'
 
 const TAG_COLOR: Record<string, 'green' | 'orange' | 'gray' | 'black'> = {
   QUICK: 'orange', CHEAP: 'green', MEALPREP: 'gray', HIGH_PROTEIN: 'orange',
@@ -34,12 +44,24 @@ function VisibilityBadge({ visibility }: { visibility: Recipe['visibility'] }) {
   )
 }
 
+interface ImportState {
+  recipe: Recipe
+  unmatchedLines: string[]
+  healthifySuggestions: HealthifySuggestion[]
+  source: RecipeImportSource
+  sourceUrl: string | null
+}
+
 export function MyRecipes() {
   const { t, i18n } = useTranslation()
   const qc = useQueryClient()
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [editOpen, setEditOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<Recipe | null>(null)
+  const [importModalOpen, setImportModalOpen] = useState(false)
+  const [importState, setImportState] = useState<ImportState | null>(null)
+  const [ingSearchOpen, setIngSearchOpen] = useState(false)
+  const [resolvingLine, setResolvingLine] = useState<string | null>(null)
 
   const { data: recipes = [], isLoading } = useQuery({
     queryKey: ['my-recipes'],
@@ -87,6 +109,72 @@ export function MyRecipes() {
     },
   })
 
+  const confirmImportMutation = useMutation({
+    mutationFn: (body: RecipeImportConfirmRequest) => aiRecipeImportService.confirmImport(body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['my-recipes'] })
+      setImportState(null)
+      toast({ title: t('aiImport.preview.saveSuccess'), variant: 'success' })
+    },
+    onError: () => {
+      toast({ title: t('aiImport.preview.saveError'), variant: 'destructive' })
+    },
+  })
+
+  function handlePreviewReceived(preview: RecipeImportPreview, source: RecipeImportSource, sourceUrl?: string | null) {
+    setImportState({
+      recipe: preview.recipe,
+      unmatchedLines: preview.unmatchedLines,
+      healthifySuggestions: preview.healthifySuggestions,
+      source,
+      sourceUrl: sourceUrl ?? null,
+    })
+  }
+
+  function handleResolveLine(line: string) {
+    setResolvingLine(line)
+    setIngSearchOpen(true)
+  }
+
+  function handleIngredientResolved(ing: Ingredient) {
+    setIngSearchOpen(false)
+    if (!importState || !resolvingLine) return
+    setImportState({
+      ...importState,
+      recipe: {
+        ...importState.recipe,
+        ingredients: [
+          ...importState.recipe.ingredients,
+          { id: crypto.randomUUID(), ingredientId: ing.id, amount: 100, unit: 'G' },
+        ],
+      },
+      unmatchedLines: importState.unmatchedLines.filter(l => l !== resolvingLine),
+    })
+    setResolvingLine(null)
+  }
+
+  function handleDismissLine(line: string) {
+    if (!importState) return
+    setImportState({
+      ...importState,
+      unmatchedLines: importState.unmatchedLines.filter(l => l !== line),
+    })
+  }
+
+  function handleImportSubmit(values: ReturnType<typeof toRequest>) {
+    if (!importState) return
+    const body: RecipeImportConfirmRequest = {
+      ...values,
+      culturalTags: importState.recipe.culturalTags?.length
+        ? importState.recipe.culturalTags
+        : ['USER_IMPORTED'],
+      source: importState.source,
+      sourceUrl: importState.sourceUrl,
+      appliedHealthifyCount: 0,
+    }
+    confirmImportMutation.mutate(body)
+  }
+
   const updateMutation = useMutation({
     mutationFn: ({ id, body }: { id: string; body: ReturnType<typeof toRequest> }) =>
       recipesService.update(id, body),
@@ -106,10 +194,16 @@ export function MyRecipes() {
         title={t('myContent.recipes.title')}
         subtitle={t('myContent.recipes.subtitle', { count: recipes.length })}
         actions={
-          <Button onClick={() => setEditOpen(true)}>
-            <Plus className="h-4 w-4" />
-            {t('myContent.recipes.addNew')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" onClick={() => setImportModalOpen(true)}>
+              <Sparkles className="h-4 w-4" />
+              {t('aiImport.openButton')}
+            </Button>
+            <Button onClick={() => setEditOpen(true)}>
+              <Plus className="h-4 w-4" />
+              {t('myContent.recipes.addNew')}
+            </Button>
+          </div>
         }
       />
 
@@ -224,6 +318,142 @@ export function MyRecipes() {
         isPending={updateMutation.isPending}
         error={updateMutation.error?.message}
       />
+
+      <AiRecipeImportModal
+        open={importModalOpen}
+        onOpenChange={setImportModalOpen}
+        onPreview={handlePreviewReceived}
+      />
+
+      {/* The import preview-edit dialog re-uses RecipeFormDialog. The key forces a fresh
+          mount when the import session changes or when ingredient resolution alters the
+          ingredient list — without it, react-hook-form keeps stale values. */}
+      <RecipeFormDialog
+        key={importState
+          ? `import-${importState.unmatchedLines.length}-${importState.recipe.ingredients.length}`
+          : 'import-closed'}
+        open={importState !== null}
+        recipe={importState?.recipe}
+        ingredientMap={ingredientMap}
+        onOpenChange={open => { if (!open) setImportState(null) }}
+        onSubmit={values => handleImportSubmit(toRequest(values))}
+        isPending={confirmImportMutation.isPending}
+        error={confirmImportMutation.error?.message}
+        titleOverride={t('aiImport.preview.title')}
+        submitLabelOverride={t('aiImport.preview.save')}
+        extraSubmitDisabled={(importState?.unmatchedLines.length ?? 0) > 0}
+        headerSlot={importState && (
+          <ImportPreviewHeader
+            unmatchedLines={importState.unmatchedLines}
+            healthifySuggestions={importState.healthifySuggestions}
+            onResolveLine={handleResolveLine}
+            onDismissLine={handleDismissLine}
+          />
+        )}
+      />
+
+      <IngredientSearchDialog
+        open={ingSearchOpen}
+        onOpenChange={open => {
+          setIngSearchOpen(open)
+          if (!open) setResolvingLine(null)
+        }}
+        excludeIds={importState?.recipe.ingredients.map(i => i.ingredientId) ?? []}
+        onSelect={handleIngredientResolved}
+      />
+    </div>
+  )
+}
+
+// ── Import preview header (unmatched-lines banner + healthify accordion) ────
+
+function ImportPreviewHeader({
+  unmatchedLines,
+  healthifySuggestions,
+  onResolveLine,
+  onDismissLine,
+}: {
+  unmatchedLines: string[]
+  healthifySuggestions: HealthifySuggestion[]
+  onResolveLine: (line: string) => void
+  onDismissLine: (line: string) => void
+}) {
+  const { t } = useTranslation()
+  const [healthifyOpen, setHealthifyOpen] = useState(false)
+
+  return (
+    <div className="space-y-3">
+      {unmatchedLines.length > 0 && (
+        <div className="rounded-[12px] border border-amber-300 bg-amber-50 p-3 text-sm">
+          <p className="font-medium text-amber-900">
+            {t('aiImport.preview.unmatchedTitle', { count: unmatchedLines.length })}
+          </p>
+          <p className="mt-0.5 text-xs text-amber-800">
+            {t('aiImport.preview.unmatchedDescription')}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {unmatchedLines.map(line => (
+              <span
+                key={line}
+                className="inline-flex items-center gap-1 rounded-full bg-white border border-amber-300 px-2 py-1 text-xs text-amber-900"
+              >
+                <button
+                  type="button"
+                  onClick={() => onResolveLine(line)}
+                  className="font-medium hover:underline"
+                >
+                  {line}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onDismissLine(line)}
+                  aria-label={t('aiImport.preview.unmatchedDismiss')}
+                  className="rounded-full p-0.5 text-amber-700 hover:bg-amber-100"
+                >
+                  <X className="h-3 w-3" aria-hidden />
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {healthifySuggestions.length > 0 && (
+        <div className="rounded-[12px] border border-[#4F7942]/40 bg-[#F1F5EB] text-sm">
+          <button
+            type="button"
+            onClick={() => setHealthifyOpen(o => !o)}
+            aria-expanded={healthifyOpen}
+            className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left"
+          >
+            <span className="font-medium text-[#365229]">
+              {t('aiImport.preview.healthifyTitle', { count: healthifySuggestions.length })}
+            </span>
+            <ChevronDown
+              className={`h-4 w-4 text-[#365229] transition-transform ${healthifyOpen ? 'rotate-180' : ''}`}
+              aria-hidden
+            />
+          </button>
+          {healthifyOpen && (
+            <ul className="space-y-2 border-t border-[#4F7942]/30 px-3 py-2.5">
+              {healthifySuggestions.map((s, i) => (
+                <li key={i} className="space-y-0.5">
+                  <p className="text-sm font-medium text-[#1A1A1A]">{s.swap}</p>
+                  {s.reason && (
+                    <p className="text-xs text-gray-600">{s.reason}</p>
+                  )}
+                  <p className="text-[11px] text-[#365229]">
+                    {t('aiImport.preview.healthifyDelta', {
+                      kcal: Math.round(s.kcalDelta),
+                      protein: Math.round(s.proteinDelta),
+                    })}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   )
 }

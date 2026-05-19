@@ -790,6 +790,63 @@
       "rejectError": "Nem sikerült elutasítani."
     }
   },
+  "aiImport": {
+    "openButton": "Recept importálása",
+    "title": "Recept importálása AI-jal",
+    "subtitle": "Illeszd be egy recept szövegét, vagy fotózd le a kézzel írt receptet.",
+    "tabs": {
+      "text": "Beillesztés",
+      "photo": "Kézírás"
+    },
+    "text": {
+      "label": "Recept szövege",
+      "placeholder": "Pl. Tejfölös csirkemell — 500 g csirkemell, 2 dl tejföl, 1 fej hagyma, 1 ek olaj…",
+      "charsLeft_one": "{{count}} karakter maradt",
+      "charsLeft_other": "{{count}} karakter maradt",
+      "sourceUrlLabel": "Forrás URL (opcionális)",
+      "sourceUrlPlaceholder": "https://nosalty.hu/recept/..."
+    },
+    "photo": {
+      "drop": "Húzd ide a fotót vagy kattints a feltöltéshez",
+      "hint": "JPEG, PNG, HEIC, WEBP — max 8 MB",
+      "useCamera": "Fényképezőgép használata",
+      "cameraStarting": "Kamera indítása…",
+      "capture": "Fotó készítése",
+      "remove": "Fotó eltávolítása",
+      "replaceUpload": "Másik fájl",
+      "retake": "Új fotó"
+    },
+    "parse": "Feldolgozás",
+    "parsing": "Feldolgozom…",
+    "preview": {
+      "title": "Importált recept ellenőrzése",
+      "save": "Mentés a receptjeim közé",
+      "saveSuccess": "Az importált recept mentve.",
+      "saveError": "Nem sikerült menteni az importált receptet.",
+      "unmatchedTitle_one": "{{count}} hozzávaló nincs még megfeleltetve",
+      "unmatchedTitle_other": "{{count}} hozzávaló nincs még megfeleltetve",
+      "unmatchedDescription": "Kattints egy hozzávalóra, hogy hozzáadd a katalógusból. A mentés csak akkor engedélyezett, ha minden tétel feloldódott vagy elvetve lett.",
+      "unmatchedDismiss": "Elvetés",
+      "healthifyTitle_one": "{{count}} egészségesebb javaslat",
+      "healthifyTitle_other": "{{count}} egészségesebb javaslat",
+      "healthifyDelta": "≈ {{kcal}} kcal, {{protein}} g fehérje / adag"
+    },
+    "errors": {
+      "premiumTitle": "Ez prémium funkció",
+      "premiumDescription": "Az AI-receptimport a Founding Member csomag része.",
+      "premiumCta": "Founding Member lettem",
+      "rateLimitText": "Túl sok importálási kérés. Próbáld újra egy perc múlva.",
+      "rateLimitPhoto": "Túl sok digitalizálási kérés. Próbáld újra egy perc múlva.",
+      "monthlyQuota": "Elérted a havi receptimportálási kereted. A keret jövő hónapban megújul.",
+      "tooLarge": "A fájl mérete meghaladja a 8 MB-ot.",
+      "unsupportedType": "Nem támogatott formátum. JPEG, PNG, HEIC vagy WEBP kell.",
+      "cameraPermission": "A kamera hozzáférés szükséges a fotózáshoz.",
+      "cameraUnavailable": "A kamera nem elérhető ezen az eszközön.",
+      "aiUnavailable": "Az AI-import jelenleg nem elérhető. Próbáld meg később.",
+      "parseFailed": "Nem sikerült feldolgozni a receptet. Ellenőrizd a beillesztett szöveget.",
+      "generic": "Valami hiba történt. Próbáld meg újra."
+    }
+  },
   "myContent": {
     "status": {
       "private": "Privát",
@@ -1073,6 +1130,99 @@
       "placeholder": "Pl. spenót, brokkoli",
       "empty": "Nincs kizárt hozzávaló",
       "hint": "Ezeket a hozzávalókat egyik recept sem fogja tartalmazni"
+    },
+    "listTitle": "Tervek",
+    "newPlanCta": "Új terv",
+    "noPlans": "Még nincs terv.",
+    "filter": {
+      "label": "Szűrő",
+      "all": "Mind",
+      "active": "Aktív",
+      "upcoming": "Közelgő",
+      "past": "Múlt"
+    },
+    "card": {
+      "shopped": "Bevásárolt",
+      "pendingShopping": "Bevásárlás szükséges",
+      "avgKcal": "~{{kcal}} kcal/étkezés"
+    },
+    "mealTypes": {
+      "BREAKFAST": "Reggeli",
+      "MORNING_SNACK": "Tízórai",
+      "LUNCH": "Ebéd",
+      "AFTERNOON_SNACK": "Uzsonna",
+      "DINNER": "Vacsora",
+      "SNACK": "Snack"
+    },
+    "wizard": {
+      "title": "Új terv",
+      "stepsLabel": "Lépések",
+      "step1Label": "Tagok",
+      "step2Label": "Időszak",
+      "step3Label": "Étkezések",
+      "step1Title": "Kire tervezzük?",
+      "step1Hint": "Kikre vonatkozzon a terv.",
+      "step2Title": "Mikor és mennyi ideig?",
+      "step3Title": "Mely étkezéseket tervezzük?",
+      "step3Hint": "Alapból ebéd és vacsora.",
+      "membersLabel": "Tagválasztó",
+      "mealSlotsLabel": "Étkezés-kiválasztó",
+      "startDate": "Kezdő dátum",
+      "duration": "Időtartam",
+      "durationDays_one": "{{count}} nap",
+      "durationDays_other": "{{count}} nap",
+      "durationCustom": "Egyedi napszám",
+      "days": "nap",
+      "planName": "Terv neve",
+      "nameHint": "Módosíthatod — vagy marad az automatikus név.",
+      "autoName": "{{date}} — terv",
+      "autoNameFamily": "{{date}} — közös terv",
+      "autoNamePlaceholder": "Automatikusan generálva",
+      "atLeastOneMember": "Legalább egy tagot ki kell választani.",
+      "atLeastOneMealSlot": "Legalább egy étkezést ki kell jelölni.",
+      "next": "Tovább",
+      "generate": "Terv generálása",
+      "generating": "Összerakom…",
+      "created": "A terv elkészült.",
+      "conflictGeneric": "Ez a terv ütközik egy meglévő tervvel. Válassz másik időszakot."
+    },
+    "planner": {
+      "noRecipe": "Recept hiányzik",
+      "leftover": "Maradék",
+      "servings": "adag",
+      "viewRecipe": "Recept megtekintése",
+      "editSlot": "Étkezés szerkesztése",
+      "toggleSplit": "Eltérések mutatása",
+      "moreOptions": "Több lehetőség",
+      "divergentLabel": "{{name}} mást eszik",
+      "unresolvedHint": "Döntést igényel",
+      "noMealsDay": "Erre a napra nincs tervezett étkezés.",
+      "costLabel": "{{cost}} Ft"
+    },
+    "detail": {
+      "settings": "Terv beállításai"
+    },
+    "member": {
+      "allergenWarningAria": "Allergén figyelmeztetés"
+    }
+  },
+  "approval": {
+    "sectionLabel": "Jóváhagyandó változások",
+    "bannerText_one": "{{count}} terv-változtatás vár a jóváhagyásodra.",
+    "bannerText_other": "{{count}} terv-változtatás vár a jóváhagyásodra.",
+    "accept": "Elfogadás",
+    "reject": "Elutasítás",
+    "edit": "Szerkesztés",
+    "acceptAll": "Összes elfogadása",
+    "acceptedOne": "Változtatás elfogadva.",
+    "rejectedOne": "Változtatás elutasítva.",
+    "acceptedAll": "Összes kis kockázatú változtatás elfogadva.",
+    "swapDiff": "Csere: {{from}} → {{to}}",
+    "addDiff": "Hozzáadás: {{to}}",
+    "risk": {
+      "low": "kis kockázat",
+      "medium": "közepes kockázat",
+      "high": "nagy kockázat"
     }
   },
   "preferences": {
@@ -1108,6 +1258,9 @@
     "advancedToggle": "Speciális beállítások",
     "advancedToggleOpen": "Speciális beállítások elrejtése",
     "household": "Kikre tervezzük?",
+    "householdAlwaysIncluded": "Te mindig részt veszel a tervben.",
+    "multiMemberHint": "Több családtaggal tervezel — átvezetünk a többszemélyes varázslóhoz, ahol mindenki étrendjét összehangoljuk.",
+    "continueToWizard": "Tovább a többszemélyes varázslóhoz",
     "inviteMember": "Meghívás",
     "inviteComingSoon": "Meghívó funkció hamarosan elérhető.",
     "constraints": "Tervező beállítások",
@@ -1571,9 +1724,6 @@
       "permissionPendingLabel": "Jóváhagyásra vár"
     },
     "prefs": {
-      "allergens": "Allergének",
-      "allergensPlaceholder": "pl. mogyoró, tej, tojás",
-      "allergensHint": "Vesszővel elválasztva add meg az allergéneket.",
       "dietaryFlags": "Étrendi megszorítások",
       "macroTargets": "Makrócélok",
       "kcalTarget": "Kalóriacél (kcal)",
