@@ -27,7 +27,17 @@ export interface FamilyRecipient {
 interface DispositionPickerProps {
   /** Family members eligible to receive the meal (meal owner already excluded). */
   familyRecipients: FamilyRecipient[]
-  onConfirm: (disposition: OffPlanDispositionType, recipientUserId?: string) => void
+  /**
+   * Called when the user confirms their disposition choice.
+   * `allergenAcknowledged` is true when the user explicitly confirmed
+   * an allergen warning modal before selecting the recipient.
+   * Thread this flag through to the BE4 endpoint when it lands.
+   */
+  onConfirm: (
+    disposition: OffPlanDispositionType,
+    recipientUserId?: string,
+    allergenAcknowledged?: boolean,
+  ) => void
   onCancel: () => void
   /** True while the parent mutation is in-flight. */
   isSubmitting?: boolean
@@ -47,11 +57,14 @@ export function DispositionPicker({
   const [pendingRecipient, setPendingRecipient] = useState<FamilyRecipient | null>(null)
   const [allergenModalOpen, setAllergenModalOpen] = useState(false)
   const [chosenRecipient, setChosenRecipient] = useState<FamilyRecipient | null>(null)
+  /** True once the user has explicitly confirmed an allergen warning for the chosen recipient. */
+  const [allergenAcknowledged, setAllergenAcknowledged] = useState(false)
 
   function handleTopLevel(val: TopLevel) {
     setSelected(val)
     setGivenToOpen(val === 'GIVEN_TO_FAMILY' || val === 'GIVEN_TO_OTHER')
     setChosenRecipient(null)
+    setAllergenAcknowledged(false)
   }
 
   function handleRecipientClick(r: FamilyRecipient) {
@@ -67,12 +80,13 @@ export function DispositionPicker({
     setChosenRecipient(pendingRecipient)
     setPendingRecipient(null)
     setAllergenModalOpen(false)
+    setAllergenAcknowledged(true)
   }
 
   function handleSubmit() {
     if (!selected) return
     if (selected === 'GIVEN_TO_FAMILY' && !chosenRecipient) return
-    onConfirm(selected, chosenRecipient?.userId)
+    onConfirm(selected, chosenRecipient?.userId, allergenAcknowledged)
   }
 
   const canSubmit =

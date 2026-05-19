@@ -21,6 +21,7 @@ import { Header } from '@/components/layout/Header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { shoppingCartService } from '@/services/shoppingCartService'
+import { useAuthStore } from '@/store/auth'
 import type { ShoppingCartResponse, CartLineItemResponse } from '@/types'
 
 const WINDOW_OPTIONS = [
@@ -40,11 +41,13 @@ function todayIso(): string {
   return new Date().toISOString().split('T')[0]
 }
 
-const CART_CHECK_KEY = (cartId: string) => `cart-checked-${cartId}`
+/** User-scoped key prevents one user seeing another's check state on a shared device. */
+const CART_CHECK_KEY = (userId: string, cartId: string) => `cart-checked-${userId}-${cartId}`
 
 export function ShoppingCart() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const userId = useAuthStore(s => s.user?.id ?? '')
 
   const [windowDays, setWindowDays] = useState(7)
   const [cart, setCart] = useState<ShoppingCartResponse | null>(null)
@@ -53,18 +56,21 @@ export function ShoppingCart() {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
 
   // ── Generate cart mutation ────────────────────────────────────────────────
+  // mutationFn receives windowDays explicitly to avoid stale-closure bugs:
+  // setState is async so calling mutate() immediately after setWindowDays()
+  // would capture the previous windowDays value from the closure.
   const generateMutation = useMutation({
-    mutationFn: () =>
+    mutationFn: (days: number) =>
       shoppingCartService.generate({
         windowStart: todayIso(),
-        windowEnd: addDays(windowDays),
+        windowEnd: addDays(days),
       }),
     onSuccess: data => {
       setCart(data)
       setMarkedShopped(false)
-      // Restore check state from localStorage
+      // Restore check state from localStorage (user-scoped key)
       try {
-        const raw = localStorage.getItem(CART_CHECK_KEY(data.cartId))
+        const raw = localStorage.getItem(CART_CHECK_KEY(userId, data.cartId))
         setChecked(raw ? new Set<string>(JSON.parse(raw) as string[]) : new Set<string>())
       } catch {
         setChecked(new Set<string>())
@@ -74,16 +80,16 @@ export function ShoppingCart() {
 
   // Generate on first render
   useEffect(() => {
-    generateMutation.mutate()
+    generateMutation.mutate(windowDays)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Re-generate when window changes (if we already have a cart)
+  // Re-generate when window changes — pass days directly to avoid stale closure.
   function handleWindowChange(days: number) {
     setWindowDays(days)
     setCart(null)
     setChecked(new Set())
-    generateMutation.mutate()
+    generateMutation.mutate(days)
   }
 
   // ── Mark shopped mutation ─────────────────────────────────────────────────
@@ -107,7 +113,7 @@ export function ShoppingCart() {
         next.add(ingredientId)
       }
       try {
-        localStorage.setItem(CART_CHECK_KEY(cart.cartId), JSON.stringify([...next]))
+        localStorage.setItem(CART_CHECK_KEY(userId, cart.cartId), JSON.stringify([...next]))
       } catch {
         /* storage unavailable */
       }

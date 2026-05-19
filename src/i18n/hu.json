@@ -1614,6 +1614,14 @@
     }
   },
   "offPlan": {
+    "quickOptions": {
+      "gyros": "Gyros",
+      "szendvics": "Szendvics",
+      "salata": "Saláta",
+      "teszta": "Tészta",
+      "pizza": "Pizza",
+      "leves": "Leves"
+    },
     "sheet": {
       "title": "Mit ettél?",
       "quickOptions": "Gyors választás",

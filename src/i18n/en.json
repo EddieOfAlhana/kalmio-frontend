@@ -1614,6 +1614,14 @@
     }
   },
   "offPlan": {
+    "quickOptions": {
+      "gyros": "Gyros",
+      "szendvics": "Sandwich",
+      "salata": "Salad",
+      "teszta": "Pasta",
+      "pizza": "Pizza",
+      "leves": "Soup"
+    },
     "sheet": {
       "title": "What did you eat?",
       "quickOptions": "Quick options",

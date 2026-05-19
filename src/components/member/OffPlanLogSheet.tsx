@@ -21,7 +21,8 @@ import { offPlanMealsService } from '@/services/offPlanMeals'
 import { DispositionPicker } from './DispositionPicker'
 import type { OffPlanDispositionType } from '@/types'
 
-const QUICK_OPTIONS = ['Gyros', 'Szendvics', 'Saláta', 'Tészta', 'Pizza', 'Leves']
+/** i18n key suffixes under offPlan.quickOptions.*  */
+const QUICK_OPTION_KEYS = ['gyros', 'szendvics', 'salata', 'teszta', 'pizza', 'leves'] as const
 
 export interface FamilyRecipient {
   userId: string
@@ -78,15 +79,18 @@ export function OffPlanLogSheet({
   })
 
   // BE4 stub: disposition is selected but not submitted to backend yet.
+  // The signature preserves the full data shape so wiring to BE4 is one-line.
   function handleDispositionConfirm(
     disposition: OffPlanDispositionType,
     recipientUserId?: string,
+    allergenAcknowledged?: boolean,
   ) {
     // TODO (BE4): POST /api/plans/{planId}/meals/{plannedMealId}/disposition
     // with { disposition, recipientUserId, allergenAcknowledged }
     // loggedMealId is available for correlation.
     void disposition
     void recipientUserId
+    void allergenAcknowledged
     void loggedMealId
     onClose()
   }
@@ -121,21 +125,24 @@ export function OffPlanLogSheet({
                   {t('offPlan.sheet.quickOptions')}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {QUICK_OPTIONS.map(opt => (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() => setDisplayName(opt)}
-                      className={`
-                        px-3 py-1.5 rounded-full text-sm border transition-colors
-                        ${displayName === opt
-                          ? 'bg-[#4f46e5] text-white border-[#4f46e5]'
-                          : 'bg-white text-[#1a1a1a] border-[#e5e7eb] hover:bg-[#f3f4f6]'}
-                      `}
-                    >
-                      {opt}
-                    </button>
-                  ))}
+                  {QUICK_OPTION_KEYS.map(key => {
+                    const label = t(`offPlan.quickOptions.${key}`)
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => setDisplayName(label)}
+                        className={`
+                          px-3 py-1.5 rounded-full text-sm border transition-colors
+                          ${displayName === label
+                            ? 'bg-[#4f46e5] text-white border-[#4f46e5]'
+                            : 'bg-white text-[#1a1a1a] border-[#e5e7eb] hover:bg-[#f3f4f6]'}
+                        `}
+                      >
+                        {label}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 
