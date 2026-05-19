@@ -1359,31 +1359,31 @@
       "next": "Tovább",
       "finish": "Megnézem a hetemet",
       "stepLabels": {
-        "1":  "Üdvözlés",
-        "2":  "Hány személyre főzzük?",
-        "3":  "Aktivitás és kalória",
-        "4":  "Étrendi preferenciák",
-        "5":  "Bevásárlási szokások",
-        "6":  "Tiltott hozzávalók",
-        "7":  "Ízlés-körkép",
-        "8":  "Étrend összerakása…",
-        "9":  "Az első heted kész",
+        "1": "Üdvözlés",
+        "2": "Hány személyre főzzük?",
+        "3": "Aktivitás és kalória",
+        "4": "Étrendi preferenciák",
+        "5": "Bevásárlási szokások",
+        "6": "Tiltott hozzávalók",
+        "7": "Ízlés-körkép",
+        "8": "Étrend összerakása…",
+        "9": "Az első heted kész",
         "10": "Csemete — az első cselekvés"
       }
     },
     "planting": {
       "ariaLabel": "Dióültetés animáció — az ültetési folyamat előrehaladása",
       "steps": {
-        "0":  "Kéz látható a talaj felett, diót tartva",
-        "1":  "Gödör ásódik a talajban, a kéz lejjebb ereszkedik",
-        "2":  "A dió a gödörbe kerül",
-        "3":  "Az első marék föld betakarja a diót",
-        "4":  "A földhalom kiformálódik és lesimul",
-        "5":  "Kis fa-jelölőkaró kerül a halom mellé",
-        "6":  "Apró részletek kerülnek a jelenet köré — kövek, levelek, a talaj nedvesedik",
-        "7":  "Öntöző kanna billen a halom fölé, az első cseppek lehullanak",
-        "8":  "A talaj sötét és nedves — a dió teljesen el van ültetve",
-        "9":  "Mag-szakasz kész — a dió a földben van",
+        "0": "Kéz látható a talaj felett, diót tartva",
+        "1": "Gödör ásódik a talajban, a kéz lejjebb ereszkedik",
+        "2": "A dió a gödörbe kerül",
+        "3": "Az első marék föld betakarja a diót",
+        "4": "A földhalom kiformálódik és lesimul",
+        "5": "Kis fa-jelölőkaró kerül a halom mellé",
+        "6": "Apró részletek kerülnek a jelenet köré — kövek, levelek, a talaj nedvesedik",
+        "7": "Öntöző kanna billen a halom fölé, az első cseppek lehullanak",
+        "8": "A talaj sötét és nedves — a dió teljesen el van ültetve",
+        "9": "Mag-szakasz kész — a dió a földben van",
         "10": "Csemete — két sziklevél tör elő a föld alól"
       }
     },
@@ -1596,20 +1596,20 @@
       "plannedMeals": "Tervezett étkezések",
       "offPlanHistory": "Ma naplózott étkezések",
       "noPlanSelected": "Nincs kiválasztott terv.",
-      "skipSlotComingSoon": "Kihagyom ezt az étkezést",
+      "skipSlotComingSoon": "Étkezés kihagyása",
       "mealRequestComingSoon": "Étkezés kérése a tervezőtől",
       "recipientNotificationComingSoon": "Értesítés, ha valaki megosztja veled az adagját"
     },
     "slot": {
       "noRecipe": "Recept hiányzik",
       "protein": "fehérje",
-      "eaten": "Megcsináltam",
+      "eaten": "Megettem",
       "skipped": "Kihagyva"
     },
     "actions": {
-      "ateIt": "Megcsináltam",
+      "ateIt": "Megettem",
       "somethingElse": "Mást ettem",
-      "markEaten": "Megcsináltam jelölés",
+      "markEaten": "Megettnek jelöl",
       "moreOptions": "Több lehetőség"
     }
   },
@@ -1634,7 +1634,7 @@
     "disposition": {
       "question": "Mi történt a tervezett adaggal?",
       "returnedToFridge": "Visszatettem a hűtőbe",
-      "wasted": "Sajnos elromlott / kidobtuk",
+      "wasted": "Elromlott / kidobtuk",
       "givenToSomebody": "Valaki más ette meg",
       "givenToOther": "Más személy (nincs a listán)",
       "confirm": "Mentés",
@@ -1648,7 +1648,7 @@
     "bulkDisposition": {
       "title": "{{name}} eltávolítása — {{count}} tervezett étkezés",
       "subtitle": "Mi történjen a {{count}} tervezett adaggal?",
-      "applyToAll": "Alkalmazd az összesre",
+      "applyToAll": "Alkalmazás az összesre",
       "customizePerSlot": "Egyéni beállítás étkezésenként",
       "confirm": "Megerősítés"
     }
@@ -1662,9 +1662,9 @@
     "itemCount": "{{count}} hozzávaló",
     "markShoppedCta": "Mindent megvettem — tervek lezárása",
     "markedShopped": "A tervek sikeresen lezárva.",
-    "allCheckedNudge": "Úgy tűnik, mindent kipipáltál. Kész a bevásárlás?",
+    "allCheckedNudge": "Mindent kipipáltál. Lezárhatod a terveket.",
     "ingredientsTitle": "Hozzávalók",
-    "checkItem": "{{name}} pipa",
+    "checkItem": "{{name}} megjelölése",
     "showSourcePlans": "Forrástervek",
     "sourcePlan": "Terv",
     "leftoversRescueNotice": "A hűtőből visszakerült maradékok hamarosan megjelennek itt kiemelve — \"meglévő felhasználás\" jelöléssel.",

@@ -47,7 +47,7 @@ describe('OffPlanLogSheet stub (Finding 3a)', () => {
 
     function handleDispositionConfirm(
       disposition: OffPlanDispositionType,
-      recipientUserId?: string,
+      _recipientUserId?: string,
       allergenAcknowledged?: boolean,
     ) {
       received.push({ disp: disposition, ack: allergenAcknowledged })
