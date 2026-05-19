@@ -66,12 +66,10 @@ describe('OffPlanLogSheet stub (Finding 3a)', () => {
 describe('DispositionPicker allergenAcknowledged state machine (Finding 3b, F5)', () => {
   function makePickerState() {
     let allergenAcknowledged = false
-    let pendingRecipient: { userId: string; conflictingAllergens: string[] } | null = null
     let allergenModalOpen = false
 
     function handleRecipientClick(r: { userId: string; conflictingAllergens: string[] }) {
       if (r.conflictingAllergens.length > 0) {
-        pendingRecipient = r
         allergenModalOpen = true
       }
       // else: choose directly, allergenAcknowledged stays false
@@ -79,13 +77,11 @@ describe('DispositionPicker allergenAcknowledged state machine (Finding 3b, F5)'
 
     function handleAllergenConfirm() {
       allergenAcknowledged = true
-      pendingRecipient = null
       allergenModalOpen = false
     }
 
     function handleAllergenCancel() {
       allergenModalOpen = false
-      pendingRecipient = null
       // allergenAcknowledged stays false — user did not confirm
     }
 

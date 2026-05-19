@@ -67,10 +67,6 @@ describe('handleWindowChange (Finding 1)', () => {
 
   it('does not use the stale closure value when called with 30', () => {
     const capturedArgs: number[] = []
-    function handleWindowChangeBuggy(days: number) {
-      // Simulate the BUGGY pattern: mutate called with no args (uses stale closure)
-      capturedArgs.push(7) // would always push stale value
-    }
     function handleWindowChangeFixed(days: number) {
       capturedArgs.push(days) // correct: pass the arg
     }
