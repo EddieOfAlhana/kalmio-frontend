@@ -887,6 +887,17 @@ export interface FamilyMemberDto {
   userId: string
   role: FamilyRole
   joinedAt: string  // ISO-8601
+  /** True when the family planner has granted (or been granted) impersonation permission for this real account. [PENDING_BE] */
+  impersonationPermissionGranted?: boolean
+}
+
+/** [PENDING_BE] Represents an invite the planner sent — from GET /api/families/{id}/invites. */
+export interface SentInviteDto {
+  id: string
+  claimCode: string
+  expiresAt: string  // ISO-8601
+  boundProfileName?: string
+  status: 'PENDING' | 'ACCEPTED' | 'REVOKED' | 'EXPIRED'
 }
 
 /** Response from POST /api/families and GET /api/families/{id} */
@@ -948,6 +959,8 @@ export interface SendInviteResponse {
 
 export interface AcceptInviteRequest {
   claim: boolean
+  /** Allergens the user confirmed from the merge preview. Only sent when claim=true. */
+  checkedAllergens?: string[]
 }
 
 export interface MacroMergeResultDto {

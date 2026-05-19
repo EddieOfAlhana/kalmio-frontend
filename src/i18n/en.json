@@ -1465,14 +1465,14 @@
   "family": {
     "title": "Family",
     "subtitleNoFamily": "Your family group is not set up yet",
-    "noFamilyExplainer": "Create your family to plan meals together.",
+    "noFamilyExplainer": "No family group set up yet.",
     "capacityCounter": "{{used}} of {{cap}} slots used",
     "membersSection": "Members",
     "capReached": "You have reached the 5-member limit.",
     "creation": {
       "cta": "Start your family",
       "creating": "Creating…",
-      "success": "Your family has been created."
+      "success": "Family group created."
     },
     "managedProfile": {
       "addCta": "Add profile",
@@ -1513,14 +1513,24 @@
       "copyCode": "Copy code",
       "codeExpiry": "This code expires in 7 days.",
       "claimSection": "Join with an invite",
-      "claimPrompt": "If you received an invite code, enter it here to join the right family.",
+      "claimPrompt": "If you have an invite code, enter it here.",
       "enterCodeCta": "Redeem invite code",
       "claimDialogTitle": "Redeem invite code",
       "codePlaceholder": "Code (e.g. ABC123)",
       "submitCodeCta": "Continue",
       "checking": "Checking…",
       "invalidCode": "This code is not valid or has expired.",
-      "acceptSuccess": "You have joined the family."
+      "acceptSuccess": "You have joined the group.",
+      "sentInvitesSection": "Sent invites",
+      "sentInvitesEmpty": "No active invites.",
+      "sentInviteCode": "Code: {{code}}",
+      "sentInviteExpiry": "Expires: {{date}}",
+      "sentInviteBoundTo": "Linked to: {{name}}",
+      "revokeInviteCta": "Revoke",
+      "revokeInviteConfirm": "Are you sure you want to revoke this invite?",
+      "revokeInviteSuccess": "Invite revoked.",
+      "revokeInviteError": "Failed to revoke the invite.",
+      "sentInvitesUnavailable": "The sent invites list is currently unavailable."
     },
     "merge": {
       "dialogTitle": "Link your profile",
@@ -1531,6 +1541,8 @@
       "allergenItemAriaLabel": "{{allergen}} allergen checked",
       "dietaryFlagsSection": "Dietary restrictions",
       "flagsUncheckable": "Dietary flags will be merged automatically.",
+      "dislikesSection": "Disliked ingredients",
+      "dislikesHint": "These ingredients from the managed profile will be added to your account.",
       "macroSection": "Macro targets",
       "macroHint": "Your actual account data takes precedence when a value is set in both places.",
       "kcal": "Calories",
@@ -1551,7 +1563,12 @@
       "switchTo": "Switch to {{name}}",
       "switchLabel": "View as",
       "auditLogTitle": "Who viewed your plans",
-      "auditLogEmpty": "No one has viewed your plans yet."
+      "auditLogEmpty": "No one has viewed your plans yet.",
+      "requestPermissionCta": "Request access",
+      "requestPermissionAriaLabel": "Request access to view {{name}}",
+      "requestPermissionSent": "Access request sent for {{name}}",
+      "requestPermissionError": "Failed to send the access request.",
+      "permissionPendingLabel": "Awaiting approval"
     },
     "prefs": {
       "allergens": "Allergens",

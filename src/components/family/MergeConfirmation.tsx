@@ -39,7 +39,8 @@ export function MergeConfirmation({ preview, onConfirmClaim, onJoinWithoutClaim,
 
   const hasAnyDiff =
     preview.mergedAllergens.length > 0 ||
-    preview.activeDietaryFlags.length > 0
+    preview.activeDietaryFlags.length > 0 ||
+    preview.mergedDislikedIngredientIds.length > 0
 
   return (
     <div className="space-y-6">
@@ -100,6 +101,33 @@ export function MergeConfirmation({ preview, onConfirmClaim, onJoinWithoutClaim,
             ))}
           </ul>
           <p className="text-xs text-[#6b6b6b] mt-1.5">{t('family.merge.flagsUncheckable')}</p>
+        </section>
+      )}
+
+      {/* Dislikes — read-only, informational */}
+      {preview.mergedDislikedIngredientIds.length > 0 && (
+        <section aria-labelledby="merge-dislikes-heading">
+          <h3
+            id="merge-dislikes-heading"
+            className="text-sm font-semibold text-[#1A1A1A] mb-2"
+          >
+            {t('family.merge.dislikesSection')}
+          </h3>
+          <p className="text-xs text-[#6b6b6b] mb-3">{t('family.merge.dislikesHint')}</p>
+          <ul
+            className="flex flex-wrap gap-1.5"
+            role="list"
+            aria-label={t('family.merge.dislikesSection')}
+          >
+            {preview.mergedDislikedIngredientIds.map((id) => (
+              <li
+                key={id}
+                className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded font-medium"
+              >
+                {id}
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 
