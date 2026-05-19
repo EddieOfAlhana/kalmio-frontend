@@ -14,7 +14,7 @@ import { InviteFlow } from '@/components/family/InviteFlow'
 import { familyService } from '@/services/family'
 import { usersService } from '@/services/users'
 import { useAuthStore } from '@/store/auth'
-import type { FamilyMemberDto, UserPreferencesDto, MergePreviewResponse } from '@/types'
+import type { FamilyMemberDto, UserPreferencesDto, MergePreviewResponse, SentInviteDto } from '@/types'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MergeConfirmation } from '@/components/family/MergeConfirmation'
@@ -31,7 +31,7 @@ function saveMyFamilyId(id: string) {
 }
 
 export function Family() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const qc = useQueryClient()
   const currentUserId = useAuthStore((s) => s.user?.id) ?? ''
 
@@ -64,6 +64,37 @@ export function Family() {
     staleTime: 30_000,
   })
 
+  const members: FamilyMemberDto[] = family?.members ?? []
+  const memberCount = members.length
+  const atCap = memberCount >= FAMILY_CAP
+
+  const plannerCount = members.filter((m) => m.role === 'PLANNER').length
+  const myRole = members.find((m) => m.userId === currentUserId)?.role ?? null
+  const iAmPlanner = myRole === 'PLANNER'
+
+  // [PENDING_BE] Fetch sent invites — only when we have a family and current user is planner
+  const {
+    data: sentInvites,
+    isLoading: sentInvitesLoading,
+    isError: sentInvitesError,
+  } = useQuery<SentInviteDto[]>({
+    queryKey: ['family-invites', familyId],
+    queryFn: () => familyService.listInvites(familyId!),
+    enabled: !!familyId && iAmPlanner,
+    staleTime: 30_000,
+    retry: false,
+  })
+
+  // [PENDING_BE] Revoke invite mutation
+  const revokeInviteMutation = useMutation({
+    mutationFn: (inviteId: string) => familyService.revokeInvite(familyId!, inviteId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['family-invites', familyId] })
+      toast({ title: t('family.invite.revokeInviteSuccess') })
+    },
+    onError: () => toast({ title: t('family.invite.revokeInviteError'), variant: 'destructive' }),
+  })
+
   // Create family mutation
   const createFamilyMutation = useMutation({
     mutationFn: familyService.createFamily,
@@ -90,10 +121,6 @@ export function Family() {
     onError: () => toast({ title: t('common.errorGeneric'), variant: 'destructive' }),
   })
 
-  const members: FamilyMemberDto[] = family?.members ?? []
-  const memberCount = members.length
-  const atCap = memberCount >= FAMILY_CAP
-
   // For now managed profiles are identified heuristically by comparing against current user.
   // The backend returns the same userId it stored — managed profiles have no Supabase session.
   // We use a simple heuristic: any member that is not the current user and not in any known
@@ -113,9 +140,11 @@ export function Family() {
     }
   }
 
-  const plannerCount = members.filter((m) => m.role === 'PLANNER').length
-  const myRole = members.find((m) => m.userId === currentUserId)?.role ?? null
-  const iAmPlanner = myRole === 'PLANNER'
+  const locale = i18n.resolvedLanguage === 'hu' ? 'hu-HU' : 'en-GB'
+
+  function formatExpiry(iso: string): string {
+    return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(iso))
+  }
 
   // ── Render: no family yet ──────────────────────────────────────────────────
   if (!familyId || familyError) {
@@ -218,6 +247,65 @@ export function Family() {
         </CardContent>
       </Card>
 
+      {/* Sent invites — planner only, [PENDING_BE] */}
+      {iAmPlanner && (
+        <Card>
+          <CardContent className="py-4">
+            <h2 className="text-sm font-semibold text-[#1A1A1A] mb-3">
+              {t('family.invite.sentInvitesSection')}
+            </h2>
+            {sentInvitesLoading && (
+              <div className="flex justify-center py-4" aria-live="polite" aria-busy="true">
+                <Spinner />
+              </div>
+            )}
+            {sentInvitesError && (
+              <p className="text-xs text-[#6b6b6b]">{t('family.invite.sentInvitesUnavailable')}</p>
+            )}
+            {!sentInvitesLoading && !sentInvitesError && sentInvites !== undefined && (
+              sentInvites.length === 0 ? (
+                <p className="text-xs text-[#6b6b6b]">{t('family.invite.sentInvitesEmpty')}</p>
+              ) : (
+                <ul role="list" className="space-y-2">
+                  {sentInvites.filter((inv) => inv.status === 'PENDING').map((inv) => (
+                    <li
+                      key={inv.id}
+                      className="flex items-center justify-between gap-3 py-2 border-b border-[#e5e4e7] last:border-none"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-mono font-medium text-[#1A1A1A]">
+                          {t('family.invite.sentInviteCode', { code: inv.claimCode })}
+                        </p>
+                        <p className="text-xs text-[#6b6b6b]">
+                          {t('family.invite.sentInviteExpiry', { date: formatExpiry(inv.expiresAt) })}
+                          {inv.boundProfileName && (
+                            <span className="ml-2">
+                              {t('family.invite.sentInviteBoundTo', { name: inv.boundProfileName })}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        disabled={revokeInviteMutation.isPending}
+                        onClick={() => {
+                          if (confirm(t('family.invite.revokeInviteConfirm'))) {
+                            revokeInviteMutation.mutate(inv.id)
+                          }
+                        }}
+                        className="text-xs px-2 py-1 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-40 shrink-0"
+                      >
+                        {t('family.invite.revokeInviteCta')}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Claim an invite code (for joining another family) */}
       <Card>
         <CardContent className="py-4">
@@ -296,28 +384,9 @@ function ClaimCodeDialog({ open, onOpenChange, onAccepted }: ClaimCodeDialogProp
   const [preview, setPreview] = useState<MergePreviewResponse | null>(null)
   const [previewError, setPreviewError] = useState<string | null>(null)
 
-  const previewMutation = useMutation({
-    mutationFn: (code: string) => familyService.mergePreview(code),
-    onSuccess: (data) => {
-      setPreview(data)
-      setPreviewError(null)
-      // If the invite has no bound managed profile the merge preview is empty —
-      // skip straight to accepting.
-      if (
-        data.mergedAllergens.length === 0 &&
-        data.activeDietaryFlags.length === 0
-      ) {
-        acceptMutation.mutate({ code: enteredCode, claim: false })
-      } else {
-        setDialogStep('merge-preview')
-      }
-    },
-    onError: () => setPreviewError(t('family.invite.invalidCode')),
-  })
-
   const acceptMutation = useMutation({
-    mutationFn: ({ code, claim }: { code: string; claim: boolean }) =>
-      familyService.acceptInvite(code, { claim }),
+    mutationFn: ({ code, claim, checkedAllergens }: { code: string; claim: boolean; checkedAllergens?: string[] }) =>
+      familyService.acceptInvite(code, { claim, checkedAllergens }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['family'] })
       onAccepted()
@@ -327,6 +396,26 @@ function ClaimCodeDialog({ open, onOpenChange, onAccepted }: ClaimCodeDialogProp
       setPreview(null)
     },
     onError: () => toast({ title: t('common.errorGeneric'), variant: 'destructive' }),
+  })
+
+  const previewMutation = useMutation({
+    mutationFn: (code: string) => familyService.mergePreview(code),
+    onSuccess: (data) => {
+      setPreview(data)
+      setPreviewError(null)
+      // If the invite has no bound managed profile the merge preview is empty —
+      // skip straight to accepting.
+      if (
+        data.mergedAllergens.length === 0 &&
+        data.activeDietaryFlags.length === 0 &&
+        data.mergedDislikedIngredientIds.length === 0
+      ) {
+        acceptMutation.mutate({ code: enteredCode, claim: false })
+      } else {
+        setDialogStep('merge-preview')
+      }
+    },
+    onError: () => setPreviewError(t('family.invite.invalidCode')),
   })
 
   function handleCodeSubmit(e: React.FormEvent) {
@@ -384,7 +473,9 @@ function ClaimCodeDialog({ open, onOpenChange, onAccepted }: ClaimCodeDialogProp
           <MergeConfirmation
             preview={preview}
             isPending={acceptMutation.isPending}
-            onConfirmClaim={() => acceptMutation.mutate({ code: enteredCode, claim: true })}
+            onConfirmClaim={(checkedAllergens) =>
+              acceptMutation.mutate({ code: enteredCode, claim: true, checkedAllergens })
+            }
             onJoinWithoutClaim={() =>
               acceptMutation.mutate({ code: enteredCode, claim: false })
             }

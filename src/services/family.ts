@@ -9,6 +9,7 @@ import type {
   MergePreviewResponse,
   ImpersonateResponse,
   UserPreferencesDto,
+  SentInviteDto,
 } from '@/types'
 
 export const familyService = {
@@ -79,6 +80,20 @@ export const familyService = {
     api
       .post<ImpersonateResponse>(`/api/families/${familyId}/impersonate/${userId}`)
       .then((r) => r.data),
+
+  /** [PENDING_BE] POST /api/families/{id}/impersonate/{userId}/request-permission — request impersonation permission for a real account. */
+  requestImpersonationPermission: (familyId: string, userId: string): Promise<void> =>
+    api
+      .post(`/api/families/${familyId}/impersonate/${userId}/request-permission`)
+      .then(() => undefined),
+
+  /** [PENDING_BE] GET /api/families/{id}/invites — list sent invites (planner only). */
+  listInvites: (familyId: string): Promise<SentInviteDto[]> =>
+    api.get<SentInviteDto[]>(`/api/families/${familyId}/invites`).then((r) => r.data),
+
+  /** [PENDING_BE] DELETE /api/families/{id}/invites/{inviteId} — revoke a pending invite. */
+  revokeInvite: (familyId: string, inviteId: string): Promise<void> =>
+    api.delete(`/api/families/${familyId}/invites/${inviteId}`).then(() => undefined),
 }
 
 /** Blank preferences template for the managed-profile editor. */

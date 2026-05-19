@@ -39,6 +39,7 @@ export function FamilyMemberRow({
 
   const [editOpen, setEditOpen] = useState(false)
   const [roleMenuOpen, setRoleMenuOpen] = useState(false)
+  const [permissionRequested, setPermissionRequested] = useState(false)
 
   const removeMutation = useMutation({
     mutationFn: () => familyService.removeManagedProfile(familyId, member.userId),
@@ -68,8 +69,29 @@ export function FamilyMemberRow({
     onError: () => toast({ title: t('common.errorGeneric'), variant: 'destructive' }),
   })
 
+  // [PENDING_BE] Request impersonation permission for real accounts
+  const requestPermissionMutation = useMutation({
+    mutationFn: () => familyService.requestImpersonationPermission(familyId, member.userId),
+    onSuccess: () => {
+      setPermissionRequested(true)
+      toast({ title: t('family.impersonation.requestPermissionSent', { name: displayName }) })
+    },
+    onError: () => toast({ title: t('family.impersonation.requestPermissionError'), variant: 'destructive' }),
+  })
+
   const isSelf = member.userId === currentUserId
-  const canImpersonate = isCurrentUserPlanner && !isSelf
+  const permissionGranted = member.impersonationPermissionGranted ?? false
+
+  // Impersonation permission rules:
+  // - Managed profiles: planner can always impersonate
+  // - Real accounts: planner can only impersonate if permission is granted
+  const canImpersonateManaged = isCurrentUserPlanner && !isSelf && isManaged
+  const canImpersonateReal = isCurrentUserPlanner && !isSelf && !isManaged && permissionGranted
+  const canImpersonate = canImpersonateManaged || canImpersonateReal
+
+  // Show "Request access" for real accounts where permission is not yet granted (and not already requested)
+  const canRequestPermission = isCurrentUserPlanner && !isSelf && !isManaged && !permissionGranted && !permissionRequested
+
   const canRemove = isCurrentUserPlanner && isManaged
   const canEdit = isCurrentUserPlanner && isManaged
   const canChangeRole = isCurrentUserPlanner
@@ -106,7 +128,7 @@ export function FamilyMemberRow({
             <span className="ml-1.5 text-xs text-[#6b6b6b]">({t('family.memberRow.you')})</span>
           )}
         </p>
-        <div className="flex items-center gap-1.5 mt-0.5">
+        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
           {/* Role badge */}
           <span
             className={
@@ -121,6 +143,12 @@ export function FamilyMemberRow({
           {isManaged && (
             <span className="text-[10px] font-medium bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">
               {t('family.memberRow.managedBadge')}
+            </span>
+          )}
+          {/* Permission pending badge — shown after request was sent */}
+          {permissionRequested && (
+            <span className="text-[10px] font-medium bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded">
+              {t('family.impersonation.permissionPendingLabel')}
             </span>
           )}
         </div>
@@ -177,6 +205,7 @@ export function FamilyMemberRow({
           </div>
         )}
 
+        {/* Impersonate — only for managed profiles or real accounts with permission */}
         {canImpersonate && (
           <button
             type="button"
@@ -186,6 +215,19 @@ export function FamilyMemberRow({
             className="text-xs px-2 py-1 rounded-lg border border-[#e5e4e7] text-[#6b6b6b] hover:text-[#1A1A1A] hover:border-[#1A1A1A] transition-colors disabled:opacity-40"
           >
             {t('family.impersonation.switchLabel')}
+          </button>
+        )}
+
+        {/* Request access — for real accounts without permission */}
+        {canRequestPermission && (
+          <button
+            type="button"
+            onClick={() => requestPermissionMutation.mutate()}
+            disabled={requestPermissionMutation.isPending}
+            aria-label={t('family.impersonation.requestPermissionAriaLabel', { name: displayName })}
+            className="text-xs px-2 py-1 rounded-lg border border-[#e5e4e7] text-[#6b6b6b] hover:text-[#1A1A1A] hover:border-[#1A1A1A] transition-colors disabled:opacity-40"
+          >
+            {t('family.impersonation.requestPermissionCta')}
           </button>
         )}
 
