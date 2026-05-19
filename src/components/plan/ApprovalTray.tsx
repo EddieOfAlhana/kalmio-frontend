@@ -165,7 +165,7 @@ export function ApprovalTray({ planId, suggestions, isLoading = false, onEditSlo
                 <button
                   type="button"
                   aria-label={t('approval.edit')}
-                  onClick={() => {}}
+                  onClick={() => onEditSlot(s.id)}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#f3f4f6] text-[#6b7280] hover:bg-[#e5e7eb] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4f46e5]"
                 >
                   <Pencil className="w-3.5 h-3.5" />

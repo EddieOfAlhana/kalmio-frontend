@@ -25,6 +25,7 @@ import { multiMemberPlanService } from '@/services/multiMemberPlanService'
 import { familyService } from '@/services/family'
 import { usersService } from '@/services/users'
 import { useAuthStore } from '@/store/auth'
+import { generatePlanName } from './planUtils'
 import type { MealType, CreateMultiMemberPlanRequest } from '@/types'
 
 const FAMILY_ID_KEY = 'kalmio_family_id'
@@ -35,14 +36,6 @@ const MEAL_TYPES: MealType[] = ['BREAKFAST', 'LUNCH', 'DINNER', 'SNACK']
 const DURATION_PRESETS = [7, 14]
 const TODAY = new Date().toISOString().slice(0, 10)
 
-function generatePlanName(memberNames: string[], startDate: string, t: (key: string, opts?: Record<string, unknown>) => string): string {
-  if (!startDate) return ''
-  const date = new Date(startDate)
-  const monthDay = new Intl.DateTimeFormat('hu-HU', { month: 'long', day: 'numeric' }).format(date)
-  if (memberNames.length === 0) return t('plan.wizard.autoName', { date: monthDay })
-  if (memberNames.length === 1) return t('plan.wizard.autoName', { date: monthDay })
-  return t('plan.wizard.autoNameFamily', { date: monthDay })
-}
 
 export function PlanCreate() {
   const { t } = useTranslation()

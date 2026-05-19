@@ -1144,6 +1144,9 @@
     },
     "detail": {
       "settings": "Terv beállításai"
+    },
+    "member": {
+      "allergenWarningAria": "Allergén figyelmeztetés"
     }
   },
   "approval": {

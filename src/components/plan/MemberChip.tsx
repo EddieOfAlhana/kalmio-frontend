@@ -7,6 +7,7 @@
  *  - hasAllergenWarning: shows a warning indicator (BE4 safety check, stubbed for now)
  *  - onClick: optional tap handler (e.g. reveal portion size)
  */
+import { useTranslation } from 'react-i18next'
 
 interface MemberChipProps {
   name: string
@@ -24,6 +25,7 @@ function initials(name: string): string {
 }
 
 export function MemberChip({ name, colorClass, hasAllergenWarning = false, onClick, size = 'sm' }: MemberChipProps) {
+  const { t } = useTranslation()
   const dim = size === 'sm' ? 'w-7 h-7 text-[11px]' : 'w-8 h-8 text-xs'
 
   return (
@@ -40,7 +42,7 @@ export function MemberChip({ name, colorClass, hasAllergenWarning = false, onCli
       {initials(name)}
       {hasAllergenWarning && (
         <span
-          aria-label="Allergén figyelmeztetés"
+          aria-label={t('plan.member.allergenWarningAria')}
           className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-amber-400 border-2 border-white"
         />
       )}

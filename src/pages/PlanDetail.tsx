@@ -163,6 +163,14 @@ export function PlanDetail() {
             planId={plan.id}
             suggestions={suggestions}
             isLoading={suggestionsLoading}
+            onEditSlot={(mealId) => {
+              const el = document.getElementById(`meal-slot-${mealId}`)
+              el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              el?.classList.add('ring-2', 'ring-[#4f46e5]', 'ring-offset-2')
+              setTimeout(() => {
+                el?.classList.remove('ring-2', 'ring-[#4f46e5]', 'ring-offset-2')
+              }, 2000)
+            }}
           />
         </div>
       )}

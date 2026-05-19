@@ -991,7 +991,12 @@ export interface PlannedMealSummary {
   mealType: MealType
   recipeId: string | null
   recipeName: string | null
-  memberIds: string[]
+  /**
+   * Per-slot memberIds are NOT returned by PlannedMealResponse.java on the backend
+   * (no memberIds field exists on that Java record). Member chips in PlannerMealRow
+   * are rendered from the plan-level allMemberIds prop instead (all-plan-members indicator).
+   * DEFERRED: KALMIO-218 — backend-dev to add `List<UUID> memberIds` to PlannedMealResponse.
+   */
   macros: Macros | null
   estimatedCostPerServing: number | null
   servingMultiplier: number

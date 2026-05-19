@@ -16,17 +16,9 @@ import { Spinner } from '@/components/ui/spinner'
 import { PlanCard } from '@/components/plan/PlanCard'
 import { multiMemberPlanService } from '@/services/multiMemberPlanService'
 import { usersService } from '@/services/users'
-import type { MultiMemberPlan } from '@/types'
+import { filterPlans, type FilterStatus } from './planUtils'
 
-type FilterStatus = 'all' | 'active' | 'upcoming' | 'past'
 
-function filterPlans(plans: MultiMemberPlan[], status: FilterStatus): MultiMemberPlan[] {
-  const today = new Date().toISOString().slice(0, 10)
-  if (status === 'active') return plans.filter(p => p.startDate <= today && p.endDate >= today)
-  if (status === 'upcoming') return plans.filter(p => p.startDate > today)
-  if (status === 'past') return plans.filter(p => p.endDate < today)
-  return plans
-}
 
 export function Plans() {
   const { t } = useTranslation()

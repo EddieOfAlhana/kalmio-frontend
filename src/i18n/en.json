@@ -1144,6 +1144,9 @@
     },
     "detail": {
       "settings": "Plan settings"
+    },
+    "member": {
+      "allergenWarningAria": "Allergen warning"
     }
   },
   "approval": {
