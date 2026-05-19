@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Copy, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { toast } from '@/components/ui/toast'
 import { familyService } from '@/services/family'
 import type { FamilyMemberDto } from '@/types'
@@ -39,6 +40,7 @@ export function InviteFlow({
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null)
   const [claimCode, setClaimCode] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const autoFiredRef = useRef(false)
 
   // Used on step "cap-exceeded" — remove profile before creating a fresh invite
   const removeMutation = useMutation({
@@ -60,6 +62,17 @@ export function InviteFlow({
     },
     onError: () => toast({ title: t('common.errorGeneric'), variant: 'destructive' }),
   })
+
+  // No managed profiles to bind to — skip the binding question and generate a fresh-slot
+  // code immediately (unless we're at the family cap, in which case the cap-exceeded step
+  // already lets the planner free a slot first).
+  useEffect(() => {
+    if (autoFiredRef.current) return
+    if (managedProfileIds.length === 0 && !atCap && step === 'cap-binding') {
+      autoFiredRef.current = true
+      inviteMutation.mutate({ boundManagedProfileId: null, freshSlot: true })
+    }
+  }, [managedProfileIds.length, atCap, step, inviteMutation])
 
   function handleBindChoice(profileId: string | null) {
     setSelectedProfileId(profileId)
@@ -86,6 +99,16 @@ export function InviteFlow({
   // ── Step: cap-binding ──────────────────────────────────────────────────────
   if (step === 'cap-binding') {
     const managedMembers = members.filter((m) => managedProfileIds.includes(m.userId))
+
+    // No managed profiles to bind to → useEffect above has already kicked off a fresh-slot
+    // invite. Render a spinner instead of the binding prompt so the user never sees it.
+    if (managedMembers.length === 0 && !atCap) {
+      return (
+        <div className="py-8 flex justify-center" aria-busy="true">
+          <Spinner />
+        </div>
+      )
+    }
 
     return (
       <div className="space-y-4">

@@ -887,6 +887,10 @@ export interface FamilyMemberDto {
   userId: string
   role: FamilyRole
   joinedAt: string  // ISO-8601
+  /** Human-readable label resolved on the backend (first/last name → username → email local-part → short UUID). */
+  displayName: string
+  /** True for managed profiles (a users row with managed_by_user_id set). */
+  isManaged: boolean
   /** True when the family planner has granted (or been granted) impersonation permission for this real account. [PENDING_BE] */
   impersonationPermissionGranted?: boolean
 }

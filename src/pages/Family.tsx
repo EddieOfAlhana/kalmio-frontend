@@ -94,23 +94,16 @@ export function Family() {
   const memberCount = members.length
   const atCap = memberCount >= FAMILY_CAP
 
-  // For now managed profiles are identified heuristically by comparing against current user.
-  // The backend returns the same userId it stored — managed profiles have no Supabase session.
-  // We use a simple heuristic: any member that is not the current user and not in any known
-  // real-account set. Since we only know currentUserId reliably, we mark everyone else as
-  // potentially managed. A follow-up will extend FamilyMemberDto with an `isManaged` flag.
-  const managedProfileIds = members
-    .filter((m) => m.userId !== currentUserId)
-    .map((m) => m.userId)
+  const managedProfileIds = members.filter((m) => m.isManaged).map((m) => m.userId)
 
-  // Display names: use "me" name for current user, otherwise a short UUID
-  const displayNames: Record<string, string> = {
-    [currentUserId]: myDisplayName,
-  }
+  // Display names: prefer backend-resolved name, but show the current user's own real name
+  // (freshly loaded from /me). Fall back to a short UUID slice when the backend hasn't
+  // rolled out the enriched DTO yet.
+  const displayNames: Record<string, string> = {}
   for (const m of members) {
-    if (!displayNames[m.userId]) {
-      displayNames[m.userId] = m.userId.slice(0, 8)
-    }
+    displayNames[m.userId] = m.userId === currentUserId
+      ? myDisplayName
+      : (m.displayName ?? m.userId.slice(0, 8))
   }
 
   const plannerCount = members.filter((m) => m.role === 'PLANNER').length

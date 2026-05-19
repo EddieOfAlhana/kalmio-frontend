@@ -1201,6 +1201,9 @@
     "advancedToggle": "Speciális beállítások",
     "advancedToggleOpen": "Speciális beállítások elrejtése",
     "household": "Kikre tervezzük?",
+    "householdAlwaysIncluded": "Te mindig részt veszel a tervben.",
+    "multiMemberHint": "Több családtaggal tervezel — átvezetünk a többszemélyes varázslóhoz, ahol mindenki étrendjét összehangoljuk.",
+    "continueToWizard": "Tovább a többszemélyes varázslóhoz",
     "inviteMember": "Meghívás",
     "inviteComingSoon": "Meghívó funkció hamarosan elérhető.",
     "constraints": "Tervező beállítások",
@@ -1664,9 +1667,6 @@
       "permissionPendingLabel": "Jóváhagyásra vár"
     },
     "prefs": {
-      "allergens": "Allergének",
-      "allergensPlaceholder": "pl. mogyoró, tej, tojás",
-      "allergensHint": "Vesszővel elválasztva add meg az allergéneket.",
       "dietaryFlags": "Étrendi megszorítások",
       "macroTargets": "Makrócélok",
       "kcalTarget": "Kalóriacél (kcal)",

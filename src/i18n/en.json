@@ -1201,6 +1201,9 @@
     "advancedToggle": "Advanced settings",
     "advancedToggleOpen": "Hide advanced settings",
     "household": "Who is this plan for?",
+    "householdAlwaysIncluded": "You are always part of the plan.",
+    "multiMemberHint": "Planning with multiple family members — we'll take you to the multi-member wizard so every diet target is honored.",
+    "continueToWizard": "Continue in the multi-member wizard",
     "inviteMember": "Invite",
     "inviteComingSoon": "Invite feature coming soon.",
     "constraints": "Planner settings",
@@ -1664,9 +1667,6 @@
       "permissionPendingLabel": "Awaiting approval"
     },
     "prefs": {
-      "allergens": "Allergens",
-      "allergensPlaceholder": "e.g. peanuts, milk, eggs",
-      "allergensHint": "Separate allergens with a comma.",
       "dietaryFlags": "Dietary restrictions",
       "macroTargets": "Macro targets",
       "kcalTarget": "Calorie target (kcal)",

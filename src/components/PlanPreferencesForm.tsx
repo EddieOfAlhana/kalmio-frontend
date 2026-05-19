@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { UserPlus, ChevronDown, ChevronUp } from 'lucide-react'
 import axios from 'axios'
 import { capture } from '@/lib/analytics'
@@ -10,12 +11,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { UserAvatar } from '@/components/ui/UserAvatar'
-import { toast } from '@/components/ui/toast'
 import { planService } from '@/services/plans'
 import { usersService } from '@/services/users'
+import { familyService } from '@/services/family'
+import { useAuthStore } from '@/store/auth'
 import { cn } from '@/lib/utils'
 import { ForbiddenIngredientsPicker } from '@/components/ForbiddenIngredientsPicker'
 import type { MealType, ConstraintWeights } from '@/types'
+
+const FAMILY_ID_KEY = 'kalmio_family_id'
 
 // ── TDEE suggestion banner ────────────────────────────────────────────────────
 
@@ -103,6 +107,8 @@ function distributeWeights(
 export function PlanPreferencesForm({ onSuccess, isRegeneration = false }: PlanPreferencesFormProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const currentUserId = useAuthStore((s) => s.session?.user.id ?? '')
 
   // ── User settings (for personal meal preferences) ─────────────────────────
   const { data: user } = useQuery({
@@ -110,6 +116,33 @@ export function PlanPreferencesForm({ onSuccess, isRegeneration = false }: PlanP
     queryFn: usersService.getMe,
     staleTime: 5 * 60 * 1000,
   })
+
+  // ── Family (for the household chip selector) ──────────────────────────────
+  const familyId = typeof window !== 'undefined' ? localStorage.getItem(FAMILY_ID_KEY) : null
+  const { data: family } = useQuery({
+    queryKey: ['family', familyId],
+    queryFn: () => familyService.getFamily(familyId!),
+    enabled: !!familyId,
+    staleTime: 60_000,
+  })
+
+  // Start with every family member included; toggling a chip excludes them.
+  const [excludedMemberIds, setExcludedMemberIds] = useState<Set<string>>(new Set())
+  function toggleMember(userId: string) {
+    if (userId === currentUserId) return // current user is always included
+    setExcludedMemberIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(userId)) next.delete(userId)
+      else next.add(userId)
+      return next
+    })
+  }
+
+  const familyMembers = family?.members ?? []
+  const includedMemberIds = familyMembers
+    .map((m) => m.userId)
+    .filter((id) => !excludedMemberIds.has(id))
+  const hasMultipleIncluded = includedMemberIds.length > 1
 
   // ── Plan-level state ──────────────────────────────────────────────────────
   const [budgetMax, setBudgetMax] = useState('')
@@ -195,6 +228,15 @@ export function PlanPreferencesForm({ onSuccess, isRegeneration = false }: PlanP
   // ── Submit ────────────────────────────────────────────────────────────────
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+
+    // The single-user generator only plans for the caller. When the user has kept other
+    // family members in the household, hand off to the multi-member wizard so each
+    // person's selection actually matters.
+    if (hasMultipleIncluded) {
+      navigate('/app/plans/new', { state: { initialMemberIds: includedMemberIds } })
+      return
+    }
+
     const prefs = user?.mealPlanPreferences
     const kcal = prefs?.kcalTarget ?? 2000
     const selectedMeals = (prefs?.selectedMealTypes ?? ['BREAKFAST', 'LUNCH', 'DINNER']) as MealType[]
@@ -253,36 +295,73 @@ export function PlanPreferencesForm({ onSuccess, isRegeneration = false }: PlanP
       <section>
         <p className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('preferences.household')}</p>
         <div className="flex flex-wrap gap-2">
-          {/* Current user chip — always selected */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-[#4F7942] bg-white">
-            <div className="relative">
-              <UserAvatar
-                firstName={user?.firstName}
-                lastName={user?.lastName}
-                email={user?.email}
-                size="sm"
-              />
-              <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#4F7942]">
-                <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 12 10" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <polyline points="1,5 4,9 11,1" />
-                </svg>
-              </span>
-            </div>
-            <span className="text-sm font-medium text-[#1A1A1A] max-w-[120px] truncate">
-              {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email || '—'}
-            </span>
-          </div>
+          {(familyMembers.length > 0
+            ? familyMembers
+            : [{
+                userId: currentUserId,
+                role: 'PLANNER' as const,
+                joinedAt: '',
+                displayName: [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email || '—',
+                isManaged: false,
+              }]
+          ).map((m) => {
+            const isSelf = m.userId === currentUserId
+            const isIncluded = !excludedMemberIds.has(m.userId)
+            return (
+              <button
+                key={m.userId}
+                type="button"
+                onClick={() => toggleMember(m.userId)}
+                disabled={isSelf}
+                aria-pressed={isIncluded}
+                className={cn(
+                  'flex items-center gap-2 px-3 py-2 rounded-full border transition-colors',
+                  isIncluded
+                    ? 'border-[#4F7942] bg-white'
+                    : 'border-gray-200 bg-gray-50 opacity-60',
+                  isSelf ? 'cursor-default' : 'cursor-pointer hover:border-[#4F7942]/80',
+                )}
+                title={isSelf ? t('preferences.householdAlwaysIncluded') : undefined}
+              >
+                <div className="relative">
+                  <UserAvatar
+                    firstName={isSelf ? user?.firstName : (m.displayName ?? m.userId.slice(0, 8))}
+                    lastName={isSelf ? user?.lastName : undefined}
+                    email={isSelf ? user?.email : undefined}
+                    size="sm"
+                  />
+                  {isIncluded && (
+                    <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#4F7942]">
+                      <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 12 10" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <polyline points="1,5 4,9 11,1" />
+                      </svg>
+                    </span>
+                  )}
+                </div>
+                <span className="text-sm font-medium text-[#1A1A1A] max-w-[120px] truncate">
+                  {isSelf
+                    ? ([user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.email || '—')
+                    : (m.displayName ?? m.userId.slice(0, 8))}
+                </span>
+              </button>
+            )
+          })}
 
-          {/* Invite placeholder */}
+          {/* Invite — links to the family page where invites are generated */}
           <button
             type="button"
-            onClick={() => toast({ title: t('preferences.inviteComingSoon') })}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-dashed border-gray-300 text-sm text-gray-400 hover:border-gray-500 hover:text-gray-600 transition-colors"
+            onClick={() => navigate('/app/family')}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-full border border-dashed border-gray-300 text-sm text-gray-500 hover:border-[#4F7942] hover:text-[#4F7942] transition-colors"
           >
             <UserPlus className="h-4 w-4" />
             {t('preferences.inviteMember')}
           </button>
         </div>
+        {hasMultipleIncluded && (
+          <p className="mt-3 text-xs text-[#4F7942]">
+            {t('preferences.multiMemberHint')}
+          </p>
+        )}
       </section>
 
       {/* Section 2 — Advanced settings disclosure */}
@@ -494,6 +573,8 @@ export function PlanPreferencesForm({ onSuccess, isRegeneration = false }: PlanP
         >
           {mutation.isPending ? (
             <><Spinner className="h-4 w-4" /> {t('preferences.generating')}</>
+          ) : hasMultipleIncluded ? (
+            t('preferences.continueToWizard')
           ) : (
             t('preferences.generate')
           )}

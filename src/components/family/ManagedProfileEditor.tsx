@@ -8,7 +8,6 @@ import { blankPreferences } from '@/services/family'
 
 export interface ManagedProfileFormValues {
   displayName: string
-  allergens: string
   vegetarian: boolean
   vegan: boolean
   pescatarian: boolean
@@ -43,7 +42,6 @@ function prefsToForm(
 ): ManagedProfileFormValues {
   return {
     displayName,
-    allergens: (prefs.allergens ?? []).join(', '),
     vegetarian: prefs.vegetarian ?? false,
     vegan: prefs.vegan ?? false,
     pescatarian: prefs.pescatarian ?? false,
@@ -79,12 +77,9 @@ function formToPrefs(values: ManagedProfileFormValues): UserPreferencesDto {
   const base = blankPreferences()
   return {
     ...base,
-    allergens: values.allergens
-      ? values.allergens
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [],
+    // Allergens are expressed through the typed dietary-free flags below (glutenFree,
+    // dairyFree, eggFree, …). The free-text allergens array stays empty here.
+    allergens: [],
     vegetarian: values.vegetarian,
     vegan: values.vegan,
     pescatarian: values.pescatarian,
@@ -191,16 +186,6 @@ export function ManagedProfileEditor({
           )}
         </div>
       )}
-
-      <div className="space-y-1.5">
-        <Label htmlFor="mp-allergens">{t('family.prefs.allergens')}</Label>
-        <Input
-          id="mp-allergens"
-          {...register('allergens')}
-          placeholder={t('family.prefs.allergensPlaceholder')}
-        />
-        <p className="text-xs text-[#6b6b6b]">{t('family.prefs.allergensHint')}</p>
-      </div>
 
       <div className="space-y-2">
         <p className="text-sm font-medium text-[#1A1A1A]">{t('family.prefs.dietaryFlags')}</p>

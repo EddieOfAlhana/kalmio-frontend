@@ -12,7 +12,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Pencil, Check } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
@@ -40,12 +40,18 @@ const TODAY = new Date().toISOString().slice(0, 10)
 export function PlanCreate() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
   const qc = useQueryClient()
   const currentUserId = useAuthStore((s) => s.session?.user.id ?? '')
   const familyId = localStorage.getItem(FAMILY_ID_KEY)
 
+  // Allow callers to land on the wizard with a pre-selected member set (e.g. the household
+  // chip selector in PlanPreferencesForm hands off here when multiple members are toggled in).
+  const initialMemberIds =
+    (location.state as { initialMemberIds?: string[] } | null)?.initialMemberIds ?? [currentUserId]
+
   const [step, setStep] = useState<WizardStep>(1)
-  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([currentUserId])
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(initialMemberIds)
   const [startDate, setStartDate] = useState(TODAY)
   const [durationDays, setDurationDays] = useState(7)
   const [mealSlots, setMealSlots] = useState<MealType[]>(['LUNCH', 'DINNER'])
@@ -71,13 +77,15 @@ export function PlanCreate() {
     ? ([me.firstName, me.lastName].filter(Boolean).join(' ') || me.email)
     : t('family.memberRow.you')
 
-  // Build selectable member list from family members
+  // Build selectable member list from family members.
+  // displayName may be missing if the backend hasn't been redeployed yet — fall back to a
+  // short UUID so the page renders instead of crashing inside MemberChipSelector.
   const selectableMembers: SelectableMember[] = family
     ? family.members.map((m) => ({
         id: m.userId,
         displayName: m.userId === currentUserId
           ? myDisplayName
-          : m.userId.slice(0, 8),
+          : (m.displayName ?? m.userId.slice(0, 8)),
         isCurrentUser: m.userId === currentUserId,
       }))
     : [{ id: currentUserId, displayName: myDisplayName, isCurrentUser: true }]
