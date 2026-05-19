@@ -881,7 +881,8 @@
     "status": {
       "private": "Private",
       "pendingReview": "Pending review",
-      "public": "Public"
+      "public": "Public",
+      "mine": "Yours"
     },
     "recipes": {
       "title": "My Recipes",
@@ -1689,7 +1690,15 @@
       "editPrefs": "Edit {{name}}'s preferences",
       "removeProfile": "Remove {{name}}",
       "confirmRemove": "Remove this profile: {{name}}?",
-      "profileRemoved": "Profile removed."
+      "profileRemoved": "Profile removed.",
+      "removeMember": "Remove {{name}} from the family",
+      "confirmKick": "Remove {{name}} from the family? Their personal data is kept — only the family link is dissolved.",
+      "memberRemoved": "{{name}} has been removed from the family.",
+      "leaveCta": "Leave",
+      "leaveAriaLabel": "Leave the family",
+      "confirmLeave": "Leave the family? Your personal data stays with you — only the family link is dissolved.",
+      "leaveSuccess": "You have left the family.",
+      "cannotLeaveLastPlanner": "You cannot leave — you are the only Planner. Hand off the role first."
     },
     "roles": {
       "planner": "Planner",

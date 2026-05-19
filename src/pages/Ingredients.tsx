@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Pencil, Trash2, Search, CheckCircle, Archive } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, CheckCircle, Archive, SendHorizonal, Undo2 } from 'lucide-react'
 import { useForm, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -14,7 +14,9 @@ import { Select } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Spinner } from '@/components/ui/spinner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { toast } from '@/components/ui/toast'
 import { ingredientsService } from '@/services/ingredients'
+import { usersService } from '@/services/users'
 import { useAuthStore } from '@/store/auth'
 import type { Ingredient, IngredientCategory, IngredientTranslations } from '@/types'
 
@@ -117,6 +119,7 @@ export function Ingredients() {
   const qc = useQueryClient()
   const { t, i18n } = useTranslation()
   const isAdmin = useAuthStore((s) => s.isAdmin)
+  const session = useAuthStore((s) => s.session)
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [search, setSearch] = useState('')
   const [editTarget, setEditTarget] = useState<Ingredient | null | 'new'>(null)
@@ -126,10 +129,18 @@ export function Ingredients() {
     queryKey: ['ingredients'],
     queryFn: ingredientsService.list,
   })
+  const { data: user } = useQuery({ queryKey: ['me'], queryFn: usersService.getMe, enabled: !!session })
 
   const createMutation = useMutation({
     mutationFn: ingredientsService.create,
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['ingredients'] }); setEditTarget(null) },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['ingredients'] })
+      setEditTarget(null)
+      toast({ title: t('myContent.ingredients.submitSuccess'), variant: 'success' })
+    },
+    onError: () => {
+      toast({ title: t('myContent.ingredients.submitError'), variant: 'destructive' })
+    },
   })
   const updateMutation = useMutation({
     mutationFn: ({ id, body }: { id: string; body: ReturnType<typeof toRequest> }) =>
@@ -149,6 +160,26 @@ export function Ingredients() {
       ingredientsService.updateTranslation(id, body),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['ingredients'] }); setTranslationTarget(null) },
   })
+  const submitMutation = useMutation({
+    mutationFn: (id: string) => ingredientsService.submitForReview(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['ingredients'] })
+      toast({ title: t('myContent.ingredients.submitSuccess'), variant: 'success' })
+    },
+    onError: () => {
+      toast({ title: t('myContent.ingredients.submitError'), variant: 'destructive' })
+    },
+  })
+  const withdrawMutation = useMutation({
+    mutationFn: (id: string) => ingredientsService.withdrawFromReview(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['ingredients'] })
+      toast({ title: t('myContent.ingredients.withdrawSuccess'), variant: 'success' })
+    },
+    onError: () => {
+      toast({ title: t('myContent.ingredients.withdrawError'), variant: 'destructive' })
+    },
+  })
 
   const filtered = ingredients.filter(i => {
     if (!search) return true
@@ -163,7 +194,7 @@ export function Ingredients() {
       <Header
         title={t('ingredients.title')}
         subtitle={t('ingredients.subtitle', { count: ingredients.length })}
-        actions={isAdmin ? (
+        actions={session ? (
           <Button onClick={() => setEditTarget('new')}>
             <Plus className="h-4 w-4" /> {t('ingredients.addIngredient')}
           </Button>
@@ -189,6 +220,9 @@ export function Ingredients() {
           {filtered.map(ing => {
             const displayName = ing.translations?.[lang]?.name ?? ing.name
             const displayAliases = ing.translations?.[lang]?.aliases ?? ing.aliases
+            const isOwner = !!user?.id && ing.createdByUserId === user.id
+            const canModify = isAdmin
+            const ownerActionsPending = submitMutation.isPending || withdrawMutation.isPending
             return (
               <Card key={ing.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="pt-4">
@@ -196,6 +230,15 @@ export function Ingredients() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <p className="font-semibold text-sm text-[#1A1A1A]">{displayName}</p>
+                        {isOwner && ing.visibility === 'PUBLIC' && (
+                          <Badge variant="green">{t('myContent.status.mine')}</Badge>
+                        )}
+                        {ing.visibility === 'PENDING_REVIEW' && (
+                          <Badge variant="amber">{t('myContent.status.pendingReview')}</Badge>
+                        )}
+                        {ing.visibility === 'PRIVATE' && (
+                          <Badge variant="gray">{t('myContent.status.private')}</Badge>
+                        )}
                         {ing.machineTranslated && isAdmin && (
                           <MtBadgeMenu
                             label={t('ingredients.machineTranslated.badge')}
@@ -240,7 +283,7 @@ export function Ingredients() {
                     ))}
                   </div>
 
-                  {isAdmin && (
+                  {canModify && (
                     <div className="flex gap-2">
                       <Button variant="secondary" size="sm" className="flex-1" onClick={() => setEditTarget(ing)}>
                         <Pencil className="h-3.5 w-3.5" /> {t('ingredients.edit')}
@@ -250,6 +293,34 @@ export function Ingredients() {
                       }}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
+                    </div>
+                  )}
+
+                  {/* Owner review actions for private / pending ingredients */}
+                  {isOwner && ing.visibility !== 'PUBLIC' && (
+                    <div className="mt-2 flex justify-end">
+                      {ing.visibility === 'PRIVATE' && (
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          disabled={ownerActionsPending}
+                          onClick={() => submitMutation.mutate(ing.id)}
+                        >
+                          <SendHorizonal className="h-3.5 w-3.5" />
+                          {t('myContent.ingredients.submit')}
+                        </Button>
+                      )}
+                      {ing.visibility === 'PENDING_REVIEW' && (
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          disabled={ownerActionsPending}
+                          onClick={() => withdrawMutation.mutate(ing.id)}
+                        >
+                          <Undo2 className="h-3.5 w-3.5" />
+                          {t('myContent.ingredients.withdraw')}
+                        </Button>
+                      )}
                     </div>
                   )}
                 </CardContent>

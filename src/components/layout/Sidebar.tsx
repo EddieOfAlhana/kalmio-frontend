@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Link } from 'react-router-dom'
-import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store, LogOut, Settings, ShieldCheck, MessageSquarePlus, Vault, ChevronRight, Refrigerator, BookOpenCheck, ClipboardList, Users } from 'lucide-react'
+import { LayoutDashboard, UtensilsCrossed, ChefHat, ShoppingCart, Leaf, Store, LogOut, Settings, ShieldCheck, MessageSquarePlus, Vault, ChevronRight, Refrigerator, ClipboardList, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
@@ -35,9 +35,7 @@ export function Sidebar() {
     { to: '/app', icon: LayoutDashboard, label: t('nav.dashboard') },
     { to: '/app/meal-plans', icon: UtensilsCrossed, label: t('nav.mealPlans') },
     { to: '/app/recipes', icon: ChefHat, label: t('nav.recipes') },
-    { to: '/app/my-recipes', icon: BookOpenCheck, label: t('nav.myRecipes') },
     { to: '/app/ingredients', icon: Leaf, label: t('nav.ingredients') },
-    { to: '/app/my-ingredients', icon: ClipboardList, label: t('nav.myIngredients') },
     { to: '/app/shopping-list', icon: ShoppingCart, label: t('nav.shoppingList') },
     { to: '/app/fridge', icon: Refrigerator, label: t('nav.fridge') },
     { to: '/app/retail-products', icon: Store, label: t('nav.retail') },

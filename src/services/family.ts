@@ -46,6 +46,16 @@ export const familyService = {
       .delete(`/api/families/${familyId}/managed-profiles/${profileId}`)
       .then(() => undefined),
 
+  /**
+   * DELETE /api/families/{id}/members/{userId} — detach a real (non-managed) member.
+   * Handles both planner-removes-other (caller != userId) and member-leaves (caller == userId).
+   * Refuses managed profiles (use removeManagedProfile) and the last remaining planner.
+   */
+  removeMember: (familyId: string, userId: string): Promise<void> =>
+    api
+      .delete(`/api/families/${familyId}/members/${userId}`)
+      .then(() => undefined),
+
   /** POST /api/families/{id}/invites — generate a claim code. */
   sendInvite: (
     familyId: string,

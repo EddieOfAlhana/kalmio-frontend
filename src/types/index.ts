@@ -71,6 +71,7 @@ export interface Ingredient {
   /** Shelf-stable pantry staple — excluded from leftover calculations. */
   pantryItem: boolean
   visibility: ContentVisibility
+  createdByUserId: string | null
   createdByUsername: string | null
 }
 

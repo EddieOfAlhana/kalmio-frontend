@@ -881,7 +881,8 @@
     "status": {
       "private": "Privát",
       "pendingReview": "Jóváhagyás alatt",
-      "public": "Nyilvános"
+      "public": "Nyilvános",
+      "mine": "Saját"
     },
     "recipes": {
       "title": "Saját receptjeim",
@@ -1689,7 +1690,15 @@
       "editPrefs": "{{name}} beállításainak szerkesztése",
       "removeProfile": "{{name}} törlése",
       "confirmRemove": "Biztosan törölni szeretnéd ezt a profilt: {{name}}?",
-      "profileRemoved": "A profil törölve."
+      "profileRemoved": "A profil törölve.",
+      "removeMember": "{{name}} eltávolítása a családból",
+      "confirmKick": "Eltávolítod {{name}} nevű tagot a családból? Saját adataikat megtartjuk, csak a családhoz fűződő kapcsolatuk szűnik meg.",
+      "memberRemoved": "{{name}} eltávolítva a családból.",
+      "leaveCta": "Kilépés",
+      "leaveAriaLabel": "Kilépés a családból",
+      "confirmLeave": "Biztosan kilépsz a családból? Saját adataidat megtartod, csak a családhoz fűződő kapcsolatod szűnik meg.",
+      "leaveSuccess": "Kiléptél a családból.",
+      "cannotLeaveLastPlanner": "Nem léphetsz ki, mert te vagy az egyetlen tervező. Először adj át a szerepet."
     },
     "roles": {
       "planner": "Tervező",

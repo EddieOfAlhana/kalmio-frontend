@@ -21,8 +21,6 @@ import { Profile } from '@/pages/Profile'
 import { UserManagement } from '@/pages/admin/UserManagement'
 import { IpVault } from '@/pages/admin/IpVault'
 import { ContentReview } from '@/pages/admin/ContentReview'
-import { MyRecipes } from '@/pages/MyRecipes'
-import { MyIngredients } from '@/pages/MyIngredients'
 import { InvestorVault } from '@/pages/InvestorVault'
 import { BlogIndex } from '@/pages/BlogIndex'
 import { BlogPost } from '@/pages/BlogPost'
@@ -170,8 +168,6 @@ export default function App() {
                   <Route path="retail-products" element={<RetailProducts />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="profile" element={<Profile />} />
-                  <Route path="my-recipes" element={<MyRecipes />} />
-                  <Route path="my-ingredients" element={<MyIngredients />} />
                   <Route path="grove" element={<Grove />} />
                   <Route path="founding-member" element={<FoundingMember />} />
                   <Route path="family" element={<Family />} />

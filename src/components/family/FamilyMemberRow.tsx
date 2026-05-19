@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ChevronDown, Pencil, Trash2, UserCog } from 'lucide-react'
+import { ChevronDown, LogOut, Pencil, Trash2, UserCog, UserMinus } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { toast } from '@/components/ui/toast'
 import { ManagedProfileEditor } from './ManagedProfileEditor'
 import { familyService } from '@/services/family'
 import { useAuthStore } from '@/store/auth'
 import type { FamilyMemberDto, FamilyRole } from '@/types'
+
+const FAMILY_ID_KEY = 'kalmio_family_id'
 
 interface Props {
   familyId: string
@@ -46,6 +48,25 @@ export function FamilyMemberRow({
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['family', familyId] })
       toast({ title: t('family.memberRow.profileRemoved') })
+    },
+    onError: () => toast({ title: t('common.errorGeneric'), variant: 'destructive' }),
+  })
+
+  const kickMutation = useMutation({
+    mutationFn: () => familyService.removeMember(familyId, member.userId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['family', familyId] })
+      toast({ title: t('family.memberRow.memberRemoved', { name: displayName }) })
+    },
+    onError: () => toast({ title: t('common.errorGeneric'), variant: 'destructive' }),
+  })
+
+  const leaveMutation = useMutation({
+    mutationFn: () => familyService.removeMember(familyId, member.userId),
+    onSuccess: () => {
+      localStorage.removeItem(FAMILY_ID_KEY)
+      qc.invalidateQueries({ queryKey: ['family'] })
+      toast({ title: t('family.memberRow.leaveSuccess') })
     },
     onError: () => toast({ title: t('common.errorGeneric'), variant: 'destructive' }),
   })
@@ -93,6 +114,8 @@ export function FamilyMemberRow({
   const canRequestPermission = isCurrentUserPlanner && !isSelf && !isManaged && !permissionGranted && !permissionRequested
 
   const canRemove = isCurrentUserPlanner && isManaged
+  const canKick = isCurrentUserPlanner && !isSelf && !isManaged
+  const canLeave = isSelf && !isManaged
   const canEdit = isCurrentUserPlanner && isManaged
   const canChangeRole = isCurrentUserPlanner
   const isLastPlanner = member.role === 'PLANNER' && plannerCount === 1
@@ -109,6 +132,20 @@ export function FamilyMemberRow({
   function handleRemove() {
     if (!confirm(t('family.memberRow.confirmRemove', { name: displayName }))) return
     removeMutation.mutate()
+  }
+
+  function handleKick() {
+    if (!confirm(t('family.memberRow.confirmKick', { name: displayName }))) return
+    kickMutation.mutate()
+  }
+
+  function handleLeave() {
+    if (isLastPlanner) {
+      toast({ title: t('family.memberRow.cannotLeaveLastPlanner'), variant: 'destructive' })
+      return
+    }
+    if (!confirm(t('family.memberRow.confirmLeave'))) return
+    leaveMutation.mutate()
   }
 
   return (
@@ -240,6 +277,32 @@ export function FamilyMemberRow({
             className="p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-40"
           >
             <Trash2 className="h-4 w-4" />
+          </button>
+        )}
+
+        {canKick && (
+          <button
+            type="button"
+            onClick={handleKick}
+            disabled={kickMutation.isPending}
+            aria-label={t('family.memberRow.removeMember', { name: displayName })}
+            className="p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-40"
+          >
+            <UserMinus className="h-4 w-4" />
+          </button>
+        )}
+
+        {canLeave && (
+          <button
+            type="button"
+            onClick={handleLeave}
+            disabled={leaveMutation.isPending || isLastPlanner}
+            title={isLastPlanner ? t('family.memberRow.cannotLeaveLastPlanner') : undefined}
+            aria-label={t('family.memberRow.leaveAriaLabel')}
+            className="text-xs px-2 py-1 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            {t('family.memberRow.leaveCta')}
           </button>
         )}
       </div>
