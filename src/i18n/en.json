@@ -1586,5 +1586,89 @@
       "lowFodmap": "Low FODMAP",
       "paleo": "Paleo"
     }
+  },
+  "member": {
+    "view": {
+      "myMealsTitle": "Today's meals",
+      "memberMealsTitle": "Meals",
+      "dailyTotal": "Daily total",
+      "protein": "Protein",
+      "plannedMeals": "Planned meals",
+      "offPlanHistory": "Logged today",
+      "noPlanSelected": "No plan selected.",
+      "skipSlotComingSoon": "Skip this meal",
+      "mealRequestComingSoon": "Request a meal from the planner",
+      "recipientNotificationComingSoon": "Notifications when someone shares their portion with you"
+    },
+    "slot": {
+      "noRecipe": "No recipe assigned",
+      "protein": "protein",
+      "eaten": "Eaten",
+      "skipped": "Skipped"
+    },
+    "actions": {
+      "ateIt": "I ate it",
+      "somethingElse": "I had something else",
+      "markEaten": "Mark as eaten",
+      "moreOptions": "More options"
+    }
+  },
+  "offPlan": {
+    "sheet": {
+      "title": "What did you eat?",
+      "quickOptions": "Quick options",
+      "freeName": "Or type it in",
+      "freeNamePlaceholder": "e.g. Salad, pizza, sandwich…",
+      "log": "Log meal",
+      "logging": "Saving…",
+      "logFloating": "Log a meal"
+    },
+    "disposition": {
+      "question": "What happened to the planned portion?",
+      "returnedToFridge": "Returned to fridge",
+      "wasted": "Wasted",
+      "givenToSomebody": "Someone else ate it",
+      "givenToOther": "Someone not on the list",
+      "confirm": "Save",
+      "stubNotice": "Disposition tracking is coming soon — your selection is saved locally.",
+      "allergenBadge": "allergen",
+      "allergenWarning": "Allergen warning for {{name}}",
+      "allergenModalTitle": "Allergen warning — {{name}}",
+      "allergenModalBody": "This meal contains: {{allergens}}. {{name}} has an allergy to this. Are you sure they ate it?",
+      "allergenConfirm": "Yes, {{name}} ate it"
+    },
+    "bulkDisposition": {
+      "title": "Removing {{name}} — {{count}} planned meals",
+      "subtitle": "What should happen to the {{count}} planned portions?",
+      "applyToAll": "Apply to all",
+      "customizePerSlot": "Customise per meal",
+      "confirm": "Confirm"
+    }
+  },
+  "cart": {
+    "title": "Shopping cart",
+    "subtitle_one": "Based on {{count}} plan",
+    "subtitle_other": "Based on {{count}} plans",
+    "subtitle": "Based on {{planCount}} plans",
+    "generating": "Building your list…",
+    "itemCount": "{{count}} ingredients",
+    "markShoppedCta": "All done — close plans as shopped",
+    "markedShopped": "Plans successfully marked as shopped.",
+    "allCheckedNudge": "Looks like you've checked everything. Ready to close this out?",
+    "ingredientsTitle": "Ingredients",
+    "checkItem": "Check off {{name}}",
+    "showSourcePlans": "Source plans",
+    "sourcePlan": "Plan",
+    "leftoversRescueNotice": "Returned-to-fridge items will be highlighted here as \"use existing\" once disposition tracking is live.",
+    "empty": {
+      "title": "Nothing to shop for",
+      "desc": "All plans in this period have already been marked as shopped."
+    },
+    "window": {
+      "days3": "Next 3 days",
+      "days7": "Next 7 days",
+      "days14": "Next 14 days",
+      "days30": "Next 30 days"
+    }
   }
 }

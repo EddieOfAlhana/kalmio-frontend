@@ -46,6 +46,8 @@ import { FoundingMember } from '@/pages/FoundingMember'
 import { Family } from '@/pages/Family'
 import { OnboardingShell } from '@/pages/onboarding/OnboardingShell'
 import { ConversationalOnboarding } from '@/pages/onboarding/ConversationalOnboarding'
+import { MemberView } from '@/pages/MemberView'
+import { ShoppingCart } from '@/pages/ShoppingCart'
 
 initAnalytics()
 
@@ -159,6 +161,8 @@ export default function App() {
                 <Route path="grove" element={<Grove />} />
                 <Route path="founding-member" element={<FoundingMember />} />
                 <Route path="family" element={<Family />} />
+                <Route path="cart" element={<ShoppingCart />} />
+                <Route path="members/:memberId" element={<MemberView />} />
                 <Route path="_preview/planting" element={<PlantingPreview />} />
                 <Route path="_preview/diofa" element={<DiofaPreview />} />
                 <Route path="_preview/taste-swipe" element={<TasteSwipePreview />} />

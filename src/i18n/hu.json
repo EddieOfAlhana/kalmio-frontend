@@ -1586,5 +1586,89 @@
       "lowFodmap": "Alacsony FODMAP",
       "paleo": "Paleó"
     }
+  },
+  "member": {
+    "view": {
+      "myMealsTitle": "A mai étkezéseim",
+      "memberMealsTitle": "Étkezések",
+      "dailyTotal": "Mai összesített",
+      "protein": "Fehérje",
+      "plannedMeals": "Tervezett étkezések",
+      "offPlanHistory": "Ma naplózott étkezések",
+      "noPlanSelected": "Nincs kiválasztott terv.",
+      "skipSlotComingSoon": "Kihagyom ezt az étkezést",
+      "mealRequestComingSoon": "Étkezés kérése a tervezőtől",
+      "recipientNotificationComingSoon": "Értesítés, ha valaki megosztja veled az adagját"
+    },
+    "slot": {
+      "noRecipe": "Recept hiányzik",
+      "protein": "fehérje",
+      "eaten": "Megcsináltam",
+      "skipped": "Kihagyva"
+    },
+    "actions": {
+      "ateIt": "Megcsináltam",
+      "somethingElse": "Mást ettem",
+      "markEaten": "Megcsináltam jelölés",
+      "moreOptions": "Több lehetőség"
+    }
+  },
+  "offPlan": {
+    "sheet": {
+      "title": "Mit ettél?",
+      "quickOptions": "Gyors választás",
+      "freeName": "Vagy írj be mást",
+      "freeNamePlaceholder": "pl. Saláta, pizza, gyros…",
+      "log": "Naplózom",
+      "logging": "Mentés…",
+      "logFloating": "Étkezés naplózása"
+    },
+    "disposition": {
+      "question": "Mi történt a tervezett adaggal?",
+      "returnedToFridge": "Visszatettem a hűtőbe",
+      "wasted": "Sajnos elromlott / kidobtuk",
+      "givenToSomebody": "Valaki más ette meg",
+      "givenToOther": "Más személy (nincs a listán)",
+      "confirm": "Mentés",
+      "stubNotice": "Az adag-sors rögzítése hamarosan elérhető — a választásod el van mentve helyben.",
+      "allergenBadge": "allergén",
+      "allergenWarning": "{{name}} allergén figyelmeztetés",
+      "allergenModalTitle": "Allergén figyelmeztetés — {{name}}",
+      "allergenModalBody": "Ez az étel tartalmaz: {{allergens}}. {{name}} erre allergiás. Biztosan ő ette meg?",
+      "allergenConfirm": "Igen, {{name}} ette"
+    },
+    "bulkDisposition": {
+      "title": "{{name}} eltávolítása — {{count}} tervezett étkezés",
+      "subtitle": "Mi történjen a {{count}} tervezett adaggal?",
+      "applyToAll": "Alkalmazd az összesre",
+      "customizePerSlot": "Egyéni beállítás étkezésenként",
+      "confirm": "Megerősítés"
+    }
+  },
+  "cart": {
+    "title": "Bevásárlókosár",
+    "subtitle_one": "{{count}} terv alapján",
+    "subtitle_other": "{{count}} terv alapján",
+    "subtitle": "{{planCount}} terv alapján",
+    "generating": "Összerakom a listát…",
+    "itemCount": "{{count}} hozzávaló",
+    "markShoppedCta": "Mindent megvettem — tervek lezárása",
+    "markedShopped": "A tervek sikeresen lezárva.",
+    "allCheckedNudge": "Úgy tűnik, mindent kipipáltál. Kész a bevásárlás?",
+    "ingredientsTitle": "Hozzávalók",
+    "checkItem": "{{name}} pipa",
+    "showSourcePlans": "Forrástervek",
+    "sourcePlan": "Terv",
+    "leftoversRescueNotice": "A hűtőből visszakerült maradékok hamarosan megjelennek itt kiemelve — \"meglévő felhasználás\" jelöléssel.",
+    "empty": {
+      "title": "Nincs bevásárolni való",
+      "desc": "Az összes terv már le van zárva ebben az időszakban."
+    },
+    "window": {
+      "days3": "Következő 3 nap",
+      "days7": "Következő 7 nap",
+      "days14": "Következő 14 nap",
+      "days30": "Következő 30 nap"
+    }
   }
 }
