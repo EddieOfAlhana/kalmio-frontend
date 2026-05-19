@@ -1465,14 +1465,14 @@
   "family": {
     "title": "Család",
     "subtitleNoFamily": "Még nincs beállítva a csoportod",
-    "noFamilyExplainer": "Hozd létre a családodat, hogy közösen tervezhessétek az étrendet.",
+    "noFamilyExplainer": "Még nincs csoportod beállítva.",
     "capacityCounter": "{{used}} / {{cap}} hely foglalt",
     "membersSection": "Tagok",
     "capReached": "Elértétek az 5 fős limitet.",
     "creation": {
       "cta": "Hozd létre a családot",
       "creating": "Létrehozás…",
-      "success": "A család sikeresen létrejött."
+      "success": "A csoport létrejött."
     },
     "managedProfile": {
       "addCta": "Profil hozzáadása",
@@ -1513,14 +1513,14 @@
       "copyCode": "Kód másolása",
       "codeExpiry": "A kód 7 napig érvényes.",
       "claimSection": "Csatlakozás meghívóval",
-      "claimPrompt": "Ha kaptál egy meghívókódot, add meg itt, és csatlakozol a megfelelő családhoz.",
+      "claimPrompt": "Ha meghívókódot kaptál, add meg itt.",
       "enterCodeCta": "Meghívókód beváltása",
       "claimDialogTitle": "Meghívókód beváltása",
       "codePlaceholder": "Kód (pl. ABC123)",
       "submitCodeCta": "Folytatás",
       "checking": "Ellenőrzés…",
       "invalidCode": "Ez a kód nem érvényes vagy már lejárt.",
-      "acceptSuccess": "Sikeresen csatlakoztál a családhoz.",
+      "acceptSuccess": "Csatlakoztál a csoporthoz.",
       "sentInvitesSection": "Kiküldött meghívók",
       "sentInvitesEmpty": "Nincs aktív meghívó.",
       "sentInviteCode": "Kód: {{code}}",
@@ -1534,7 +1534,7 @@
     },
     "merge": {
       "dialogTitle": "Profil összekapcsolása",
-      "intro": "A meghívó egy felügyelt profilhoz van kötve. Az alábbi beállítások kerülnek az Kalmio-fiókodba.",
+      "intro": "A meghívó egy felügyelt profilhoz van kötve. Az alábbi beállítások kerülnek a Kalmio-fiókodba.",
       "allergenSection": "Allergének",
       "allergenHint": "Az allergének biztonsági okokból alapból be vannak jelölve. Az összes allergén fiókodba kerül.",
       "allergenSafetyBadge": "biztonsági",

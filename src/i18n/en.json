@@ -1465,14 +1465,14 @@
   "family": {
     "title": "Family",
     "subtitleNoFamily": "Your family group is not set up yet",
-    "noFamilyExplainer": "Create your family to plan meals together.",
+    "noFamilyExplainer": "No family group set up yet.",
     "capacityCounter": "{{used}} of {{cap}} slots used",
     "membersSection": "Members",
     "capReached": "You have reached the 5-member limit.",
     "creation": {
       "cta": "Start your family",
       "creating": "Creating…",
-      "success": "Your family has been created."
+      "success": "Family group created."
     },
     "managedProfile": {
       "addCta": "Add profile",
@@ -1513,14 +1513,14 @@
       "copyCode": "Copy code",
       "codeExpiry": "This code expires in 7 days.",
       "claimSection": "Join with an invite",
-      "claimPrompt": "If you received an invite code, enter it here to join the right family.",
+      "claimPrompt": "If you have an invite code, enter it here.",
       "enterCodeCta": "Redeem invite code",
       "claimDialogTitle": "Redeem invite code",
       "codePlaceholder": "Code (e.g. ABC123)",
       "submitCodeCta": "Continue",
       "checking": "Checking…",
       "invalidCode": "This code is not valid or has expired.",
-      "acceptSuccess": "You have joined the family.",
+      "acceptSuccess": "You have joined the group.",
       "sentInvitesSection": "Sent invites",
       "sentInvitesEmpty": "No active invites.",
       "sentInviteCode": "Code: {{code}}",
