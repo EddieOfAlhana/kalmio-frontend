@@ -49,6 +49,7 @@ import {
   readOnboardingStep,
   writeOnboardingStep,
   clearOnboardingStep,
+  writeOnboardingDone,
 } from '@/hooks/useOnboardingProgress'
 
 // ---------------------------------------------------------------------------
@@ -152,8 +153,12 @@ export function OnboardingShell() {
 
   const goNext = useCallback(() => {
     if (currentStep >= TOTAL_STEPS) {
-      // Final step completed — clear progress and navigate to app.
-      if (userId) clearOnboardingStep(userId)
+      // Final step completed — mark done, clear step progress, navigate to app.
+      // Writing the done flag prevents OnboardingGate from re-redirecting.
+      if (userId) {
+        writeOnboardingDone(userId)
+        clearOnboardingStep(userId)
+      }
       navigate('/app', { replace: true })
       return
     }
@@ -161,9 +166,13 @@ export function OnboardingShell() {
   }, [currentStep, goToStep, navigate, userId])
 
   const handleSkipConfirm = useCallback(() => {
-    // Skip: clear persisted progress and go to plan generation / dashboard.
+    // Skip: mark done, clear persisted progress and go to dashboard.
     // The user proceeds with whatever data has been collected so far.
-    if (userId) clearOnboardingStep(userId)
+    // Writing the done flag prevents OnboardingGate from re-redirecting.
+    if (userId) {
+      writeOnboardingDone(userId)
+      clearOnboardingStep(userId)
+    }
     navigate('/app', { replace: true })
   }, [navigate, userId])
 

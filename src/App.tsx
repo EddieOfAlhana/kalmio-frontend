@@ -46,6 +46,7 @@ import { FoundingMember } from '@/pages/FoundingMember'
 import { Family } from '@/pages/Family'
 import { OnboardingShell } from '@/pages/onboarding/OnboardingShell'
 import { ConversationalOnboarding } from '@/pages/onboarding/ConversationalOnboarding'
+import { OnboardingGate } from '@/components/OnboardingGate'
 
 initAnalytics()
 
@@ -139,33 +140,40 @@ export default function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route element={<ProtectedRoute />}>
-              {/* Full-screen onboarding flow — no AppShell sidebar/nav chrome */}
+              {/* Full-screen onboarding flow — no AppShell sidebar/nav chrome.
+                  These routes are intentionally OUTSIDE OnboardingGate so that
+                  new users can reach them before completing the flow. */}
               <Route path="/app/onboarding" element={<OnboardingShell />} />
               {/* Conversational onboarding alternative — E11.7, premium-only */}
               <Route path="/app/onboarding/conversational" element={<ConversationalOnboarding />} />
-              <Route path="/app" element={<AppShell />}>
-                <Route index element={<Dashboard />} />
-                <Route path="meal-plans" element={<MealPlan />} />
-                <Route path="recipes" element={<Recipes />} />
-                <Route path="ingredients" element={<Ingredients />} />
-                <Route path="shopping-list" element={<ShoppingList />} />
-                <Route path="fridge" element={<Fridge />} />
-                <Route path="grooming" element={<Grooming />} />
-                <Route path="retail-products" element={<RetailProducts />} />
-                <Route path="settings" element={<Settings />} />
-                <Route path="profile" element={<Profile />} />
-                <Route path="my-recipes" element={<MyRecipes />} />
-                <Route path="my-ingredients" element={<MyIngredients />} />
-                <Route path="grove" element={<Grove />} />
-                <Route path="founding-member" element={<FoundingMember />} />
-                <Route path="family" element={<Family />} />
-                <Route path="_preview/planting" element={<PlantingPreview />} />
-                <Route path="_preview/diofa" element={<DiofaPreview />} />
-                <Route path="_preview/taste-swipe" element={<TasteSwipePreview />} />
-                <Route element={<AdminRoute />}>
-                  <Route path="admin/users" element={<UserManagement />} />
-                  <Route path="admin/ip-vault" element={<IpVault />} />
-                  <Route path="admin/content-review" element={<ContentReview />} />
+              {/* OnboardingGate — redirects first-time users to /app/onboarding.
+                  Passes through for users who have completed or skipped onboarding.
+                  See src/components/OnboardingGate.tsx — KALMIO-45. */}
+              <Route element={<OnboardingGate />}>
+                <Route path="/app" element={<AppShell />}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="meal-plans" element={<MealPlan />} />
+                  <Route path="recipes" element={<Recipes />} />
+                  <Route path="ingredients" element={<Ingredients />} />
+                  <Route path="shopping-list" element={<ShoppingList />} />
+                  <Route path="fridge" element={<Fridge />} />
+                  <Route path="grooming" element={<Grooming />} />
+                  <Route path="retail-products" element={<RetailProducts />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="my-recipes" element={<MyRecipes />} />
+                  <Route path="my-ingredients" element={<MyIngredients />} />
+                  <Route path="grove" element={<Grove />} />
+                  <Route path="founding-member" element={<FoundingMember />} />
+                  <Route path="family" element={<Family />} />
+                  <Route path="_preview/planting" element={<PlantingPreview />} />
+                  <Route path="_preview/diofa" element={<DiofaPreview />} />
+                  <Route path="_preview/taste-swipe" element={<TasteSwipePreview />} />
+                  <Route element={<AdminRoute />}>
+                    <Route path="admin/users" element={<UserManagement />} />
+                    <Route path="admin/ip-vault" element={<IpVault />} />
+                    <Route path="admin/content-review" element={<ContentReview />} />
+                  </Route>
                 </Route>
               </Route>
             </Route>
