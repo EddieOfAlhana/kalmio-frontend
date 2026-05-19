@@ -1359,31 +1359,31 @@
       "next": "Tovább",
       "finish": "Megnézem a hetemet",
       "stepLabels": {
-        "1":  "Üdvözlés",
-        "2":  "Hány személyre főzzük?",
-        "3":  "Aktivitás és kalória",
-        "4":  "Étrendi preferenciák",
-        "5":  "Bevásárlási szokások",
-        "6":  "Tiltott hozzávalók",
-        "7":  "Ízlés-körkép",
-        "8":  "Étrend összerakása…",
-        "9":  "Az első heted kész",
+        "1": "Üdvözlés",
+        "2": "Hány személyre főzzük?",
+        "3": "Aktivitás és kalória",
+        "4": "Étrendi preferenciák",
+        "5": "Bevásárlási szokások",
+        "6": "Tiltott hozzávalók",
+        "7": "Ízlés-körkép",
+        "8": "Étrend összerakása…",
+        "9": "Az első heted kész",
         "10": "Csemete — az első cselekvés"
       }
     },
     "planting": {
       "ariaLabel": "Dióültetés animáció — az ültetési folyamat előrehaladása",
       "steps": {
-        "0":  "Kéz látható a talaj felett, diót tartva",
-        "1":  "Gödör ásódik a talajban, a kéz lejjebb ereszkedik",
-        "2":  "A dió a gödörbe kerül",
-        "3":  "Az első marék föld betakarja a diót",
-        "4":  "A földhalom kiformálódik és lesimul",
-        "5":  "Kis fa-jelölőkaró kerül a halom mellé",
-        "6":  "Apró részletek kerülnek a jelenet köré — kövek, levelek, a talaj nedvesedik",
-        "7":  "Öntöző kanna billen a halom fölé, az első cseppek lehullanak",
-        "8":  "A talaj sötét és nedves — a dió teljesen el van ültetve",
-        "9":  "Mag-szakasz kész — a dió a földben van",
+        "0": "Kéz látható a talaj felett, diót tartva",
+        "1": "Gödör ásódik a talajban, a kéz lejjebb ereszkedik",
+        "2": "A dió a gödörbe kerül",
+        "3": "Az első marék föld betakarja a diót",
+        "4": "A földhalom kiformálódik és lesimul",
+        "5": "Kis fa-jelölőkaró kerül a halom mellé",
+        "6": "Apró részletek kerülnek a jelenet köré — kövek, levelek, a talaj nedvesedik",
+        "7": "Öntöző kanna billen a halom fölé, az első cseppek lehullanak",
+        "8": "A talaj sötét és nedves — a dió teljesen el van ültetve",
+        "9": "Mag-szakasz kész — a dió a földben van",
         "10": "Csemete — két sziklevél tör elő a föld alól"
       }
     },
@@ -1585,6 +1585,98 @@
       "lowGi": "Alacsony GI",
       "lowFodmap": "Alacsony FODMAP",
       "paleo": "Paleó"
+    }
+  },
+  "member": {
+    "view": {
+      "myMealsTitle": "A mai étkezéseim",
+      "memberMealsTitle": "Étkezések",
+      "dailyTotal": "Mai összesített",
+      "protein": "Fehérje",
+      "plannedMeals": "Tervezett étkezések",
+      "offPlanHistory": "Ma naplózott étkezések",
+      "noPlanSelected": "Nincs kiválasztott terv.",
+      "skipSlotComingSoon": "Étkezés kihagyása",
+      "mealRequestComingSoon": "Étkezés kérése a tervezőtől",
+      "recipientNotificationComingSoon": "Értesítés, ha valaki megosztja veled az adagját"
+    },
+    "slot": {
+      "noRecipe": "Recept hiányzik",
+      "protein": "fehérje",
+      "eaten": "Megettem",
+      "skipped": "Kihagyva"
+    },
+    "actions": {
+      "ateIt": "Megettem",
+      "somethingElse": "Mást ettem",
+      "markEaten": "Megettnek jelöl",
+      "moreOptions": "Több lehetőség"
+    }
+  },
+  "offPlan": {
+    "quickOptions": {
+      "gyros": "Gyros",
+      "szendvics": "Szendvics",
+      "salata": "Saláta",
+      "teszta": "Tészta",
+      "pizza": "Pizza",
+      "leves": "Leves"
+    },
+    "sheet": {
+      "title": "Mit ettél?",
+      "quickOptions": "Gyors választás",
+      "freeName": "Vagy írj be mást",
+      "freeNamePlaceholder": "pl. Saláta, pizza, gyros…",
+      "log": "Naplózom",
+      "logging": "Mentés…",
+      "logFloating": "Étkezés naplózása"
+    },
+    "disposition": {
+      "question": "Mi történt a tervezett adaggal?",
+      "returnedToFridge": "Visszatettem a hűtőbe",
+      "wasted": "Elromlott / kidobtuk",
+      "givenToSomebody": "Valaki más ette meg",
+      "givenToOther": "Más személy (nincs a listán)",
+      "confirm": "Mentés",
+      "stubNotice": "Az adag-sors rögzítése hamarosan elérhető — a választásod el van mentve helyben.",
+      "allergenBadge": "allergén",
+      "allergenWarning": "{{name}} allergén figyelmeztetés",
+      "allergenModalTitle": "Allergén figyelmeztetés — {{name}}",
+      "allergenModalBody": "Ez az étel tartalmaz: {{allergens}}. {{name}} erre allergiás. Biztosan ő ette meg?",
+      "allergenConfirm": "Igen, {{name}} ette"
+    },
+    "bulkDisposition": {
+      "title": "{{name}} eltávolítása — {{count}} tervezett étkezés",
+      "subtitle": "Mi történjen a {{count}} tervezett adaggal?",
+      "applyToAll": "Alkalmazás az összesre",
+      "customizePerSlot": "Egyéni beállítás étkezésenként",
+      "confirm": "Megerősítés"
+    }
+  },
+  "cart": {
+    "title": "Bevásárlókosár",
+    "subtitle_one": "{{count}} terv alapján",
+    "subtitle_other": "{{count}} terv alapján",
+    "subtitle": "{{planCount}} terv alapján",
+    "generating": "Összerakom a listát…",
+    "itemCount": "{{count}} hozzávaló",
+    "markShoppedCta": "Mindent megvettem — tervek lezárása",
+    "markedShopped": "A tervek sikeresen lezárva.",
+    "allCheckedNudge": "Mindent kipipáltál. Lezárhatod a terveket.",
+    "ingredientsTitle": "Hozzávalók",
+    "checkItem": "{{name}} megjelölése",
+    "showSourcePlans": "Forrástervek",
+    "sourcePlan": "Terv",
+    "leftoversRescueNotice": "A hűtőből visszakerült maradékok hamarosan megjelennek itt kiemelve — \"meglévő felhasználás\" jelöléssel.",
+    "empty": {
+      "title": "Nincs bevásárolni való",
+      "desc": "Az összes terv már le van zárva ebben az időszakban."
+    },
+    "window": {
+      "days3": "Következő 3 nap",
+      "days7": "Következő 7 nap",
+      "days14": "Következő 14 nap",
+      "days30": "Következő 30 nap"
     }
   }
 }
