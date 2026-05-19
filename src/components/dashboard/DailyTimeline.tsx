@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
+import { Eye, Sparkles, RefreshCw, MoreHorizontal } from 'lucide-react'
 import {
   DndContext,
   DragOverlay,
@@ -20,7 +22,10 @@ import { planService } from '@/services/plans'
 import { prepTasksService } from '@/services/prepTasks'
 import { offPlanMealsService } from '@/services/offPlanMeals'
 import { getRecipeNameFromTranslations } from '@/lib/i18nRecipe'
-import type { DashboardDto, OffPlanMealCard, TimePreferencesDto } from '@/types'
+import { MealRationalePanel } from '@/components/plan/MealRationalePanel'
+import { RecipeDetailDialog } from '@/components/plan/RecipeDetailDialog'
+import { RecipePickerDialog } from '@/components/plan/RecipePickerDialog'
+import type { DashboardDto, OffPlanMealCard, Recipe, TimePreferencesDto } from '@/types'
 import { useEffect } from 'react'
 import { OffPlanMealLogModal } from './OffPlanMealLogModal'
 import { AiOffPlanLogModal } from './AiOffPlanLogModal'
@@ -97,13 +102,18 @@ function nodeStyle(type: string): NodeStyle {
 interface TimelineCardData {
   id: string
   type: string
+  /** What appears on the card. For prep cards this is "Meal prep: <recipe>". */
   label: string
+  /** Localized recipe name without any prefix — used inside dialogs and pickers. */
+  recipeName?: string
   subtitle?: string
   startMinutes: number
   mealType?: string
   window?: string
   mealId?: string
   prepTaskId?: string
+  recipeId?: string
+  macros?: { kcal: number; protein: number; fat: number; carbs: number } | null
 }
 
 // ── SleepBanner ───────────────────────────────────────────────────────────
@@ -146,12 +156,42 @@ interface DraggableRowProps {
   isFirst: boolean
   isLast: boolean
   liveDragMinutes: number | null  // non-null only for the card being dragged
+  rationaleOpen: boolean
+  menuOpen: boolean
+  onViewRecipe: () => void
+  onToggleRationale: () => void
+  onOpenSwap: () => void
+  onToggleMenu: () => void
+  onMarkEaten: () => void
+  onMarkSkipped: () => void
+  mutating?: boolean
 }
 
-function DraggableRow({ card, isFirst, isLast, liveDragMinutes }: DraggableRowProps) {
+function DraggableRow({
+  card,
+  isFirst,
+  isLast,
+  liveDragMinutes,
+  rationaleOpen,
+  menuOpen,
+  onViewRecipe,
+  onToggleRationale,
+  onOpenSwap,
+  onToggleMenu,
+  onMarkEaten,
+  onMarkSkipped,
+  mutating,
+}: DraggableRowProps) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: card.id })
   const ns = nodeStyle(card.type)
+  const isPrep = card.type === 'prep'
+  const isMeal = !!card.mealId
+  // Prep cards get a slightly tinted background to distinguish them from meals.
+  const cardSurface = isPrep
+    ? 'bg-[#F2F7F5] border-teal-100'
+    : 'bg-white border-gray-100/80'
 
   // While dragging: left label shows live snapped time in orange
   const displayTime = isDragging && liveDragMinutes !== null
@@ -190,26 +230,115 @@ function DraggableRow({ card, isFirst, isLast, liveDragMinutes }: DraggableRowPr
           // Ghost placeholder: dashed outline, same height as real card
           <div className="h-10 rounded-xl border-2 border-dashed border-[#F28C28]/30 bg-orange-50/30" />
         ) : (
-          <div className="rounded-xl bg-white border border-gray-100/80 shadow-[0_1px_4px_rgba(0,0,0,0.06)] px-3 py-2.5 flex items-center gap-2 select-none">
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold text-gray-800 leading-tight truncate">{card.label}</p>
-              {card.subtitle && (
-                <p className="text-[11px] text-gray-400 mt-0.5 leading-tight truncate">{card.subtitle}</p>
-              )}
+          <>
+            <div className={`rounded-xl border shadow-[0_1px_4px_rgba(0,0,0,0.06)] px-3 py-2.5 flex items-center gap-1 select-none ${cardSurface}`}>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-semibold text-gray-800 leading-tight truncate">{card.label}</p>
+                {card.subtitle && (
+                  <p className="text-[11px] text-gray-400 mt-0.5 leading-tight truncate">{card.subtitle}</p>
+                )}
+              </div>
+
+              {/* Action icons */}
+              <div className="flex items-center gap-0 shrink-0 text-gray-400">
+                {isMeal && card.recipeId && (
+                  <button
+                    type="button"
+                    onClick={onToggleRationale}
+                    aria-label={t('plan.rationale.toggle')}
+                    aria-expanded={rationaleOpen}
+                    className={`p-1.5 rounded-md transition-colors ${
+                      rationaleOpen
+                        ? 'text-[#F28C28] bg-[#FFF3E5]'
+                        : 'hover:text-[#F28C28] hover:bg-gray-200/60'
+                    }`}
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                  </button>
+                )}
+
+                {isPrep && card.recipeId && (
+                  <button
+                    type="button"
+                    onClick={onViewRecipe}
+                    aria-label={t('mealPlan.viewRecipe')}
+                    className="p-1.5 rounded-md hover:text-[#1A1A1A] hover:bg-gray-200/60 transition-colors"
+                  >
+                    <Eye className="h-3.5 w-3.5" />
+                  </button>
+                )}
+
+                {isMeal && (
+                  <button
+                    type="button"
+                    onClick={onOpenSwap}
+                    aria-label={t('mealPlan.editSlot.swapRecipe')}
+                    disabled={mutating}
+                    className="p-1.5 rounded-md hover:text-[#1A1A1A] hover:bg-gray-200/60 transition-colors disabled:opacity-40"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                  </button>
+                )}
+
+                {isMeal && (
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={onToggleMenu}
+                      disabled={mutating}
+                      aria-label={t('plan.mealActions')}
+                      aria-expanded={menuOpen}
+                      className="p-1.5 rounded-md hover:text-[#1A1A1A] hover:bg-gray-200/60 transition-colors disabled:opacity-40"
+                    >
+                      <MoreHorizontal className="h-3.5 w-3.5" />
+                    </button>
+                    {menuOpen && (
+                      <div className="absolute right-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-[10px] shadow-md py-1 min-w-[160px]">
+                        <button
+                          type="button"
+                          onClick={onMarkEaten}
+                          className="w-full text-left px-3 py-2 text-sm text-[#1A1A1A] hover:bg-[#F9F7F2] transition-colors"
+                        >
+                          {t('plan.actions.markEaten')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={onMarkSkipped}
+                          className="w-full text-left px-3 py-2 text-sm text-[#1A1A1A] hover:bg-[#F9F7F2] transition-colors"
+                        >
+                          {t('plan.actions.markSkipped')}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Drag handle */}
+                <button
+                  type="button"
+                  {...listeners}
+                  aria-label={t('common.moveLabel')}
+                  className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing touch-none shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28] rounded p-0.5 ml-0.5"
+                >
+                  <svg width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-hidden>
+                    <circle cx="3" cy="2.5" r="1.3" /><circle cx="7" cy="2.5" r="1.3" />
+                    <circle cx="3" cy="7"    r="1.3" /><circle cx="7" cy="7"    r="1.3" />
+                    <circle cx="3" cy="11.5" r="1.3" /><circle cx="7" cy="11.5" r="1.3" />
+                  </svg>
+                </button>
+              </div>
             </div>
-            <button
-              type="button"
-              {...listeners}
-              aria-label={t('common.moveLabel')}
-              className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing touch-none shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28] rounded p-0.5"
-            >
-              <svg width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-hidden>
-                <circle cx="3" cy="2.5" r="1.3" /><circle cx="7" cy="2.5" r="1.3" />
-                <circle cx="3" cy="7"    r="1.3" /><circle cx="7" cy="7"    r="1.3" />
-                <circle cx="3" cy="11.5" r="1.3" /><circle cx="7" cy="11.5" r="1.3" />
-              </svg>
-            </button>
-          </div>
+
+            {/* Inline rationale panel — only rendered for meals while open. */}
+            {isMeal && card.mealId && (
+              <MealRationalePanel
+                plannedMealId={card.mealId}
+                recipeId={card.recipeId}
+                open={rationaleOpen}
+                onStartCooking={rid => navigate(`/app/recipes/${rid}/cook`)}
+              />
+            )}
+          </>
         )}
       </div>
     </div>
@@ -479,6 +608,10 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
   const [liveDragMinutes, setLiveDragMinutes] = useState<number | null>(null)
   const [showOffPlanModal, setShowOffPlanModal] = useState(false)
   const [showAiOffPlanModal, setShowAiOffPlanModal] = useState(false)
+  const [openRationaleCardId, setOpenRationaleCardId] = useState<string | null>(null)
+  const [openMenuCardId, setOpenMenuCardId] = useState<string | null>(null)
+  const [detailCard, setDetailCard] = useState<TimelineCardData | null>(null)
+  const [swapCard, setSwapCard] = useState<TimelineCardData | null>(null)
   const dragBaseMinutesRef = useRef<number>(0)
   const outerRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLDivElement>(null)
@@ -504,6 +637,18 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['dashboard', date] }),
   })
 
+  // Status changes (mark eaten/skipped) and recipe swaps reuse the same
+  // updateMeal endpoint; we invalidate both the dashboard view and the plan
+  // cache so the meal plans page stays in sync.
+  const updateMeal = useMutation({
+    mutationFn: ({ planId, mealId, req }: { planId: string; mealId: string; req: import('@/types').UpdatePlannedMealRequest }) =>
+      planService.updateMeal(planId, mealId, req),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['dashboard', date] })
+      void queryClient.invalidateQueries({ queryKey: ['plan', 'active'] })
+    },
+  })
+
   const deleteOffPlanMeal = useMutation({
     mutationFn: (id: string) => offPlanMealsService.delete(id),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['dashboard', date] }),
@@ -522,28 +667,35 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
       const mealTimePrefs = timePref?.mealTimePrefs ?? {}
       const defaultTime = mealTimePrefs[meal.mealType] ?? MEAL_DEFAULTS[meal.mealType] ?? '12:00'
       const scheduledTime = cardTimeOverrides[`meal-${meal.mealId}`] ?? meal.scheduledTime ?? defaultTime
+      const recipeName = getRecipeNameFromTranslations(meal.recipeTranslations ?? null, meal.recipeName, lang)
       result.push({
         id: `meal-${meal.mealId}`,
         type: meal.mealType,
-        label: getRecipeNameFromTranslations(meal.recipeTranslations ?? null, meal.recipeName, lang),
+        label: recipeName,
+        recipeName,
         subtitle: meal.macros ? `${meal.macros.kcal} kcal · ${meal.macros.protein}g ${t('dashboard.macros.protein')}` : undefined,
         startMinutes: hmToMinutes(scheduledTime),
         mealType: meal.mealType,
         mealId: meal.mealId,
+        recipeId: meal.recipeId,
+        macros: meal.macros,
       })
     })
 
     prepTasks.forEach(task => {
       const defaultTime = PREP_WINDOW_DEFAULTS[task.window] ?? '12:00'
       const scheduledTime = cardTimeOverrides[`prep-${task.id ?? task.recipeId}`] ?? task.scheduledTime ?? defaultTime
+      const recipeName = getRecipeNameFromTranslations(task.recipeTranslations ?? null, task.recipeName, lang)
       result.push({
         id: `prep-${task.id ?? task.recipeId}`,
         type: 'prep',
-        label: getRecipeNameFromTranslations(task.recipeTranslations ?? null, task.recipeName, lang),
+        label: t('timeline.prepLabel', { recipe: recipeName }),
+        recipeName,
         subtitle: task.durationMin ? t('dashboard.prep.durationMin', { count: task.durationMin }) : undefined,
         startMinutes: hmToMinutes(scheduledTime),
         window: task.window,
         prepTaskId: task.id,
+        recipeId: task.recipeId,
       })
     })
 
@@ -774,13 +926,40 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
                 )
               }
 
+              const cardData = row.card
+              const cardMutating =
+                updateMeal.isPending &&
+                (updateMeal.variables as { mealId?: string } | undefined)?.mealId === cardData.mealId
               return (
                 <DraggableRow
-                  key={row.card.id}
-                  card={row.card}
+                  key={cardData.id}
+                  card={cardData}
                   isFirst={isFirst}
                   isLast={isLast}
-                  liveDragMinutes={liveDragId === row.card.id ? liveDragMinutes : null}
+                  liveDragMinutes={liveDragId === cardData.id ? liveDragMinutes : null}
+                  rationaleOpen={openRationaleCardId === cardData.id}
+                  menuOpen={openMenuCardId === cardData.id}
+                  mutating={cardMutating}
+                  onViewRecipe={() => setDetailCard(cardData)}
+                  onToggleRationale={() =>
+                    setOpenRationaleCardId(prev => (prev === cardData.id ? null : cardData.id))
+                  }
+                  onOpenSwap={() => { setOpenMenuCardId(null); setSwapCard(cardData) }}
+                  onToggleMenu={() =>
+                    setOpenMenuCardId(prev => (prev === cardData.id ? null : cardData.id))
+                  }
+                  onMarkEaten={() => {
+                    setOpenMenuCardId(null)
+                    if (activePlanId && cardData.mealId) {
+                      updateMeal.mutate({ planId: activePlanId, mealId: cardData.mealId, req: { status: 'EATEN' } })
+                    }
+                  }}
+                  onMarkSkipped={() => {
+                    setOpenMenuCardId(null)
+                    if (activePlanId && cardData.mealId) {
+                      updateMeal.mutate({ planId: activePlanId, mealId: cardData.mealId, req: { status: 'SKIPPED' } })
+                    }
+                  }}
                 />
               )
             })
@@ -817,6 +996,36 @@ export function DailyTimeline({ date, hasShoppingDay, activePlanId }: DailyTimel
         onOpenChange={setShowAiOffPlanModal}
         date={date}
       />
+
+      {/* Recipe detail — used by both meal and prep cards to "watch the recipe". */}
+      {detailCard?.recipeId && (
+        <RecipeDetailDialog
+          open
+          onOpenChange={open => !open && setDetailCard(null)}
+          recipeId={detailCard.recipeId}
+          displayName={detailCard.recipeName}
+          macros={detailCard.macros ?? null}
+        />
+      )}
+
+      {/* Recipe swap picker — meal cards only. */}
+      {swapCard?.recipeId && (
+        <RecipePickerDialog
+          open
+          currentRecipeId={swapCard.recipeId}
+          onSelect={(recipe: Recipe) => {
+            if (activePlanId && swapCard.mealId) {
+              updateMeal.mutate({
+                planId: activePlanId,
+                mealId: swapCard.mealId,
+                req: { replacedWithRecipeId: recipe.id },
+              })
+            }
+            setSwapCard(null)
+          }}
+          onClose={() => setSwapCard(null)}
+        />
+      )}
 
       {/* DragOverlay — anchored to the card rect (setNodeRef is on the card div),
           so it appears exactly where the card is and only moves vertically */}

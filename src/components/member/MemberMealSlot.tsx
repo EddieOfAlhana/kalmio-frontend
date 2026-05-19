@@ -8,14 +8,17 @@
  * Secondary action: "Something else" → opens the OffPlanLogSheet.
  */
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { CheckCircle, MoreHorizontal, Utensils } from 'lucide-react'
+import { CheckCircle, MoreHorizontal, Sparkles, Utensils } from 'lucide-react'
+import { MealRationalePanel } from '@/components/plan/MealRationalePanel'
 import type { MealType, PlannedMealStatus } from '@/types'
 
 export interface MemberMealSlotProps {
   plannedMealId: string
   date: string
   mealType: MealType
+  recipeId: string | null
   recipeName: string | null
   portionKcal: number | null
   portionProtein: number | null
@@ -51,6 +54,7 @@ const STATUS_CLASSES: Record<PlannedMealStatus, string> = {
 export function MemberMealSlot({
   plannedMealId,
   mealType,
+  recipeId,
   recipeName,
   portionKcal,
   portionProtein,
@@ -61,12 +65,15 @@ export function MemberMealSlot({
   onLogOffPlan,
 }: MemberMealSlotProps) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [rationaleOpen, setRationaleOpen] = useState(false)
 
   const mealLabel = t(`plan.mealTypes.${mealType}`, mealType)
   const isSettled = status === 'EATEN' || status === 'SKIPPED'
 
   return (
+    <div className="flex flex-col">
     <div
       className={`
         relative flex items-center gap-3 py-3 px-3 rounded-xl border border-[#f0ede8]
@@ -106,6 +113,21 @@ export function MemberMealSlot({
       {status === 'SKIPPED' && (
         <span className="text-[10px] font-semibold text-[#9ca3af] shrink-0">{t('member.slot.skipped')}</span>
       )}
+
+      {/* Rationale toggle — available on every slot, settled or not */}
+      <button
+        type="button"
+        aria-label={t('plan.rationale.toggle')}
+        aria-expanded={rationaleOpen}
+        onClick={() => setRationaleOpen(o => !o)}
+        className={`
+          shrink-0 p-1.5 rounded-lg transition-colors
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28]
+          ${rationaleOpen ? 'text-[#F28C28] bg-[#FFF3E5]' : 'text-[#9ca3af] hover:text-[#F28C28] hover:bg-[#FFF8EF]'}
+        `}
+      >
+        <Sparkles className="h-4 w-4" />
+      </button>
 
       {/* Action area — own slots only, not yet settled */}
       {isOwn && !isSettled && (
@@ -166,6 +188,13 @@ export function MemberMealSlot({
           </div>
         </div>
       )}
+    </div>
+      <MealRationalePanel
+        plannedMealId={plannedMealId}
+        recipeId={recipeId}
+        open={rationaleOpen}
+        onStartCooking={rid => navigate(`/app/recipes/${rid}/cook`)}
+      />
     </div>
   )
 }

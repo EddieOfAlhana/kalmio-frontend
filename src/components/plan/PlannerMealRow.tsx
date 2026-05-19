@@ -10,10 +10,12 @@
  * - Eye / edit / overflow-menu icons
  */
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Eye, Pencil, MoreHorizontal, ChevronDown, ChevronUp } from 'lucide-react'
+import { Eye, Pencil, MoreHorizontal, ChevronDown, ChevronUp, Sparkles } from 'lucide-react'
 import { MemberChip, OverflowChip } from './MemberChip'
 import { MEMBER_COLORS } from './memberColors'
+import { MealRationalePanel } from './MealRationalePanel'
 import type { PlannedMealSummary, MealType } from '@/types'
 
 const MAX_CHIPS = 5
@@ -37,7 +39,9 @@ export function PlannerMealRow({
   onEditSlot,
 }: PlannerMealRowProps) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [subRowOpen, setSubRowOpen] = useState(false)
+  const [rationaleOpen, setRationaleOpen] = useState(false)
 
   const visibleChips = allMemberIds.filter(id => !divergentMemberIds.includes(id)).slice(0, MAX_CHIPS)
   const overflow = allMemberIds.filter(id => !divergentMemberIds.includes(id)).length - MAX_CHIPS
@@ -90,6 +94,17 @@ export function PlannerMealRow({
 
         {/* Action icons */}
         <div className="flex items-center gap-1 shrink-0 text-[#9ca3af]">
+          <button
+            type="button"
+            aria-label={t('plan.rationale.toggle')}
+            aria-expanded={rationaleOpen}
+            onClick={() => setRationaleOpen(o => !o)}
+            className={`p-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28] transition-colors ${
+              rationaleOpen ? 'text-[#F28C28]' : 'hover:text-[#F28C28]'
+            }`}
+          >
+            <Sparkles className="w-4 h-4" />
+          </button>
           {meal.recipeId && onViewRecipe && (
             <button
               type="button"
@@ -130,6 +145,14 @@ export function PlannerMealRow({
           </button>
         </div>
       </div>
+
+      {/* Rationale panel — lazy-fetched on first open */}
+      <MealRationalePanel
+        plannedMealId={meal.id}
+        recipeId={meal.recipeId}
+        open={rationaleOpen}
+        onStartCooking={recipeId => navigate(`/app/recipes/${recipeId}/cook`)}
+      />
 
       {/* Sub-rows for divergent members */}
       {subRowOpen && divergentMemberIds.length > 0 && (

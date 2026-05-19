@@ -369,7 +369,28 @@
       "fat": "Zsír",
       "carbs": "Szénhidrát",
       "noIngredients": "Nincsenek hozzávalók.",
-      "piece": "db"
+      "piece": "db",
+      "startCooking": "Főzés indítása"
+    },
+    "cookMode": {
+      "stepLabel": "Lépés",
+      "stepOf": "{{current}}. / {{total}}. lépés",
+      "noSteps": "Ehhez a recepthez nincsenek elkészítési lépések.",
+      "notFound": "A recept nem található.",
+      "prevStep": "Előző",
+      "nextStep": "Következő",
+      "finish": "Kész vagyok",
+      "askTitle": "Kérdezz bármit",
+      "askPlaceholder": "Pl. Felülírhatom a borsot rozmaringgal?",
+      "askSubmit": "Kérdés küldése",
+      "thinking": "Gondolkodom…",
+      "errors": {
+        "premium": "A főzési asszisztens prémium funkció. Aktiválás után minden recept mellett ott áll a háttérben.",
+        "premiumCta": "Alapító tagság",
+        "rateLimit": "Pillanat — túl gyorsan érkeznek a kérdések. Próbáld újra egy perc múlva.",
+        "configuration": "A főzési asszisztens átmenetileg nem érhető el. Próbáld újra később.",
+        "generic": "Most nem sikerült válaszolnom. Próbáld újra egy pillanat múlva."
+      }
     },
     "tags": {
       "QUICK": "Gyors",
@@ -1208,6 +1229,20 @@
       "noMealsDay": "Erre a napra nincs tervezett étkezés.",
       "costLabel": "{{cost}} Ft"
     },
+    "rationale": {
+      "title": "Miért ezt?",
+      "toggle": "Miért ezt az étkezést?",
+      "loading": "Egy pillanat — összegyűjtöm az indoklást.",
+      "startCooking": "Főzés indítása",
+      "errors": {
+        "premium": "A „Miért ezt?\" indoklás az alapító tagság része. Aktiválás után minden étkezésnél elérhető.",
+        "premiumCta": "Alapító tagság",
+        "rateLimit": "Most kicsit sok kérdés érkezett — próbáld újra egy perc múlva.",
+        "notFound": "Ez az étkezés már nem érhető el.",
+        "generic": "Most nem tudtam előkészíteni az indoklást.",
+        "retry": "Újra"
+      }
+    },
     "detail": {
       "settings": "Terv beállításai"
     },
@@ -1356,7 +1391,8 @@
     "sleep": "Lefekvés",
     "shopping": "Bevásárlás",
     "grooming": "Hűtőellenőrzés",
-    "mealPrep": "Előkészítés"
+    "mealPrep": "Előkészítés",
+    "prepLabel": "Előkészítés: {{recipe}}"
   },
   "footer": {
     "privacy": "Adatkezelési tájékoztató",

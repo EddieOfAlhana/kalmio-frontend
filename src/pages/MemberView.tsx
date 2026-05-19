@@ -188,6 +188,7 @@ export function MemberView() {
                     plannedMealId={meal.id}
                     date={meal.date}
                     mealType={meal.mealType}
+                    recipeId={meal.recipeId}
                     recipeName={meal.recipeName}
                     portionKcal={meal.macros ? meal.macros.kcal * meal.servingMultiplier : null}
                     portionProtein={meal.macros ? meal.macros.protein * meal.servingMultiplier : null}

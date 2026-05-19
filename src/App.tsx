@@ -52,6 +52,7 @@ import { ConversationalOnboarding } from '@/pages/onboarding/ConversationalOnboa
 import { OnboardingGate } from '@/components/OnboardingGate'
 import { MemberView } from '@/pages/MemberView'
 import { ShoppingCart } from '@/pages/ShoppingCart'
+import { CookMode } from '@/pages/CookMode'
 
 initAnalytics()
 
@@ -155,6 +156,9 @@ export default function App() {
                   Passes through for users who have completed or skipped onboarding.
                   See src/components/OnboardingGate.tsx — KALMIO-45. */}
               <Route element={<OnboardingGate />}>
+                {/* Cook mode is rendered OUTSIDE AppShell so it can claim every
+                    pixel for the phone-propped-in-the-kitchen experience. */}
+                <Route path="/app/recipes/:id/cook" element={<CookMode />} />
                 <Route path="/app" element={<AppShell />}>
                   <Route index element={<Dashboard />} />
                   <Route path="meal-plans" element={<MealPlan />} />

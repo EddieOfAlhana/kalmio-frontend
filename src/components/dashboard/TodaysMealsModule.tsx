@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Check, MoreHorizontal, Trash2 } from 'lucide-react'
+import { Check, MoreHorizontal, Sparkles, Trash2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from '@/components/ui/toast'
 import { planService } from '@/services/plans'
 import { dashboardService } from '@/services/dashboard'
 import { getRecipeNameFromTranslations } from '@/lib/i18nRecipe'
+import { MealRationalePanel } from '@/components/plan/MealRationalePanel'
 import { LogOffPlanMealModal } from './LogOffPlanMealModal'
 import type { TodaysMealCard, OffPlanMealCard, Plan } from '@/types'
 
@@ -65,8 +67,10 @@ function MealCard({ meal, planId, today }: MealCardProps) {
   const { t, i18n } = useTranslation()
   const lang = (i18n.language?.startsWith('hu') ? 'hu' : 'en') as 'hu' | 'en'
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const [logModalOpen, setLogModalOpen] = useState(false)
+  const [rationaleOpen, setRationaleOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -124,6 +128,7 @@ function MealCard({ meal, planId, today }: MealCardProps) {
   const isFinal = isEaten || isSkipped || meal.status === 'REPLACED'
 
   return (
+    <div className="flex flex-col">
     <div className="relative flex items-start gap-3 p-3 rounded-[12px] bg-[#F9F7F2]">
       {/* Eaten checkbox */}
       <button
@@ -166,6 +171,20 @@ function MealCard({ meal, planId, today }: MealCardProps) {
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <StatusPill status={meal.status} />
+            {/* Rationale toggle */}
+            <button
+              type="button"
+              aria-label={t('plan.rationale.toggle')}
+              aria-expanded={rationaleOpen}
+              onClick={() => setRationaleOpen(o => !o)}
+              className={`p-1.5 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28] ${
+                rationaleOpen
+                  ? 'text-[#F28C28] bg-[#FFF3E5]'
+                  : 'text-gray-400 hover:text-[#F28C28] hover:bg-white'
+              }`}
+            >
+              <Sparkles className="h-4 w-4" aria-hidden />
+            </button>
             {/* Three-dot overflow menu — hidden only for REPLACED meals */}
             {meal.status !== 'REPLACED' && (
               <div className="relative" ref={menuRef}>
@@ -235,6 +254,13 @@ function MealCard({ meal, planId, today }: MealCardProps) {
         date={today}
         planId={planId}
         mealId={meal.mealId}
+      />
+    </div>
+      <MealRationalePanel
+        plannedMealId={meal.mealId}
+        recipeId={meal.recipeId}
+        open={rationaleOpen}
+        onStartCooking={rid => navigate(`/app/recipes/${rid}/cook`)}
       />
     </div>
   )

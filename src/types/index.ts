@@ -655,6 +655,48 @@ export interface AiOffPlanLogResponse {
   confidence: number | null
 }
 
+// ── AI meal rationale (KALMIO-185 / E11.6) ────────────────────────────────
+
+/**
+ * Response from `POST /api/planned-meals/{plannedMealId}/explain`.
+ *
+ * 2–3 sentence "Why this?" rationale grounded in structured facts (no invented
+ * data). Cached server-side per planned meal — re-calls are free and instant.
+ *
+ * Premium-gated. HTTP 402 = not premium, 429 = rate limit (5/min) or monthly
+ * cap reached.
+ */
+export interface MealRationaleResponse {
+  plannedMealId: string
+  rationale: string
+  rationaleEn: string
+  citedFacts: string[]
+  generatedAt: string
+}
+
+// ── AI cook mode (KALMIO-188 / E11.9) ─────────────────────────────────────
+
+/**
+ * Request body for `POST /api/recipes/{recipeId}/cook-mode/ask`.
+ *
+ * `previousQuestions` is a rolling window (max 5) of the user's prior questions
+ * — oldest first. The backend is stateless; we send context every turn.
+ */
+export interface AiCookModeRequest {
+  question: string
+  previousQuestions?: string[]
+  /** 0-based index of the step the user is currently on. */
+  currentStepIndex?: number
+}
+
+/**
+ * Response from the cook-mode Q&A endpoint — a short (1–3 sentence) Hungarian
+ * answer grounded in the recipe context.
+ */
+export interface AiCookModeResponse {
+  answer: string
+}
+
 // ── Shopping List ─────────────────────────────────────────────────────────
 
 export interface ShoppingListRequest {

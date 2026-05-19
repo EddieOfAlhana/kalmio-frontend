@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Plus, Pencil, Trash2, Search, Clock, X, CheckCircle, SlidersHorizontal, Upload } from 'lucide-react'
+import { ChefHat, Plus, Pencil, Trash2, Search, Clock, X, CheckCircle, SlidersHorizontal, Upload } from 'lucide-react'
 import { useForm, useFieldArray, useWatch, Controller, type Resolver } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -428,6 +429,7 @@ function RecipeDetailDialog({
   onOpenChange: (o: boolean) => void
 }) {
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const lang = (i18n.resolvedLanguage === 'hu' ? 'hu' : 'en') as 'en' | 'hu'
   const [photoFailed, setPhotoFailed] = useState(false)
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -438,6 +440,7 @@ function RecipeDetailDialog({
   const displayName = recipe.translations?.[lang]?.name ?? recipe.name
   const steps = recipe.translations?.[lang]?.steps ?? recipe.steps ?? []
   const photoUrl = recipePhotoUrl(recipe)
+  const hasSteps = steps.length > 0
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -447,6 +450,24 @@ function RecipeDetailDialog({
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Cook mode CTA — prominent so the user can launch the kitchen
+              experience without scrolling through the whole recipe first. */}
+          {hasSteps && (
+            <button
+              type="button"
+              onClick={() => navigate(`/app/recipes/${recipe.id}/cook`)}
+              className="
+                w-full inline-flex items-center justify-center gap-2 rounded-xl
+                bg-[#F28C28] px-4 py-2.5 text-sm font-semibold text-white
+                hover:bg-[#d9761e] active:bg-[#c06917]
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F28C28] focus-visible:ring-offset-1
+              "
+            >
+              <ChefHat className="h-4 w-4" aria-hidden />
+              {t('recipes.detail.startCooking')}
+            </button>
+          )}
+
           {/* Photo — hidden entirely if image fails to load */}
           {!photoFailed && (
             <div className="w-full h-44 rounded-[12px] overflow-hidden bg-[#F9F7F2]">

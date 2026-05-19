@@ -369,7 +369,28 @@
       "fat": "Fat",
       "carbs": "Carbs",
       "noIngredients": "No ingredients listed.",
-      "piece": "pc"
+      "piece": "pc",
+      "startCooking": "Start cooking"
+    },
+    "cookMode": {
+      "stepLabel": "Step",
+      "stepOf": "Step {{current}} of {{total}}",
+      "noSteps": "This recipe has no instructions to follow.",
+      "notFound": "Recipe not found.",
+      "prevStep": "Previous",
+      "nextStep": "Next",
+      "finish": "I'm done",
+      "askTitle": "Ask anything",
+      "askPlaceholder": "e.g. Can I swap the pepper for rosemary?",
+      "askSubmit": "Send question",
+      "thinking": "Thinking…",
+      "errors": {
+        "premium": "The cooking assistant is part of the founding membership. Activate it to have it standing by next to every recipe.",
+        "premiumCta": "Founding membership",
+        "rateLimit": "A moment — questions are coming in too quickly. Please try again in a minute.",
+        "configuration": "The cooking assistant is briefly unavailable. Please try again shortly.",
+        "generic": "I couldn't answer that just now. Please try again in a moment."
+      }
     },
     "tags": {
       "QUICK": "Quick",
@@ -1208,6 +1229,20 @@
       "noMealsDay": "No meals planned for this day.",
       "costLabel": "{{cost}} HUF"
     },
+    "rationale": {
+      "title": "Why this?",
+      "toggle": "Why this meal?",
+      "loading": "One moment — gathering the reasoning.",
+      "startCooking": "Start cooking",
+      "errors": {
+        "premium": "The \"Why this?\" reasoning is part of the founding membership. Activate it to see it under every meal.",
+        "premiumCta": "Founding membership",
+        "rateLimit": "A few too many requests just now — please try again in a minute.",
+        "notFound": "This meal is no longer available.",
+        "generic": "I couldn't prepare the reasoning right now.",
+        "retry": "Retry"
+      }
+    },
     "detail": {
       "settings": "Plan settings"
     },
@@ -1356,7 +1391,8 @@
     "sleep": "Sleep",
     "shopping": "Shopping",
     "grooming": "Pantry check",
-    "mealPrep": "Meal prep"
+    "mealPrep": "Meal prep",
+    "prepLabel": "Meal prep: {{recipe}}"
   },
   "footer": {
     "privacy": "Privacy Policy",
