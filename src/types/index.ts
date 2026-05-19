@@ -54,7 +54,7 @@ export interface IngredientTranslations {
   hu: IngredientLocaleTranslation | null
 }
 
-export type ContentVisibility = 'PUBLIC' | 'PRIVATE' | 'PENDING_REVIEW'
+export type ContentVisibility = 'PUBLIC' | 'PRIVATE' | 'PENDING_REVIEW' | 'PRIVATE_TO_IMPORTER'
 
 export interface Ingredient {
   id: string
@@ -157,6 +157,55 @@ export interface CreateRecipeRequest {
 }
 
 export type UpdateRecipeRequest = CreateRecipeRequest
+
+// ── AI recipe import (KALMIO-181 / E11.2 + KALMIO-187 / E11.8) ────────────
+
+export interface HealthifySuggestion {
+  /** What to swap, e.g. "Tejföl → görög joghurt (10% zsír)". */
+  swap: string
+  /** Short rationale in Hungarian, e.g. "Ugyanolyan krémes, de 40 kcal-lal kevesebb adagonként." */
+  reason: string
+  /** Estimated per-serving calorie change (negative = fewer kcal). */
+  kcalDelta: number
+  /** Estimated per-serving protein change in grams. */
+  proteinDelta: number
+}
+
+/**
+ * Response from `POST /api/recipes/from-text` and `POST /api/recipes/from-handwriting`.
+ * The recipe is a draft — nothing is persisted until the user calls
+ * `POST /api/recipes/from-text/confirm`.
+ */
+export interface RecipeImportPreview {
+  recipe: Recipe
+  /** Fraction of ingredient lines the parser matched against the Kalmio catalog (0.0–1.0). */
+  ingredientMatchConfidence: number
+  /** Raw ingredient lines the parser could not match. The user resolves them client-side. */
+  unmatchedLines: string[]
+  /** Up to three Hungarian-cuisine-aware swap suggestions. */
+  healthifySuggestions: HealthifySuggestion[]
+}
+
+/** Which AI-import path produced the preview being confirmed. */
+export type RecipeImportSource = 'PASTE_TEXT' | 'HANDWRITING'
+
+/** Body for `POST /api/recipes/from-text/confirm`. */
+export interface RecipeImportConfirmRequest {
+  name: string
+  steps: string[]
+  prepTimeMinutes: number
+  cookTimeMinutes: number
+  servings: number
+  ingredients: { ingredientId: string; amount: number; unit: Unit; id?: string }[]
+  tags: RecipeTag[]
+  /** Cultural / cuisine tags to persist on the recipe (preview seeds `USER_IMPORTED`). */
+  culturalTags: string[]
+  source: RecipeImportSource
+  /** Optional source URL for paste-text imports — stored on the event payload for attribution. */
+  sourceUrl?: string | null
+  /** Number of healthify suggestions the user accepted before saving (for AI ROI metrics). */
+  appliedHealthifyCount?: number
+}
 
 // ── Retail ────────────────────────────────────────────────────────────────
 
@@ -366,6 +415,8 @@ export interface PlannedMeal {
   eatenAt: string | null
   notes: string | null
   isBatchCookLeftover?: boolean
+  /** The family member this slot was solved for. Null on solo / legacy plans. */
+  memberId?: string | null
 }
 
 export interface Plan {
@@ -995,12 +1046,6 @@ export interface PlannedMealSummary {
   mealType: MealType
   recipeId: string | null
   recipeName: string | null
-  /**
-   * Per-slot memberIds are NOT returned by PlannedMealResponse.java on the backend
-   * (no memberIds field exists on that Java record). Member chips in PlannerMealRow
-   * are rendered from the plan-level allMemberIds prop instead (all-plan-members indicator).
-   * DEFERRED: KALMIO-218 — backend-dev to add `List<UUID> memberIds` to PlannedMealResponse.
-   */
   macros: Macros | null
   estimatedCostPerServing: number | null
   servingMultiplier: number
@@ -1010,6 +1055,8 @@ export interface PlannedMealSummary {
   notes: string | null
   scheduledTime: string | null  // "HH:mm"
   isBatchCookLeftover: boolean
+  /** The family member this slot was solved for. Null on solo / legacy plans. */
+  memberId: string | null
 }
 
 export interface MultiMemberPlan {

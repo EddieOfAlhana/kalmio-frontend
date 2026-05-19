@@ -790,6 +790,63 @@
       "rejectError": "Nem sikerült elutasítani."
     }
   },
+  "aiImport": {
+    "openButton": "Recept importálása",
+    "title": "Recept importálása AI-jal",
+    "subtitle": "Illeszd be egy recept szövegét, vagy fotózd le a kézzel írt receptet.",
+    "tabs": {
+      "text": "Beillesztés",
+      "photo": "Kézírás"
+    },
+    "text": {
+      "label": "Recept szövege",
+      "placeholder": "Pl. Tejfölös csirkemell — 500 g csirkemell, 2 dl tejföl, 1 fej hagyma, 1 ek olaj…",
+      "charsLeft_one": "{{count}} karakter maradt",
+      "charsLeft_other": "{{count}} karakter maradt",
+      "sourceUrlLabel": "Forrás URL (opcionális)",
+      "sourceUrlPlaceholder": "https://nosalty.hu/recept/..."
+    },
+    "photo": {
+      "drop": "Húzd ide a fotót vagy kattints a feltöltéshez",
+      "hint": "JPEG, PNG, HEIC, WEBP — max 8 MB",
+      "useCamera": "Fényképezőgép használata",
+      "cameraStarting": "Kamera indítása…",
+      "capture": "Fotó készítése",
+      "remove": "Fotó eltávolítása",
+      "replaceUpload": "Másik fájl",
+      "retake": "Új fotó"
+    },
+    "parse": "Feldolgozás",
+    "parsing": "Feldolgozom…",
+    "preview": {
+      "title": "Importált recept ellenőrzése",
+      "save": "Mentés a receptjeim közé",
+      "saveSuccess": "Az importált recept mentve.",
+      "saveError": "Nem sikerült menteni az importált receptet.",
+      "unmatchedTitle_one": "{{count}} hozzávaló nincs még megfeleltetve",
+      "unmatchedTitle_other": "{{count}} hozzávaló nincs még megfeleltetve",
+      "unmatchedDescription": "Kattints egy hozzávalóra, hogy hozzáadd a katalógusból. A mentés csak akkor engedélyezett, ha minden tétel feloldódott vagy elvetve lett.",
+      "unmatchedDismiss": "Elvetés",
+      "healthifyTitle_one": "{{count}} egészségesebb javaslat",
+      "healthifyTitle_other": "{{count}} egészségesebb javaslat",
+      "healthifyDelta": "≈ {{kcal}} kcal, {{protein}} g fehérje / adag"
+    },
+    "errors": {
+      "premiumTitle": "Ez prémium funkció",
+      "premiumDescription": "Az AI-receptimport a Founding Member csomag része.",
+      "premiumCta": "Founding Member lettem",
+      "rateLimitText": "Túl sok importálási kérés. Próbáld újra egy perc múlva.",
+      "rateLimitPhoto": "Túl sok digitalizálási kérés. Próbáld újra egy perc múlva.",
+      "monthlyQuota": "Elérted a havi receptimportálási kereted. A keret jövő hónapban megújul.",
+      "tooLarge": "A fájl mérete meghaladja a 8 MB-ot.",
+      "unsupportedType": "Nem támogatott formátum. JPEG, PNG, HEIC vagy WEBP kell.",
+      "cameraPermission": "A kamera hozzáférés szükséges a fotózáshoz.",
+      "cameraUnavailable": "A kamera nem elérhető ezen az eszközön.",
+      "aiUnavailable": "Az AI-import jelenleg nem elérhető. Próbáld meg később.",
+      "parseFailed": "Nem sikerült feldolgozni a receptet. Ellenőrizd a beillesztett szöveget.",
+      "generic": "Valami hiba történt. Próbáld meg újra."
+    }
+  },
   "myContent": {
     "status": {
       "private": "Privát",

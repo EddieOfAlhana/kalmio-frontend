@@ -682,6 +682,7 @@ function RecipeTranslationDialog({
 
 export function RecipeFormDialog({
   open, recipe, ingredientMap, onOpenChange, onSubmit, isPending, error,
+  titleOverride, headerSlot, extraSubmitDisabled, submitLabelOverride,
 }: {
   open: boolean
   recipe?: Recipe
@@ -690,6 +691,16 @@ export function RecipeFormDialog({
   onSubmit: (v: FormValues) => void
   isPending: boolean
   error?: string
+  /** Overrides the default "Új recept" / "Recept szerkesztése" dialog title. */
+  titleOverride?: string
+  /** Rendered above the form body — used by the AI import flow to show the unmatched-lines
+   *  banner and the healthify accordion without coupling that logic into this dialog. */
+  headerSlot?: React.ReactNode
+  /** When true, the Save button is disabled even if the form is otherwise valid. Used by the
+   *  import flow to block save while unresolved unmatched ingredient lines remain. */
+  extraSubmitDisabled?: boolean
+  /** Overrides the default submit-button label. */
+  submitLabelOverride?: string
 }) {
   const { t } = useTranslation()
   const qc = useQueryClient()
@@ -769,8 +780,10 @@ export function RecipeFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{recipe ? t('recipes.form.editTitle') : t('recipes.form.newTitle')}</DialogTitle>
+          <DialogTitle>{titleOverride ?? (recipe ? t('recipes.form.editTitle') : t('recipes.form.newTitle'))}</DialogTitle>
         </DialogHeader>
+
+        {headerSlot}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 overflow-y-auto max-h-[70dvh] pr-1">
           <div className="grid grid-cols-2 gap-3">
@@ -963,8 +976,10 @@ export function RecipeFormDialog({
 
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>{t('recipes.form.cancel')}</Button>
-            <Button type="submit" disabled={isPending}>
-              {isPending ? <Spinner className="h-4 w-4" /> : recipe ? t('recipes.form.save') : t('recipes.form.create')}
+            <Button type="submit" disabled={isPending || extraSubmitDisabled}>
+              {isPending
+                ? <Spinner className="h-4 w-4" />
+                : (submitLabelOverride ?? (recipe ? t('recipes.form.save') : t('recipes.form.create')))}
             </Button>
           </div>
         </form>

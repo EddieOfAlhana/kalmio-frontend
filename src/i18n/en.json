@@ -790,6 +790,63 @@
       "rejectError": "Failed to reject."
     }
   },
+  "aiImport": {
+    "openButton": "Import recipe",
+    "title": "Import a recipe with AI",
+    "subtitle": "Paste a recipe's text, or photograph a handwritten one.",
+    "tabs": {
+      "text": "Paste text",
+      "photo": "Handwriting"
+    },
+    "text": {
+      "label": "Recipe text",
+      "placeholder": "e.g. Sour cream chicken — 500 g chicken breast, 200 ml sour cream, 1 onion, 1 tbsp oil…",
+      "charsLeft_one": "{{count}} character left",
+      "charsLeft_other": "{{count}} characters left",
+      "sourceUrlLabel": "Source URL (optional)",
+      "sourceUrlPlaceholder": "https://example.com/recipe/..."
+    },
+    "photo": {
+      "drop": "Drop a photo here or click to upload",
+      "hint": "JPEG, PNG, HEIC, WEBP — max 8 MB",
+      "useCamera": "Use camera",
+      "cameraStarting": "Starting camera…",
+      "capture": "Take photo",
+      "remove": "Remove photo",
+      "replaceUpload": "Pick a different file",
+      "retake": "Retake"
+    },
+    "parse": "Parse",
+    "parsing": "Parsing…",
+    "preview": {
+      "title": "Review imported recipe",
+      "save": "Save to my recipes",
+      "saveSuccess": "Imported recipe saved.",
+      "saveError": "Couldn't save the imported recipe.",
+      "unmatchedTitle_one": "{{count}} ingredient still unmatched",
+      "unmatchedTitle_other": "{{count}} ingredients still unmatched",
+      "unmatchedDescription": "Click an ingredient to pick a match from the catalog. Save is enabled once every line is matched or dismissed.",
+      "unmatchedDismiss": "Dismiss",
+      "healthifyTitle_one": "{{count}} healthier suggestion",
+      "healthifyTitle_other": "{{count}} healthier suggestions",
+      "healthifyDelta": "≈ {{kcal}} kcal, {{protein}} g protein per serving"
+    },
+    "errors": {
+      "premiumTitle": "Premium feature",
+      "premiumDescription": "AI recipe import is part of the Founding Member tier.",
+      "premiumCta": "I'm a Founding Member",
+      "rateLimitText": "Too many import requests. Try again in a minute.",
+      "rateLimitPhoto": "Too many digitisation requests. Try again in a minute.",
+      "monthlyQuota": "You've reached this month's recipe-import limit. It resets next month.",
+      "tooLarge": "File exceeds the 8 MB size limit.",
+      "unsupportedType": "Unsupported format. Use JPEG, PNG, HEIC or WEBP.",
+      "cameraPermission": "Camera access is required to take a photo.",
+      "cameraUnavailable": "Camera not available on this device.",
+      "aiUnavailable": "AI import is temporarily unavailable. Try again later.",
+      "parseFailed": "Couldn't parse the recipe. Check the pasted text.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
   "myContent": {
     "status": {
       "private": "Private",
