@@ -887,6 +887,17 @@ export interface FamilyMemberDto {
   userId: string
   role: FamilyRole
   joinedAt: string  // ISO-8601
+  /** True when the family planner has granted (or been granted) impersonation permission for this real account. [PENDING_BE] */
+  impersonationPermissionGranted?: boolean
+}
+
+/** [PENDING_BE] Represents an invite the planner sent — from GET /api/families/{id}/invites. */
+export interface SentInviteDto {
+  id: string
+  claimCode: string
+  expiresAt: string  // ISO-8601
+  boundProfileName?: string
+  status: 'PENDING' | 'ACCEPTED' | 'REVOKED' | 'EXPIRED'
 }
 
 /** Response from POST /api/families and GET /api/families/{id} */
@@ -948,6 +959,8 @@ export interface SendInviteResponse {
 
 export interface AcceptInviteRequest {
   claim: boolean
+  /** Allergens the user confirmed from the merge preview. Only sent when claim=true. */
+  checkedAllergens?: string[]
 }
 
 export interface MacroMergeResultDto {
@@ -966,4 +979,70 @@ export interface MergePreviewResponse {
 
 export interface ImpersonateResponse {
   sessionToken: string
+}
+
+// ── Multi-Member Plans (BE2 / KALMIO-216) ────────────────────────────────
+
+export type MultiPlanStatus = 'DRAFT' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED'
+
+export interface PlannedMealSummary {
+  id: string
+  date: string              // "YYYY-MM-DD"
+  mealType: MealType
+  recipeId: string | null
+  recipeName: string | null
+  memberIds: string[]
+  macros: Macros | null
+  estimatedCostPerServing: number | null
+  servingMultiplier: number
+  status: PlannedMealStatus
+  replacedWithRecipeId: string | null
+  eatenAt: string | null
+  notes: string | null
+  scheduledTime: string | null  // "HH:mm"
+  isBatchCookLeftover: boolean
+}
+
+export interface MultiMemberPlan {
+  id: string
+  name: string
+  plannerId: string
+  memberIds: string[]
+  coPlannerIds: string[]
+  startDate: string         // "YYYY-MM-DD"
+  endDate: string           // "YYYY-MM-DD"
+  durationDays: number
+  mealSlotsCovered: MealType[]
+  status: MultiPlanStatus
+  shoppedAt: string | null  // ISO-8601
+  createdAt: string         // ISO-8601
+  meals: PlannedMealSummary[]
+}
+
+export interface CreateMultiMemberPlanRequest {
+  memberIds: string[]
+  startDate: string         // "YYYY-MM-DD"
+  durationDays: number
+  mealSlotsCovered: MealType[]
+  name?: string | null
+}
+
+export interface UpdatePlanMembersRequest {
+  addUserIds: string[]
+  removeUserIds: string[]
+}
+
+/** Replan suggestion from BE4 — stubbed type until BE4 endpoints land. */
+export interface ReplanSuggestion {
+  id: string
+  planId: string
+  date: string
+  mealType: MealType
+  oldRecipeId: string | null
+  oldRecipeName: string | null
+  newRecipeId: string
+  newRecipeName: string
+  reason: string
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH'
+  createdAt: string
 }

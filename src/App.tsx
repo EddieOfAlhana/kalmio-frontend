@@ -44,6 +44,9 @@ import { TasteSwipePreview } from '@/pages/_preview/TasteSwipePreview'
 import { Grove } from '@/pages/Grove'
 import { FoundingMember } from '@/pages/FoundingMember'
 import { Family } from '@/pages/Family'
+import { Plans } from '@/pages/Plans'
+import { PlanCreate } from '@/pages/PlanCreate'
+import { PlanDetail } from '@/pages/PlanDetail'
 import { OnboardingShell } from '@/pages/onboarding/OnboardingShell'
 import { ConversationalOnboarding } from '@/pages/onboarding/ConversationalOnboarding'
 
@@ -159,6 +162,9 @@ export default function App() {
                 <Route path="grove" element={<Grove />} />
                 <Route path="founding-member" element={<FoundingMember />} />
                 <Route path="family" element={<Family />} />
+                <Route path="plans" element={<Plans />} />
+                <Route path="plans/new" element={<PlanCreate />} />
+                <Route path="plans/:id" element={<PlanDetail />} />
                 <Route path="_preview/planting" element={<PlantingPreview />} />
                 <Route path="_preview/diofa" element={<DiofaPreview />} />
                 <Route path="_preview/taste-swipe" element={<TasteSwipePreview />} />

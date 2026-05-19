@@ -1073,6 +1073,96 @@
       "placeholder": "Pl. spenót, brokkoli",
       "empty": "Nincs kizárt hozzávaló",
       "hint": "Ezeket a hozzávalókat egyik recept sem fogja tartalmazni"
+    },
+    "listTitle": "Tervek",
+    "newPlanCta": "Új terv",
+    "noPlans": "Még nincs terved. Mikor kezdjük?",
+    "filter": {
+      "label": "Szűrő",
+      "all": "Mind",
+      "active": "Aktív",
+      "upcoming": "Közelgő",
+      "past": "Múlt"
+    },
+    "card": {
+      "shopped": "Bevásárolt",
+      "pendingShopping": "Bevásárlás szükséges",
+      "avgKcal": "~{{kcal}} kcal/étkezés"
+    },
+    "mealTypes": {
+      "BREAKFAST": "Reggeli",
+      "MORNING_SNACK": "Tízórai",
+      "LUNCH": "Ebéd",
+      "AFTERNOON_SNACK": "Uzsonna",
+      "DINNER": "Vacsora",
+      "SNACK": "Snack"
+    },
+    "wizard": {
+      "title": "Új terv",
+      "stepsLabel": "Lépések",
+      "step1Label": "Tagok",
+      "step2Label": "Időszak",
+      "step3Label": "Étkezések",
+      "step1Title": "Kire tervezzük?",
+      "step1Hint": "Válaszd ki, kinek szól ez a terv.",
+      "step2Title": "Mikor és mennyi ideig?",
+      "step3Title": "Mely étkezéseket tervezzük?",
+      "step3Hint": "Alapból ebéd és vacsora. Módosítsd igény szerint.",
+      "membersLabel": "Tagválasztó",
+      "mealSlotsLabel": "Étkezés-kiválasztó",
+      "startDate": "Kezdő dátum",
+      "duration": "Időtartam",
+      "durationDays_one": "{{count}} nap",
+      "durationDays_other": "{{count}} nap",
+      "durationCustom": "Egyedi napszám",
+      "days": "nap",
+      "planName": "Terv neve",
+      "nameHint": "Módosíthatod — vagy marad az automatikus név.",
+      "autoName": "{{date}} — terv",
+      "autoNameFamily": "{{date}} — közös terv",
+      "autoNamePlaceholder": "Automatikusan generálva",
+      "atLeastOneMember": "Legalább egy tagot ki kell választani.",
+      "atLeastOneMealSlot": "Legalább egy étkezést ki kell jelölni.",
+      "next": "Tovább",
+      "generate": "Terv generálása",
+      "generating": "Összerakom…",
+      "created": "A terv elkészült.",
+      "conflictGeneric": "Ez a terv ütközik egy meglévő tervvel. Válassz másik időszakot."
+    },
+    "planner": {
+      "noRecipe": "Recept hiányzik",
+      "leftover": "Maradék",
+      "servings": "adag",
+      "viewRecipe": "Recept megtekintése",
+      "editSlot": "Étkezés szerkesztése",
+      "toggleSplit": "Eltérések mutatása",
+      "moreOptions": "Több lehetőség",
+      "divergentLabel": "{{name}} mást eszik",
+      "unresolvedHint": "Megoldásra vár",
+      "noMealsDay": "Erre a napra nincs tervezett étkezés.",
+      "costLabel": "{{cost}} Ft"
+    },
+    "detail": {
+      "settings": "Terv beállításai"
+    }
+  },
+  "approval": {
+    "sectionLabel": "Jóváhagyandó változások",
+    "bannerText_one": "{{count}} terv-változtatás vár a jóváhagyásodra.",
+    "bannerText_other": "{{count}} terv-változtatás vár a jóváhagyásodra.",
+    "accept": "Elfogad",
+    "reject": "Elutasít",
+    "edit": "Szerkeszt",
+    "acceptAll": "Mindet elfogad",
+    "acceptedOne": "Változtatás elfogadva.",
+    "rejectedOne": "Változtatás elutasítva.",
+    "acceptedAll": "Összes kis kockázatú változtatás elfogadva.",
+    "swapDiff": "Csere: {{from}} → {{to}}",
+    "addDiff": "Hozzáadás: {{to}}",
+    "risk": {
+      "low": "kis kockázat",
+      "medium": "közepes kockázat",
+      "high": "nagy kockázat"
     }
   },
   "preferences": {
@@ -1520,7 +1610,17 @@
       "submitCodeCta": "Folytatás",
       "checking": "Ellenőrzés…",
       "invalidCode": "Ez a kód nem érvényes vagy már lejárt.",
-      "acceptSuccess": "Sikeresen csatlakoztál a családhoz."
+      "acceptSuccess": "Sikeresen csatlakoztál a családhoz.",
+      "sentInvitesSection": "Kiküldött meghívók",
+      "sentInvitesEmpty": "Nincs aktív meghívó.",
+      "sentInviteCode": "Kód: {{code}}",
+      "sentInviteExpiry": "Lejár: {{date}}",
+      "sentInviteBoundTo": "Kötve: {{name}}",
+      "revokeInviteCta": "Visszavonás",
+      "revokeInviteConfirm": "Biztosan visszavonod ezt a meghívót?",
+      "revokeInviteSuccess": "A meghívó visszavonva.",
+      "revokeInviteError": "A meghívót nem sikerült visszavonni.",
+      "sentInvitesUnavailable": "A kiküldött meghívók listája jelenleg nem elérhető."
     },
     "merge": {
       "dialogTitle": "Profil összekapcsolása",
@@ -1531,6 +1631,8 @@
       "allergenItemAriaLabel": "{{allergen}} allergén bejelölve",
       "dietaryFlagsSection": "Étrendi megszorítások",
       "flagsUncheckable": "Az étrendi beállítások automatikusan egyesülnek.",
+      "dislikesSection": "Nem kedvelt alapanyagok",
+      "dislikesHint": "Ezek az alapanyagok a felügyelt profilból kerülnek a fiókodba.",
       "macroSection": "Makrócélok",
       "macroHint": "A tényleges fiókadataid az irányadók, ha mindkét helyen be van állítva érték.",
       "kcal": "Kalória",
@@ -1551,7 +1653,12 @@
       "switchTo": "Váltás: {{name}}",
       "switchLabel": "Megtekintés",
       "auditLogTitle": "Ki tekintette meg a tervedet",
-      "auditLogEmpty": "Még senki nem tekintette meg a tervedet."
+      "auditLogEmpty": "Még senki nem tekintette meg a tervedet.",
+      "requestPermissionCta": "Hozzáférés kérése",
+      "requestPermissionAriaLabel": "Hozzáférés kérése: {{name}}",
+      "requestPermissionSent": "Hozzáférési kérés elküldve: {{name}}",
+      "requestPermissionError": "A kérést nem sikerült elküldeni.",
+      "permissionPendingLabel": "Jóváhagyásra vár"
     },
     "prefs": {
       "allergens": "Allergének",
@@ -1569,7 +1676,7 @@
       "vegan": "Vegán",
       "pescatarian": "Pescatariánus",
       "glutenFree": "Gluténmentes",
-      "dairyFree": "Tejtermékmentesán",
+      "dairyFree": "Tejtermékmentes",
       "lactoseFree": "Laktózmentes",
       "milkProteinFree": "Tejfehérjementes",
       "eggFree": "Tojásmentes",

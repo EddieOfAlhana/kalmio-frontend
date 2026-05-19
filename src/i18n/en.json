@@ -1073,6 +1073,96 @@
       "placeholder": "e.g. spinach, broccoli",
       "empty": "No excluded ingredients",
       "hint": "Recipes will exclude these ingredients"
+    },
+    "listTitle": "Plans",
+    "newPlanCta": "New plan",
+    "noPlans": "No plans yet. Shall we start?",
+    "filter": {
+      "label": "Filter",
+      "all": "All",
+      "active": "Active",
+      "upcoming": "Upcoming",
+      "past": "Past"
+    },
+    "card": {
+      "shopped": "Shopped",
+      "pendingShopping": "Shopping pending",
+      "avgKcal": "~{{kcal}} kcal/meal"
+    },
+    "mealTypes": {
+      "BREAKFAST": "Breakfast",
+      "MORNING_SNACK": "Morning snack",
+      "LUNCH": "Lunch",
+      "AFTERNOON_SNACK": "Afternoon snack",
+      "DINNER": "Dinner",
+      "SNACK": "Snack"
+    },
+    "wizard": {
+      "title": "New plan",
+      "stepsLabel": "Steps",
+      "step1Label": "Members",
+      "step2Label": "Period",
+      "step3Label": "Meals",
+      "step1Title": "Who is this plan for?",
+      "step1Hint": "Select the family members to include.",
+      "step2Title": "When and for how long?",
+      "step3Title": "Which meals to plan?",
+      "step3Hint": "Defaults to lunch and dinner. Adjust as needed.",
+      "membersLabel": "Member selector",
+      "mealSlotsLabel": "Meal slot selector",
+      "startDate": "Start date",
+      "duration": "Duration",
+      "durationDays_one": "{{count}} day",
+      "durationDays_other": "{{count}} days",
+      "durationCustom": "Custom number of days",
+      "days": "days",
+      "planName": "Plan name",
+      "nameHint": "You can change it — or keep the auto-generated name.",
+      "autoName": "{{date}} — plan",
+      "autoNameFamily": "{{date}} — family plan",
+      "autoNamePlaceholder": "Auto-generated",
+      "atLeastOneMember": "Select at least one member.",
+      "atLeastOneMealSlot": "Select at least one meal slot.",
+      "next": "Next",
+      "generate": "Generate plan",
+      "generating": "Working on it…",
+      "created": "Plan created.",
+      "conflictGeneric": "This plan conflicts with an existing one. Choose a different period."
+    },
+    "planner": {
+      "noRecipe": "No recipe assigned",
+      "leftover": "Leftover",
+      "servings": "serving",
+      "viewRecipe": "View recipe",
+      "editSlot": "Edit slot",
+      "toggleSplit": "Show splits",
+      "moreOptions": "More options",
+      "divergentLabel": "{{name}} has something else",
+      "unresolvedHint": "Needs a decision",
+      "noMealsDay": "No meals planned for this day.",
+      "costLabel": "{{cost}} HUF"
+    },
+    "detail": {
+      "settings": "Plan settings"
+    }
+  },
+  "approval": {
+    "sectionLabel": "Changes awaiting your review",
+    "bannerText_one": "{{count}} plan change needs your review.",
+    "bannerText_other": "{{count}} plan changes need your review.",
+    "accept": "Accept",
+    "reject": "Reject",
+    "edit": "Edit",
+    "acceptAll": "Accept all",
+    "acceptedOne": "Change accepted.",
+    "rejectedOne": "Change rejected.",
+    "acceptedAll": "All low-risk changes accepted.",
+    "swapDiff": "Swap: {{from}} → {{to}}",
+    "addDiff": "Add: {{to}}",
+    "risk": {
+      "low": "low risk",
+      "medium": "medium risk",
+      "high": "high risk"
     }
   },
   "preferences": {
@@ -1520,7 +1610,17 @@
       "submitCodeCta": "Continue",
       "checking": "Checking…",
       "invalidCode": "This code is not valid or has expired.",
-      "acceptSuccess": "You have joined the family."
+      "acceptSuccess": "You have joined the family.",
+      "sentInvitesSection": "Sent invites",
+      "sentInvitesEmpty": "No active invites.",
+      "sentInviteCode": "Code: {{code}}",
+      "sentInviteExpiry": "Expires: {{date}}",
+      "sentInviteBoundTo": "Linked to: {{name}}",
+      "revokeInviteCta": "Revoke",
+      "revokeInviteConfirm": "Are you sure you want to revoke this invite?",
+      "revokeInviteSuccess": "Invite revoked.",
+      "revokeInviteError": "Failed to revoke the invite.",
+      "sentInvitesUnavailable": "The sent invites list is currently unavailable."
     },
     "merge": {
       "dialogTitle": "Link your profile",
@@ -1531,6 +1631,8 @@
       "allergenItemAriaLabel": "{{allergen}} allergen checked",
       "dietaryFlagsSection": "Dietary restrictions",
       "flagsUncheckable": "Dietary flags will be merged automatically.",
+      "dislikesSection": "Disliked ingredients",
+      "dislikesHint": "These ingredients from the managed profile will be added to your account.",
       "macroSection": "Macro targets",
       "macroHint": "Your actual account data takes precedence when a value is set in both places.",
       "kcal": "Calories",
@@ -1551,7 +1653,12 @@
       "switchTo": "Switch to {{name}}",
       "switchLabel": "View as",
       "auditLogTitle": "Who viewed your plans",
-      "auditLogEmpty": "No one has viewed your plans yet."
+      "auditLogEmpty": "No one has viewed your plans yet.",
+      "requestPermissionCta": "Request access",
+      "requestPermissionAriaLabel": "Request access to view {{name}}",
+      "requestPermissionSent": "Access request sent for {{name}}",
+      "requestPermissionError": "Failed to send the access request.",
+      "permissionPendingLabel": "Awaiting approval"
     },
     "prefs": {
       "allergens": "Allergens",
