@@ -134,6 +134,7 @@ export interface Recipe {
   /** Minutes of passive waiting time. */
   passivePrepMinutes: number | null
   visibility: ContentVisibility
+  createdByUserId: string | null
   createdByUsername: string | null
   imageUrl: string | null
 }

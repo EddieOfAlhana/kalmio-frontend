@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { ChevronDown, Clock, Pencil, Plus, SendHorizonal, Sparkles, Undo2, X } from 'lucide-react'
+import { ChevronDown, Clock, Pencil, Plus, SendHorizonal, Sparkles, Undo2, Wand2, X } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -62,6 +62,7 @@ export function MyRecipes() {
   const [importState, setImportState] = useState<ImportState | null>(null)
   const [ingSearchOpen, setIngSearchOpen] = useState(false)
   const [resolvingLine, setResolvingLine] = useState<string | null>(null)
+  const [enrichingLines, setEnrichingLines] = useState<Set<string>>(new Set())
 
   const { data: recipes = [], isLoading } = useQuery({
     queryKey: ['my-recipes'],
@@ -159,6 +160,52 @@ export function MyRecipes() {
       ...importState,
       unmatchedLines: importState.unmatchedLines.filter(l => l !== line),
     })
+  }
+
+  async function handleEnrichLine(line: string) {
+    if (!importState || enrichingLines.has(line)) return
+    setEnrichingLines(prev => {
+      const next = new Set(prev)
+      next.add(line)
+      return next
+    })
+    try {
+      const created = await ingredientsService.createFromText(line)
+      qc.invalidateQueries({ queryKey: ['ingredients'] })
+      setImportState(curr => {
+        if (!curr) return curr
+        return {
+          ...curr,
+          recipe: {
+            ...curr.recipe,
+            ingredients: [
+              ...curr.recipe.ingredients,
+              { id: crypto.randomUUID(), ingredientId: created.id, amount: 100, unit: 'G' },
+            ],
+          },
+          unmatchedLines: curr.unmatchedLines.filter(l => l !== line),
+        }
+      })
+      toast({ title: t('aiImport.preview.enrichSuccess', { name: created.name }), variant: 'success' })
+    } catch (err) {
+      const status = (err as { response?: { status?: number; data?: { type?: string } } })?.response?.status
+      const type = (err as { response?: { data?: { type?: string } } })?.response?.data?.type
+      let key = 'aiImport.preview.enrichError'
+      if (status === 402) key = 'aiImport.preview.enrichErrorPremium'
+      else if (status === 429) {
+        key = type === 'urn:kalmio:error:monthly-quota-exceeded'
+          ? 'aiImport.preview.enrichErrorMonthly'
+          : 'aiImport.preview.enrichErrorRateLimit'
+      } else if (status === 503) key = 'aiImport.preview.enrichErrorUnavailable'
+      else if (status === 502) key = 'aiImport.preview.enrichErrorParse'
+      toast({ title: t(key), variant: 'destructive' })
+    } finally {
+      setEnrichingLines(prev => {
+        const next = new Set(prev)
+        next.delete(line)
+        return next
+      })
+    }
   }
 
   function handleImportSubmit(values: ReturnType<typeof toRequest>) {
@@ -346,7 +393,9 @@ export function MyRecipes() {
           <ImportPreviewHeader
             unmatchedLines={importState.unmatchedLines}
             healthifySuggestions={importState.healthifySuggestions}
+            enrichingLines={enrichingLines}
             onResolveLine={handleResolveLine}
+            onEnrichLine={handleEnrichLine}
             onDismissLine={handleDismissLine}
           />
         )}
@@ -370,12 +419,16 @@ export function MyRecipes() {
 function ImportPreviewHeader({
   unmatchedLines,
   healthifySuggestions,
+  enrichingLines,
   onResolveLine,
+  onEnrichLine,
   onDismissLine,
 }: {
   unmatchedLines: string[]
   healthifySuggestions: HealthifySuggestion[]
+  enrichingLines: Set<string>
   onResolveLine: (line: string) => void
+  onEnrichLine: (line: string) => void
   onDismissLine: (line: string) => void
 }) {
   const { t } = useTranslation()
@@ -392,28 +445,50 @@ function ImportPreviewHeader({
             {t('aiImport.preview.unmatchedDescription')}
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {unmatchedLines.map(line => (
-              <span
-                key={line}
-                className="inline-flex items-center gap-1 rounded-full bg-white border border-amber-300 px-2 py-1 text-xs text-amber-900"
-              >
-                <button
-                  type="button"
-                  onClick={() => onResolveLine(line)}
-                  className="font-medium hover:underline"
+            {unmatchedLines.map(line => {
+              const isEnriching = enrichingLines.has(line)
+              return (
+                <span
+                  key={line}
+                  className="inline-flex items-center gap-1 rounded-full bg-white border border-amber-300 px-2 py-1 text-xs text-amber-900"
                 >
-                  {line}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onDismissLine(line)}
-                  aria-label={t('aiImport.preview.unmatchedDismiss')}
-                  className="rounded-full p-0.5 text-amber-700 hover:bg-amber-100"
-                >
-                  <X className="h-3 w-3" aria-hidden />
-                </button>
-              </span>
-            ))}
+                  <button
+                    type="button"
+                    onClick={() => onResolveLine(line)}
+                    disabled={isEnriching}
+                    className="font-medium hover:underline disabled:opacity-50"
+                  >
+                    {line}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onEnrichLine(line)}
+                    disabled={isEnriching}
+                    aria-label={t('aiImport.preview.unmatchedEnrich')}
+                    title={t('aiImport.preview.unmatchedEnrich')}
+                    className="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[#F28C28] hover:bg-amber-100 disabled:opacity-60"
+                  >
+                    {isEnriching ? (
+                      <Spinner className="h-3 w-3" />
+                    ) : (
+                      <Wand2 className="h-3 w-3" aria-hidden />
+                    )}
+                    <span className="text-[11px] font-medium">
+                      {t('aiImport.preview.unmatchedEnrichShort')}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onDismissLine(line)}
+                    disabled={isEnriching}
+                    aria-label={t('aiImport.preview.unmatchedDismiss')}
+                    className="rounded-full p-0.5 text-amber-700 hover:bg-amber-100 disabled:opacity-50"
+                  >
+                    <X className="h-3 w-3" aria-hidden />
+                  </button>
+                </span>
+              )
+            })}
           </div>
         </div>
       )}

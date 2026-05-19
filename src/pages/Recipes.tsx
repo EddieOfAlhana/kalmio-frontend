@@ -271,6 +271,7 @@ export function Recipes() {
           {filtered.map(r => {
             const displayName = r.translations?.[lang]?.name ?? r.name
             const photoUrl = recipePhotoUrl(r)
+            const canModify = isAdmin || (!!user?.id && r.createdByUserId === user.id)
             return (
               <Card
                 key={r.id}
@@ -286,8 +287,8 @@ export function Recipes() {
                 />
                 <div className="absolute inset-0 bg-white/70" />
 
-                {/* Admin action buttons — top-right overlay */}
-                {isAdmin && (
+                {/* Owner / admin action buttons — top-right overlay */}
+                {canModify && (
                   <div
                     className="absolute top-2 right-2 z-10 flex gap-1"
                     onClick={e => e.stopPropagation()}
@@ -894,7 +895,7 @@ export function RecipeFormDialog({
                       {field.ingredientName}
                     </span>
                     <Input
-                      type="number" step="0.1" min="0.001"
+                      type="number" step="any" min="0.001"
                       {...register(`ingredients.${idx}.amount`)}
                       className="w-20 h-8 text-sm"
                     />

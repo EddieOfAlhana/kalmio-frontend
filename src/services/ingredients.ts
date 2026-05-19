@@ -12,4 +12,16 @@ export const ingredientsService = {
   updateTranslation: (id: string, body: IngredientTranslations) => api.put<Ingredient>(`/api/ingredients/${id}/translation`, body).then(r => r.data),
   submitForReview: (id: string) => api.post<Ingredient>(`/api/ingredients/${id}/submit-for-review`).then(r => r.data),
   withdrawFromReview: (id: string) => api.post<Ingredient>(`/api/ingredients/${id}/withdraw-review`).then(r => r.data),
+
+  /**
+   * Premium one-shot AI ingredient creation from a raw recipe-import line.
+   *
+   * Error mapping the UI relies on:
+   *   - 402 = not premium (paywall)
+   *   - 429 = per-minute rate limit or monthly soft cap
+   *   - 502 = LLM returned unusable response
+   *   - 503 = OpenAI not configured
+   */
+  createFromText: (rawText: string) =>
+    api.post<Ingredient>('/api/ingredients/from-text', { rawText }).then(r => r.data),
 }

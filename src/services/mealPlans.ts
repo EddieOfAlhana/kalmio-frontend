@@ -30,6 +30,7 @@ export function savedSlotToMeal(s: SavedMealSlot): GeneratedMeal {
       activePrepMinutes: null,
       passivePrepMinutes: null,
       visibility: 'PUBLIC',
+      createdByUserId: null,
       createdByUsername: null,
       imageUrl: null,
     },
